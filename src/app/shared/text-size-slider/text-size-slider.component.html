@@ -1,0 +1,15 @@
+<div class="text-size-control">
+  <div class="control-head">
+    <span class="label">{{ label }}</span>
+    <span class="size-chip">{{ value }}px</span>
+  </div>
+
+  <nz-slider
+    [nzMin]="min"
+    [nzMax]="max"
+    [nzStep]="step"
+    [ngModel]="value"
+    (ngModelChange)="onValueChange($event)"
+  ></nz-slider>
+</div>
+

@@ -4,16 +4,14 @@
       <h1>Who I Am in Christ</h1>
     </section>
 
-    <div class="text-size-control control-card">
-      <div class="control-head"><span class="label">Reading Comfort</span><span class="size-chip">{{ verseTextSize }}px</span></div>
-      <nz-slider
-        [nzMin]="14"
-        [nzMax]="24"
-        [nzStep]="1"
-        [(ngModel)]="verseTextSize"
-        (ngModelChange)="onVerseTextSizeChange($event)"
-      ></nz-slider>
-    </div>
+    <app-text-size-slider
+      class="control-card"
+      [value]="verseTextSize"
+      [min]="14"
+      [max]="24"
+      [step]="1"
+      (valueChange)="onVerseTextSizeChange($event)"
+    ></app-text-size-slider>
 
     <div class="who-stack">
       <section class="who-section">

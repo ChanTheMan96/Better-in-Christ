@@ -11,16 +11,13 @@
 
     <div *ngIf="!loading">
       <section class="control-card">
-        <div class="text-size-control">
-          <div class="control-head"><span class="label">Reading Comfort</span><span class="size-chip">{{ verseTextSize }}px</span></div>
-          <nz-slider
-            [nzMin]="14"
-            [nzMax]="24"
-            [nzStep]="1"
-            [(ngModel)]="verseTextSize"
-            (ngModelChange)="onVerseTextSizeChange($event)"
-          ></nz-slider>
-        </div>
+        <app-text-size-slider
+          [value]="verseTextSize"
+          [min]="14"
+          [max]="24"
+          [step]="1"
+          (valueChange)="onVerseTextSizeChange($event)"
+        ></app-text-size-slider>
       </section>
 
       <section class="rg-card">

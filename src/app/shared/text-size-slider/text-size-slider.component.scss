@@ -1,0 +1,11 @@
+:host {
+  display: block;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+  :host {
+    margin-bottom: 8px;
+  }
+}
+

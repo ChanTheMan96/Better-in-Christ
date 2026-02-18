@@ -16,6 +16,7 @@ import { RelationshipGuideComponent } from './relationship-guide/relationship-gu
 import { SurrenderComponent } from './surrender/surrender.component';
 import { PrayerComponent } from './prayer/prayer.component';
 import { ScriptureVersesComponent } from './shared/scripture-verses/scripture-verses.component';
+import { TextSizeSliderComponent } from './shared/text-size-slider/text-size-slider.component';
 
 import { NZ_I18N, en_US } from 'ng-zorro-antd/i18n';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -73,7 +74,7 @@ import {
 registerLocaleData(en);
 
 @NgModule({
-  declarations: [AppComponent, MensHelpComponent, WhoIAmComponent, HeaderComponent, RelationshipGuideComponent, SurrenderComponent, PrayerComponent, ScriptureVersesComponent],
+  declarations: [AppComponent, MensHelpComponent, WhoIAmComponent, HeaderComponent, RelationshipGuideComponent, SurrenderComponent, PrayerComponent, ScriptureVersesComponent, TextSizeSliderComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

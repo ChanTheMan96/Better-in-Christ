@@ -1,16 +1,12 @@
-<div *ngIf="!loading && showSlider" class="text-size-control">
-  <div class="control-head">
-    <span class="label">{{ sliderLabel }}</span>
-    <span class="size-chip">{{ verseTextSize }}px</span>
-  </div>
-  <nz-slider
-    [nzMin]="sliderMin"
-    [nzMax]="sliderMax"
-    [nzStep]="sliderStep"
-    [ngModel]="verseTextSize"
-    (ngModelChange)="onTextSizeChange($event)"
-  ></nz-slider>
-</div>
+<app-text-size-slider
+  *ngIf="!loading && showSlider"
+  [label]="sliderLabel"
+  [value]="verseTextSize"
+  [min]="sliderMin"
+  [max]="sliderMax"
+  [step]="sliderStep"
+  (valueChange)="onTextSizeChange($event)"
+></app-text-size-slider>
 
 <div *ngIf="loading" class="loading-container">
   <nz-spin nzSimple></nz-spin>
