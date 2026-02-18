@@ -35,7 +35,7 @@ I surrender everything to You.
 I come covered by the blood of Jesus,
 who died in my place and rose again.
 Cleanse me. Claim me. Lead me.
-Not my will but Yours will be done.
+Not my will but Your will be done.
 In Jesus' name, Amen.`;
 
   readonly meanings: string[] = [

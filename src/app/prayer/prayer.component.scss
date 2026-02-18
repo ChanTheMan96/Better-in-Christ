@@ -5,28 +5,6 @@
   box-sizing: border-box;
 }
 
-.page-content {
-  margin: 20px auto;
-  max-width: 1080px;
-  padding: 0 10px;
-  box-sizing: border-box;
-}
-
-.prayer-intro,
-.panel {
-  margin-bottom: 18px;
-  padding: 18px 20px;
-  border-radius: 14px;
-  border: 1px solid rgba(24, 144, 255, 0.28);
-  background: linear-gradient(140deg, rgba(24, 144, 255, 0.14), rgba(24, 144, 255, 0.03));
-}
-
-.prayer-intro h1 {
-  margin: 0;
-  font-size: 30px;
-  color: #fff;
-}
-
 .subtitle {
   margin: 8px 0 0;
   color: #9dccff;
@@ -43,12 +21,6 @@
   margin: 10px 0 0;
   color: #d8e3f0;
   line-height: 1.7;
-}
-
-.panel h2 {
-  margin: 0 0 10px;
-  color: #fff;
-  font-size: 22px;
 }
 
 .panel-caption {
@@ -111,15 +83,5 @@
 @media (max-width: 768px) {
   :host {
     padding: 12px 8px;
-  }
-
-  .page-content {
-    margin: 12px auto;
-    padding: 0 8px;
-  }
-
-  .prayer-intro,
-  .panel {
-    padding: 14px;
   }
 }

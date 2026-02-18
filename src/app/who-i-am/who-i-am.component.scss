@@ -5,34 +5,10 @@
   box-sizing: border-box;
 }
 
-.page-content {
-  margin: 20px auto;
-  max-width: 1080px;
-  padding: 0 10px;
-  box-sizing: border-box;
-}
-
 .who-intro,
 .control-card,
 .who-section {
   margin-bottom: 18px;
-  padding: 18px 20px;
-  border-radius: 14px;
-  border: 1px solid rgba(24, 144, 255, 0.28);
-  background: linear-gradient(140deg, rgba(24, 144, 255, 0.14), rgba(24, 144, 255, 0.03));
-}
-
-.who-intro h1 {
-  margin: 0;
-  font-size: 30px;
-  line-height: 1.2;
-  color: #ffffff;
-}
-
-.who-intro p {
-  margin: 0;
-  color: #d8e3f0;
-  max-width: 740px;
 }
 
 .who-stack {
@@ -45,39 +21,11 @@
   margin-bottom: 14px;
 }
 
-.text-size-control .control-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.text-size-control .label {
-  display: inline-block;
-  color: #b8c4d4;
-  font-size: 12px;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.text-size-control .size-chip {
-  border: 1px solid rgba(24, 144, 255, 0.35);
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 12px;
-  color: #9dccff;
-}
-
 .who-section {
   height: 100%;
 }
 
-.who-section h2 {
-  color: #ffffff;
-  margin: 0 0 12px;
-  font-size: 22px;
-  letter-spacing: 0.02em;
-}
+.who-section h2 { letter-spacing: 0.02em; }
 
 .who-list {
   list-style: none;
@@ -121,24 +69,9 @@
     padding: 12px 8px;
   }
 
-  .page-content {
-    margin: 12px auto;
-    padding: 0 8px;
-  }
-
-  .who-intro {
-    padding: 14px 14px 12px;
-    margin-bottom: 14px;
-  }
-
-  .who-intro h1 {
-    font-size: 22px;
-  }
-
   .who-intro,
   .control-card,
   .who-section {
-    padding: 14px;
     margin-bottom: 14px;
   }
 }

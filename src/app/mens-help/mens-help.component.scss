@@ -5,13 +5,6 @@
   box-sizing: border-box;
 }
 
-.page-content {
-  margin: 20px auto;
-  max-width: 1080px;
-  padding: 0 10px;
-  box-sizing: border-box;
-}
-
 .page-breadcrumb {
   margin: 0 0 14px;
 }
@@ -42,16 +35,10 @@
 
 .emotion-intro {
   margin-bottom: 18px;
-  padding: 18px 20px;
-  border-radius: 14px;
-  border: 1px solid rgba(24, 144, 255, 0.28);
-  background: linear-gradient(140deg, rgba(24, 144, 255, 0.14), rgba(24, 144, 255, 0.03));
 }
 
 .emotion-intro h1 {
   margin: 0 0 8px;
-  font-size: 30px;
-  line-height: 1.2;
   color: #ffffff;
 }
 
@@ -140,7 +127,7 @@
 }
 
 .emotion-icon {
-  font-size: 28px;
+  font-size: 30px;
   color: #1890ff;
 }
 
@@ -152,15 +139,18 @@
 
 .emotion-title {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  height: 52px;
+  min-height: 2.4em;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  line-height: 1.25;
-  overflow: hidden;
+  line-height: 1.2;
+  white-space: normal;
+  word-break: break-word;
+  overflow: visible;
 }
 
 .emotion-header {
@@ -315,22 +305,13 @@
     padding: 12px 8px;
   }
 
-  .page-content {
-    margin: 12px auto;
-    padding: 0 8px;
-  }
-
   .emotion-intro {
-    padding: 14px;
     margin-bottom: 14px;
   }
 
-  .emotion-intro h1 {
-    font-size: 22px;
-  }
-
   .emotion-card {
-    min-height: 126px;
+    min-height: 134px;
+    aspect-ratio: 1 / 1;
     padding: 14px 10px;
   }
 
@@ -340,7 +321,28 @@
   }
 
   .emotion-icon {
-    font-size: 22px;
+    font-size: 34px;
   }
 
+  .emotion-title {
+    font-size: 22px;
+    min-height: 2.3em;
+  }
+
+}
+
+@media (max-width: 480px) {
+  .emotion-card {
+    aspect-ratio: auto;
+    min-height: 118px;
+  }
+
+  .emotion-title {
+    font-size: 21px;
+    min-height: 2.2em;
+  }
+
+  .emotion-icon {
+    font-size: 32px;
+  }
 }

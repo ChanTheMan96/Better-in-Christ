@@ -2,34 +2,6 @@
   margin-bottom: 12px;
 }
 
-.text-size-control .control-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.text-size-control .label {
-  color: #b8c4d4;
-  font-size: 12px;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.text-size-control .size-chip {
-  border: 1px solid rgba(24, 144, 255, 0.35);
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 12px;
-  color: #9dccff;
-}
-
-.loading-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .verses-list {
   display: flex;
   flex-direction: column;
@@ -52,26 +24,6 @@
 
 :host ::ng-deep .verse-alert .ant-alert-message {
   margin-bottom: 10px;
-}
-
-.verse-header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.verse-reference {
-  flex: 1;
-}
-
-.verse-version-tag {
-  opacity: 0.72;
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--app-text-muted);
 }
 
 .verse-alert .ant-alert-description,

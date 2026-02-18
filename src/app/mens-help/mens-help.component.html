@@ -17,7 +17,7 @@
     </nz-breadcrumb>
 
     <ng-container *ngIf="!selectedEmotion">
-      <section class="emotion-intro">
+      <section class="emotion-intro page-intro">
         <h1>What are you carrying today?</h1>
         <p>
           Select an emotion or challenge to get practical guidance and relevant
@@ -27,7 +27,7 @@
       </section>
 
       <div nz-row [nzGutter]="[16, 16]" class="emotion-grid">
-        <div nz-col [nzXs]="12" [nzSm]="12" [nzMd]="8" *ngFor="let emotion of emotions">
+        <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" *ngFor="let emotion of emotions">
           <nz-card (click)="selectEmotion(emotion.emotion)" [nzHoverable]="true" class="emotion-card">
             <div class="emotion-icon-wrapper">
               <span nz-icon [nzType]="emotion.icon" nzTheme="outline" class="emotion-icon"></span>

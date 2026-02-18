@@ -7,6 +7,10 @@
 	--app-text-muted: #9ba3af;
 	--app-border: #222a36;
 	--app-accent: #1890ff;
+	--app-radius: 14px;
+	--app-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+	--app-panel-border: 1px solid rgba(24, 144, 255, 0.28);
+	--app-panel-bg: linear-gradient(140deg, rgba(24, 144, 255, 0.14), rgba(24, 144, 255, 0.03));
 }
 
 html, body, app-root {
@@ -25,8 +29,8 @@ body {
 	background: var(--app-surface);
 	color: var(--app-text);
 	border-color: var(--app-border);
-	border-radius: 14px;
-	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+	border-radius: var(--app-radius);
+	box-shadow: var(--app-shadow);
 }
 .ant-card .ant-card-head {
 	border-bottom: 1px solid rgba(230, 232, 235, 0.08);
@@ -38,6 +42,109 @@ body {
 /* Premium slider styling used by Reading Comfort controls */
 .text-size-control {
 	--slider-accent: #2d96ff;
+}
+
+/* Universal page rhythm */
+.page-content {
+	margin: 20px auto;
+	max-width: 1080px;
+	padding: 0 10px;
+	box-sizing: border-box;
+}
+
+/* Universal panel/card look used across feature pages */
+.panel,
+.control-card,
+.detail-panel,
+.rg-card,
+.who-section,
+.surrender-intro,
+.prayer-intro,
+.rg-intro,
+.who-intro,
+.emotion-intro,
+.result-card {
+	border: var(--app-panel-border);
+	background: var(--app-panel-bg);
+	border-radius: var(--app-radius);
+	box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.12), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Consistent section spacing across pages */
+.page-intro,
+.panel,
+.control-card,
+.rg-card,
+.who-section {
+	margin-bottom: 18px;
+	padding: 18px 20px;
+}
+
+/* Consistent header hierarchy across pages */
+.page-intro h1 {
+	margin: 0;
+	font-size: 30px;
+	line-height: 1.2;
+	color: #ffffff;
+}
+
+.panel h2,
+.rg-card h2,
+.who-section h2 {
+	margin: 0 0 10px;
+	color: #ffffff;
+	font-size: 22px;
+}
+
+/* Universal verse/reading controls */
+.text-size-control .control-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 6px;
+}
+
+.text-size-control .label {
+	display: inline-block;
+	color: #b8c4d4;
+	font-size: 12px;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+}
+
+.text-size-control .size-chip {
+	border: 1px solid rgba(24, 144, 255, 0.35);
+	border-radius: 999px;
+	padding: 2px 8px;
+	font-size: 12px;
+	color: #9dccff;
+}
+
+.verse-header-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.verse-reference {
+	flex: 1;
+}
+
+.verse-version-tag {
+	opacity: 0.72;
+	font-size: 11px;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	color: var(--app-text-muted);
+}
+
+.loading,
+.loading-container {
+	display: flex;
+	align-items: center;
+	gap: 12px;
 }
 
 .text-size-control ::ng-deep .ant-slider-rail {
@@ -130,4 +237,11 @@ button[nz-button] { color: var(--app-text); }
 @media (max-width: 768px) {
 	.container { padding-left: 12px; padding-right: 12px; }
 	.row { gap: 8px; }
+	.page-content { margin: 12px auto; padding: 0 8px; }
+	.page-intro,
+	.panel,
+	.control-card,
+	.rg-card,
+	.who-section { padding: 14px; margin-bottom: 14px; }
+	.page-intro h1 { font-size: 22px; }
 }
