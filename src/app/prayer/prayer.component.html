@@ -34,41 +34,12 @@
 
     <section class="panel">
       <h2>Foundational Verses on Prayer</h2>
-      <div class="text-size-control">
-        <div class="control-head">
-          <span class="label">Reading Comfort</span><span class="size-chip">{{ verseTextSize }}px</span>
-        </div>
-        <nz-slider
-          [nzMin]="14"
-          [nzMax]="24"
-          [nzStep]="1"
-          [(ngModel)]="verseTextSize"
-          (ngModelChange)="onVerseTextSizeChange($event)"
-        ></nz-slider>
-      </div>
-
-      <div *ngIf="loadingVerses" class="loading">
-        <nz-spin nzSimple></nz-spin>
-        <p>Loading Bible...</p>
-      </div>
-
-      <div class="verses-list" *ngIf="!loadingVerses" [style.--sidebar-text-size.px]="verseTextSize">
-        <nz-alert
-          *ngFor="let verse of displayedVerses"
-          nzType="info"
-          [nzMessage]="verseMessageTpl"
-          [nzDescription]="verse.text"
-          [nzCloseable]="false"
-          class="verse-alert"
-        >
-          <ng-template #verseMessageTpl>
-            <div class="verse-header-row">
-              <span class="verse-reference">{{ verse.reference }}</span>
-              <span *ngIf="verse.version" class="verse-version-tag">{{ verse.version }}</span>
-            </div>
-          </ng-template>
-        </nz-alert>
-      </div>
+      <app-scripture-verses
+        [loading]="loadingVerses"
+        [verses]="displayedVerses"
+        [verseTextSize]="verseTextSize"
+        (verseTextSizeChange)="onVerseTextSizeChange($event)"
+      ></app-scripture-verses>
     </section>
 
     <div nz-row [nzGutter]="[16, 16]">

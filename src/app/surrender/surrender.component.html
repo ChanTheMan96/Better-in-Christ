@@ -3,7 +3,7 @@
     <section class="surrender-intro">
       <h1>Surrender</h1>
       <p class="subtitle">Let Go. Trust God. Follow Fully.</p>
-      <p class="anchor">"Not my will, but Yours be done." — Luke 22:42</p>
+      <p class="anchor">"Not my will, but Yours be done." Luke 22:42</p>
       <p class="intro-body">
         Surrender isn't quitting. Real strength begins where control ends. When you surrender to Christ, you don't lose power - you finally stand
         on solid ground.
@@ -30,48 +30,18 @@
     </div>
 
     <section class="panel">
-      <h2>Key Bible Verses on Surrender</h2>
-      <div class="text-size-control">
-        <div class="control-head">
-          <span class="label">Reading Comfort</span><span class="size-chip">{{ verseTextSize }}px</span>
-        </div>
-        <nz-slider
-          [nzMin]="14"
-          [nzMax]="24"
-          [nzStep]="1"
-          [(ngModel)]="verseTextSize"
-          (ngModelChange)="onVerseTextSizeChange($event)"
-        ></nz-slider>
-      </div>
-
-      <div *ngIf="loadingVerses" class="loading">
-        <nz-spin nzSimple></nz-spin>
-        <p>Loading Bible...</p>
-      </div>
-
-      <div *ngIf="!loadingVerses" class="verses-list" [style.--sidebar-text-size.px]="verseTextSize">
-        <nz-alert
-          *ngFor="let verse of displayedVerses"
-          nzType="info"
-          [nzMessage]="verseMessageTpl"
-          [nzDescription]="verse.text"
-          [nzCloseable]="false"
-          class="verse-alert"
-        >
-          <ng-template #verseMessageTpl>
-            <div class="verse-header-row">
-              <span class="verse-reference">{{ verse.reference }}</span>
-              <span *ngIf="verse.version" class="verse-version-tag">{{ verse.version }}</span>
-            </div>
-          </ng-template>
-        </nz-alert>
-        <div class="verse-actions" *ngIf="hasMoreVerses && !loadingVerses">
-          <button nz-button nzType="primary" nzBlock (click)="loadMoreVerses()" [disabled]="loadingVerses">
-            <span nz-icon nzType="reload" nzTheme="outline"></span>
-            Load More Verses
-          </button>
-        </div>
-      </div>
+      <h2>Relevant Scripture</h2>
+      <app-scripture-verses
+        [loading]="loadingVerses"
+        [verses]="displayedVerses"
+        [verseTextSize]="verseTextSize"
+        (verseTextSizeChange)="onVerseTextSizeChange($event)"
+        [showPagination]="true"
+        [pageIndex]="versePageIndex"
+        [pageSize]="versePageSize"
+        [total]="totalVerseCount"
+        (pageIndexChange)="onVersePageChange($event)"
+      ></app-scripture-verses>
     </section>
 
     <div nz-row [nzGutter]="[16, 16]">

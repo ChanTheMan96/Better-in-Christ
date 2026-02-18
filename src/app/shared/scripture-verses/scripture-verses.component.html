@@ -1,0 +1,47 @@
+<div *ngIf="!loading && showSlider" class="text-size-control">
+  <div class="control-head">
+    <span class="label">{{ sliderLabel }}</span>
+    <span class="size-chip">{{ verseTextSize }}px</span>
+  </div>
+  <nz-slider
+    [nzMin]="sliderMin"
+    [nzMax]="sliderMax"
+    [nzStep]="sliderStep"
+    [ngModel]="verseTextSize"
+    (ngModelChange)="onTextSizeChange($event)"
+  ></nz-slider>
+</div>
+
+<div *ngIf="loading" class="loading-container">
+  <nz-spin nzSimple></nz-spin>
+  <p>{{ loadingText }}</p>
+</div>
+
+<div *ngIf="!loading" class="verses-list" [style.--sidebar-text-size.px]="verseTextSize">
+  <nz-alert
+    *ngFor="let verse of verses"
+    nzType="info"
+    [nzMessage]="verseMessageTpl"
+    [nzDescription]="verse.text"
+    [nzCloseable]="false"
+    class="verse-alert"
+  >
+    <ng-template #verseMessageTpl>
+      <div class="verse-header-row">
+        <span class="verse-reference">{{ verse.reference }}</span>
+        <span *ngIf="verse.version" class="verse-version-tag">{{ verse.version }}</span>
+      </div>
+    </ng-template>
+  </nz-alert>
+</div>
+
+<div class="verse-actions" *ngIf="!loading && showPagination && total > pageSize">
+  <nz-pagination
+    [nzPageIndex]="pageIndex"
+    [nzTotal]="total"
+    [nzPageSize]="pageSize"
+    [nzShowSizeChanger]="false"
+    [nzResponsive]="true"
+    (nzPageIndexChange)="onPageChange($event)"
+  ></nz-pagination>
+</div>

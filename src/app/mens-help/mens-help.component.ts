@@ -26,9 +26,11 @@ export class MensHelpComponent implements OnInit, OnDestroy {
   showingVerses = false;
   loadingVerses = false;
   verseTextSize = 16;
+  versePageIndex = 1;
+  readonly versePageSize = 4;
 
   private destroy$ = new Subject<void>();
-  private lastSelectedVerseRefs: string[] = [];
+  private allLoadedVerseResults: Array<{ reference: string; version: string; text: string }> = [];
   currentGuidance = '';
 
   private readonly guidanceByEmotion: Record<string, string> = {
@@ -1150,12 +1152,13 @@ export class MensHelpComponent implements OnInit, OnDestroy {
     this.bibleVersions.selectedVersion$
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(() => {
-        if (!this.showingVerses || !this.selectedEmotionData || this.lastSelectedVerseRefs.length === 0) return;
-        this.loadVersesForReferences(this.lastSelectedVerseRefs);
+        if (!this.showingVerses || !this.selectedEmotionData || this.allLoadedVerseResults.length === 0) return;
+        this.loadAllVersesForEmotion();
       });
   }
 
   onVerseTextSizeChange(size: number): void {
+    this.verseTextSize = size;
     this.textSizeService.setVerseTextSize(size);
   }
 
@@ -1184,6 +1187,8 @@ export class MensHelpComponent implements OnInit, OnDestroy {
       this.guidanceByEmotion[emotion] ||
       'Ask God for wisdom, strength, and obedience in this moment. Let His Word guide your next step.';
     this.showingVerses = false;
+    this.allLoadedVerseResults = [];
+    this.versePageIndex = 1;
     this.navSvc.setBackVisible(true);
   }
 
@@ -1192,27 +1197,45 @@ export class MensHelpComponent implements OnInit, OnDestroy {
     this.selectedEmotionData = null;
     this.currentGuidance = '';
     this.showingVerses = false;
-    this.lastSelectedVerseRefs = [];
+    this.allLoadedVerseResults = [];
+    this.versePageIndex = 1;
     this.navSvc.setBackVisible(false);
   }
 
   findRelevantVerses() {
     if (!this.selectedEmotionData) return;
-
-    const selected = this.getRandomVerses(
-      this.selectedEmotionData.keywordVerses,
-      4,
-    );
-    this.lastSelectedVerseRefs = selected;
-    this.loadVersesForReferences(selected);
+    this.versePageIndex = 1;
+    if (this.allLoadedVerseResults.length === this.selectedEmotionData.keywordVerses.length) {
+      this.showingVerses = true;
+      this.updateVisibleVersePage();
+      return;
+    }
+    this.loadAllVersesForEmotion();
   }
 
-  private loadVersesForReferences(selected: string[]) {
+  onVersePageChange(page: number): void {
+    if (!this.selectedEmotionData) return;
+    this.versePageIndex = page;
+    this.updateVisibleVersePage();
+  }
+
+  get totalVerseCount(): number {
+    return this.selectedEmotionData?.keywordVerses.length || 0;
+  }
+
+  private updateVisibleVersePage(): void {
+    if (!this.selectedEmotionData) return;
+    const start = (this.versePageIndex - 1) * this.versePageSize;
+    this.selectedEmotionData.relevantVerses = this.allLoadedVerseResults.slice(start, start + this.versePageSize);
+  }
+
+  private loadAllVersesForEmotion() {
     if (!this.selectedEmotionData) return;
     this.loadingVerses = true;
     this.showingVerses = true;
+    const refs = this.selectedEmotionData.keywordVerses;
 
-    from(selected)
+    from(refs)
       .pipe(
         concatMap((ref) =>
           this.bibleApiService.getPassage(ref).pipe(
@@ -1229,34 +1252,37 @@ export class MensHelpComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (results) => {
-          this.selectedEmotionData!.relevantVerses = results.map((r) => ({
+          this.allLoadedVerseResults = results.map((r) => ({
             reference: r.ref,
             version: r.version,
             text: r.text,
           }));
+          this.updateVisibleVersePage();
           this.loadingVerses = false;
         },
         error: (err) => {
           console.error(err);
-          this.selectedEmotionData!.relevantVerses = selected.map((s) => ({
+          this.allLoadedVerseResults = refs.map((s) => ({
             reference: s,
             version: '',
             text: 'Unable to load verse text.',
           }));
+          this.updateVisibleVersePage();
           this.loadingVerses = false;
         },
       });
   }
 
-  private getRandomVerses(verses: string[], count: number): string[] {
-    const shuffled = [...verses].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, count);
-  }
-
   backToProblems() {
     this.showingVerses = false;
-    this.lastSelectedVerseRefs = [];
+    this.allLoadedVerseResults = [];
+    this.versePageIndex = 1;
     if (this.selectedEmotionData) this.selectedEmotionData.relevantVerses = [];
+  }
+
+  goToEmotionDetailsFromBreadcrumb(): void {
+    if (!this.selectedEmotion || !this.showingVerses) return;
+    this.backToProblems();
   }
 
   ngOnDestroy(): void {

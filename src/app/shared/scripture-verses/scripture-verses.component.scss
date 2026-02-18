@@ -1,0 +1,152 @@
+.text-size-control {
+  margin-bottom: 12px;
+}
+
+.text-size-control .control-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.text-size-control .label {
+  color: #b8c4d4;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.text-size-control .size-chip {
+  border: 1px solid rgba(24, 144, 255, 0.35);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: #9dccff;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.verses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.verse-alert {
+  margin-bottom: 12px;
+  background: rgba(7, 13, 24, 0.82);
+  border: 1px solid rgba(24, 144, 255, 0.24);
+  box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.08);
+}
+
+.verse-alert .ant-alert-message,
+.verse-alert .ant-alert-message *,
+:host ::ng-deep .verse-alert .ant-alert-message,
+:host ::ng-deep .verse-alert .ant-alert-message * {
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .verse-alert .ant-alert-message {
+  margin-bottom: 10px;
+}
+
+.verse-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.verse-reference {
+  flex: 1;
+}
+
+.verse-version-tag {
+  opacity: 0.72;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--app-text-muted);
+}
+
+.verse-alert .ant-alert-description,
+.verse-alert .ant-alert-description * {
+  color: #dcdcdc;
+}
+
+:host ::ng-deep .verse-alert .ant-alert-description,
+:host ::ng-deep .verse-alert .ant-alert-description * {
+  font-size: var(--sidebar-text-size, 16px);
+  line-height: 1.7;
+  transition: font-size 180ms ease, line-height 180ms ease;
+}
+
+.verse-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+:host ::ng-deep .verse-actions .ant-pagination {
+  color: #9ba3af;
+}
+
+:host ::ng-deep .verse-actions .ant-pagination-item,
+:host ::ng-deep .verse-actions .ant-pagination-prev .ant-pagination-item-link,
+:host ::ng-deep .verse-actions .ant-pagination-next .ant-pagination-item-link {
+  border-radius: 8px;
+  border: 1px solid rgba(24, 144, 255, 0.24);
+  background: rgba(7, 13, 24, 0.82);
+  color: #9ba3af;
+}
+
+:host ::ng-deep .verse-actions .ant-pagination-item a,
+:host ::ng-deep .verse-actions .ant-pagination-prev .ant-pagination-item-link,
+:host ::ng-deep .verse-actions .ant-pagination-next .ant-pagination-item-link {
+  color: #9ba3af;
+}
+
+:host ::ng-deep .verse-actions .ant-pagination-item:hover,
+:host ::ng-deep .verse-actions .ant-pagination-prev:hover .ant-pagination-item-link,
+:host ::ng-deep .verse-actions .ant-pagination-next:hover .ant-pagination-item-link {
+  border-color: rgba(24, 144, 255, 0.55);
+  box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.14);
+}
+
+:host ::ng-deep .verse-actions .ant-pagination-item:hover a,
+:host ::ng-deep .verse-actions .ant-pagination-prev:hover .ant-pagination-item-link,
+:host ::ng-deep .verse-actions .ant-pagination-next:hover .ant-pagination-item-link {
+  color: #9dccff;
+}
+
+:host ::ng-deep .verse-actions .ant-pagination-item-active {
+  border-color: rgba(24, 144, 255, 0.78);
+  background: linear-gradient(90deg, rgba(24, 144, 255, 0.3), rgba(24, 144, 255, 0.16));
+  box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.24);
+}
+
+:host ::ng-deep .verse-actions .ant-pagination-item-active a {
+  color: #e6f4ff;
+}
+
+:host ::ng-deep .verse-actions .ant-pagination-disabled .ant-pagination-item-link,
+:host ::ng-deep .verse-actions .ant-pagination-disabled:hover .ant-pagination-item-link {
+  border-color: rgba(230, 232, 235, 0.12);
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(155, 163, 175, 0.5);
+}
+
+@media (max-width: 768px) {
+  .verse-actions {
+    margin-top: 8px;
+  }
+
+  .verse-alert {
+    margin-bottom: 8px;
+  }
+}

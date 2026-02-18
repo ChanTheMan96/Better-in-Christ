@@ -91,6 +91,7 @@ Amen.`;
   }
 
   onVerseTextSizeChange(size: number): void {
+    this.verseTextSize = size;
     this.textSizeService.setVerseTextSize(size);
   }
 

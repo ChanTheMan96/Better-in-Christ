@@ -24,12 +24,11 @@ interface SurrenderDisplayVerse {
 export class SurrenderComponent implements OnInit, OnDestroy {
   verseTextSize = 16;
   loadingVerses = false;
-  visibleRefs: string[] = [];
-  visibleEntries: SurrenderVerseEntry[] = [];
+  versePageIndex = 1;
+  readonly versePageSize = 4;
   displayedVerses: SurrenderDisplayVerse[] = [];
+  private allLoadedVerseResults: SurrenderDisplayVerse[] = [];
   private destroy$ = new Subject<void>();
-  private readonly initialVisibleCount = 4;
-  private readonly loadMoreCount = 4;
 
   readonly prayerText = `Father,
 I surrender everything to You.
@@ -70,12 +69,10 @@ In Jesus' name, Amen.`;
     { ref: 'Psalm 37:5', title: 'Psalm 37:5' },
     { ref: 'Psalm 46:10', title: 'Psalm 46:10' },
     { ref: 'Psalm 55:22', title: 'Psalm 55:22' },
-    { ref: 'Psalm 62', title: 'Psalm 62' },
     { ref: 'Psalm 62:1', title: 'Psalm 62:1' },
     { ref: 'Psalm 62:5', title: 'Psalm 62:5' },
     { ref: 'Psalm 139:23', title: 'Psalm 139:23' },
     { ref: 'Isaiah 26:3', title: 'Isaiah 26:3' },
-    { ref: 'Isaiah 55', title: 'Isaiah 55' },
     { ref: 'Isaiah 55:8', title: 'Isaiah 55:8' },
     { ref: 'Isaiah 55:9', title: 'Isaiah 55:9' },
     { ref: 'Jeremiah 29:11', title: 'Jeremiah 29:11' },
@@ -105,11 +102,11 @@ In Jesus' name, Amen.`;
 
   ngOnInit(): void {
     this.verseTextSize = this.textSizeService.getVerseTextSize();
-    this.initVisibleVerses();
+    this.loadAllVerses();
 
     this.bibleVersions.selectedVersion$
       .pipe(distinctUntilChanged(), skip(1), takeUntil(this.destroy$))
-      .subscribe(() => this.loadVisiblePassages());
+      .subscribe(() => this.loadAllVerses());
   }
 
   ngOnDestroy(): void {
@@ -118,63 +115,55 @@ In Jesus' name, Amen.`;
   }
 
   onVerseTextSizeChange(size: number): void {
+    this.verseTextSize = size;
     this.textSizeService.setVerseTextSize(size);
   }
 
-  loadMoreVerses(): void {
-    this.appendRandomVerses(this.loadMoreCount);
+  onVersePageChange(page: number): void {
+    this.versePageIndex = page;
+    this.updateVisibleVersePage();
   }
 
-  get hasMoreVerses(): boolean {
-    return this.visibleRefs.length < this.verses.length;
+  get totalVerseCount(): number {
+    return this.verses.length;
   }
 
-  private appendRandomVerses(count: number): void {
-    const used = new Set(this.visibleRefs);
-    const remaining = this.verses.filter((v) => !used.has(v.ref));
-    if (remaining.length === 0) return;
-
-    const picked = [...remaining].sort(() => Math.random() - 0.5).slice(0, count);
-    this.visibleRefs.push(...picked.map((p) => p.ref));
-    this.visibleEntries = this.verses.filter((v) => this.visibleRefs.includes(v.ref));
-    this.loadVisiblePassages();
+  private updateVisibleVersePage(): void {
+    const start = (this.versePageIndex - 1) * this.versePageSize;
+    this.displayedVerses = this.allLoadedVerseResults.slice(start, start + this.versePageSize);
   }
 
-  private loadVisiblePassages(): void {
-    if (this.visibleEntries.length === 0) {
+  private loadAllVerses(): void {
+    if (this.verses.length === 0) {
+      this.allLoadedVerseResults = [];
       this.displayedVerses = [];
       this.loadingVerses = false;
       return;
     }
 
     this.loadingVerses = true;
-    const calls = this.visibleEntries.map((entry) =>
+    const calls = this.verses.map((entry) =>
       this.bible.getPassage(entry.ref).pipe(catchError(() => of(null)))
     );
     forkJoin(calls).subscribe({
       next: (results) => {
-        this.displayedVerses = results.map((passage, index) => ({
-          reference: passage?.reference || this.visibleEntries[index].ref,
+        this.allLoadedVerseResults = results.map((passage, index) => ({
+          reference: passage?.reference || this.verses[index].ref,
           version: passage?.translation_name || passage?.translation_id || '',
           text: passage ? this.bible.formatPassageQuote(passage as BiblePassage) : 'Unable to load verse text.'
         }));
+        this.updateVisibleVersePage();
         this.loadingVerses = false;
       },
       error: () => {
-        this.displayedVerses = this.visibleEntries.map((entry) => ({
+        this.allLoadedVerseResults = this.verses.map((entry) => ({
           reference: entry.ref,
           version: '',
           text: 'Unable to load verse text.'
         }));
+        this.updateVisibleVersePage();
         this.loadingVerses = false;
       }
     });
-  }
-
-  private initVisibleVerses(): void {
-    this.visibleRefs = [];
-    this.visibleEntries = [];
-    this.displayedVerses = [];
-    this.appendRandomVerses(this.initialVisibleCount);
   }
 }

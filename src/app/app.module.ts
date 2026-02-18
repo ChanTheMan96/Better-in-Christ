@@ -15,6 +15,7 @@ import { HeaderComponent } from './shared/header.component';
 import { RelationshipGuideComponent } from './relationship-guide/relationship-guide.component';
 import { SurrenderComponent } from './surrender/surrender.component';
 import { PrayerComponent } from './prayer/prayer.component';
+import { ScriptureVersesComponent } from './shared/scripture-verses/scripture-verses.component';
 
 import { NZ_I18N, en_US } from 'ng-zorro-antd/i18n';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -29,6 +30,8 @@ import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzSliderModule } from 'ng-zorro-antd/slider';
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { IconDefinition } from '@ant-design/icons-angular';
 import {
   AimOutline,
@@ -70,7 +73,7 @@ import {
 registerLocaleData(en);
 
 @NgModule({
-  declarations: [AppComponent, MensHelpComponent, WhoIAmComponent, HeaderComponent, RelationshipGuideComponent, SurrenderComponent, PrayerComponent],
+  declarations: [AppComponent, MensHelpComponent, WhoIAmComponent, HeaderComponent, RelationshipGuideComponent, SurrenderComponent, PrayerComponent, ScriptureVersesComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -85,7 +88,9 @@ registerLocaleData(en);
     NzAlertModule,
     NzSpinModule,
     NzModalModule,
-    NzSliderModule
+    NzSliderModule,
+    NzBreadCrumbModule,
+    NzPaginationModule
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }, { provide: NZ_ICONS, useValue: [
     AimOutline,
