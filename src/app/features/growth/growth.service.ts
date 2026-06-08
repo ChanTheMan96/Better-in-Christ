@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BibleService } from '../../services/bible.service';
 import { BibleVersionService } from '../../services/bible-version.service';
 import { GROWTH_TRAITS } from '../../data/growth.data';
-import { MensHelp, MensHelpVerseResult } from '../../models/mens-help.model';
+import { GuidanceCategory, GuidanceVerseResult } from '../../models/guidance.model';
 import { from, Observable, of } from 'rxjs';
 import { catchError, concatMap, map, toArray } from 'rxjs/operators';
 
@@ -10,18 +10,18 @@ import { catchError, concatMap, map, toArray } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class GrowthService {
-  private readonly verseResultsCache = new Map<string, MensHelpVerseResult[]>();
+  private readonly verseResultsCache = new Map<string, GuidanceVerseResult[]>();
 
   constructor(
     private readonly bibleService: BibleService,
     private readonly bibleVersions: BibleVersionService
   ) {}
 
-  getTraits(): MensHelp[] {
+  getTraits(): GuidanceCategory[] {
     return GROWTH_TRAITS;
   }
 
-  findTraitBySlug(slug: string): MensHelp | null {
+  findTraitBySlug(slug: string): GuidanceCategory | null {
     return this.getTraits().find((trait) => this.toSlug(trait.emotion) === slug) || null;
   }
 
@@ -33,7 +33,7 @@ export class GrowthService {
       .replace(/^-+|-+$/g, '');
   }
 
-  getGuidance(trait: MensHelp): string {
+  getGuidance(trait: GuidanceCategory): string {
     const firstSentence = trait.description.split('. ')[0]?.trim();
     return firstSentence
       ? `${firstSentence}. Ask God to form this trait through daily obedience, humility, and trust.`
@@ -44,7 +44,7 @@ export class GrowthService {
     this.verseResultsCache.clear();
   }
 
-  loadTraitVerses(trait: MensHelp): Observable<MensHelpVerseResult[]> {
+  loadTraitVerses(trait: GuidanceCategory): Observable<GuidanceVerseResult[]> {
     const version = this.bibleVersions.getSelectedVersion();
     const cacheKey = `${this.toSlug(trait.emotion)}|${version}`;
     const cached = this.verseResultsCache.get(cacheKey);

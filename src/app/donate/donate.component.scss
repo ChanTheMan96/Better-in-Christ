@@ -29,34 +29,16 @@
   margin-bottom: 18px;
 }
 
-.donate-cross {
+.donate-logo-mark {
   position: absolute;
   right: clamp(22px, 8vw, 70px);
   top: 34px;
-  width: 54px;
-  height: 74px;
-  opacity: 0.18;
-}
-
-.donate-cross::before,
-.donate-cross::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 5px;
-  height: 100%;
-  border-radius: 999px;
-  background: #fff4d3;
-  transform: translateX(-50%);
-}
-
-.donate-cross::after {
-  top: 21px;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  transform: none;
+  width: clamp(52px, 12vw, 96px);
+  height: clamp(52px, 12vw, 96px);
+  object-fit: contain;
+  opacity: 0.2;
+  filter: drop-shadow(0 0 22px rgba(246, 217, 157, 0.18));
+  pointer-events: none;
 }
 
 .eyebrow {
@@ -126,7 +108,7 @@
 .amount-button.active {
   transform: translateY(-1px);
   border-color: rgba(255, 232, 179, 0.72);
-  background: linear-gradient(155deg, rgba(246, 217, 157, 0.24), rgba(117, 184, 163, 0.12));
+  background: linear-gradient(155deg, rgba(246, 217, 157, 0.24), rgba(255, 244, 211, 0.12));
 }
 
 .donate-action {
@@ -139,7 +121,7 @@
   border: 1px solid rgba(255, 232, 179, 0.54);
   border-radius: 8px;
   color: #fffaf1 !important;
-  background: linear-gradient(90deg, #9a7542 0%, #d7b36f 52%, #75b8a3 100%);
+  background: linear-gradient(90deg, #9a7542 0%, #d7b36f 52%, #c8943f 100%);
   font-weight: 900;
   text-decoration: none;
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22);

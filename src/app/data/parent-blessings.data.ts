@@ -1,6 +1,6 @@
-import { MensHelp } from '../models/mens-help.model';
+import { GuidanceCategory } from '../models/guidance.model';
 
-export interface ParentBlessingCategory extends MensHelp {
+export interface ParentBlessingCategory extends GuidanceCategory {
   blessing: string;
 }
 

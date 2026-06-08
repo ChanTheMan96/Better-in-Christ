@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MensHelp } from '../../models/mens-help.model';
+import { GuidanceCategory } from '../../models/guidance.model';
 import { NavigationService } from '../../services/navigation.service';
 import { GrowthService } from './growth.service';
 
@@ -12,7 +12,7 @@ import { GrowthService } from './growth.service';
   styleUrls: ['./growth-detail.component.scss']
 })
 export class GrowthDetailComponent implements OnInit, OnDestroy {
-  trait: MensHelp | null = null;
+  trait: GuidanceCategory | null = null;
   traitSlug = '';
   guidanceText = '';
 

@@ -1,6 +1,6 @@
-import { MensHelp } from '../models/mens-help.model';
+import { GuidanceCategory } from '../models/guidance.model';
 
-export const GROWTH_TRAITS: MensHelp[] = [
+export const GROWTH_TRAITS: GuidanceCategory[] = [
   {
     emotion: 'Love',
     description:

@@ -2,21 +2,6 @@
   <div class="scroll-glow glow-one"></div>
   <div class="scroll-glow glow-two"></div>
 
-  <header class="scroll-topbar">
-    <button class="icon-button" type="button" (click)="goHome()" aria-label="Back to home">
-      <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
-    </button>
-
-    <label class="emotion-picker">
-      <span>Emotion</span>
-      <select [ngModel]="selectedCategory" (ngModelChange)="onCategoryChange($event)" aria-label="Choose emotion">
-        <optgroup *ngFor="let group of categoryGroups" [label]="group.label">
-          <option *ngFor="let category of group.categories" [value]="category.name">{{ category.name }}</option>
-        </optgroup>
-      </select>
-    </label>
-  </header>
-
   <div class="loading-panel" *ngIf="loading">
     <div class="loading-cross" aria-hidden="true"></div>
     <p>Preparing Scripture...</p>
@@ -32,42 +17,81 @@
     <article
       *ngFor="let verse of verses; let i = index"
       class="verse-slide"
+      [class.is-active]="i === activeIndex"
+      [class.is-before]="i < activeIndex"
+      [class.is-after]="i > activeIndex"
       [attr.aria-label]="'Verse ' + (i + 1) + ' of ' + verses.length"
     >
-      <div class="verse-card">
-        <div class="cross-mark" aria-hidden="true"></div>
-        <p class="verse-text">{{ verse.text }}</p>
-        <p class="verse-ref">{{ verse.reference }}<span *ngIf="verse.version"> · {{ verse.version }}</span></p>
+      <div
+        class="verse-card"
+        [ngClass]="getVerseLengthClass(verse)"
+      >
+        <img src="assets/logo.png" alt="" class="verse-logo-mark" aria-hidden="true">
+        <div
+          class="verse-card-content"
+          (touchstart)="onVerseCardTouchStart($event)"
+          (touchend)="onVerseCardTouchEnd($event)"
+          (wheel)="onVerseCardWheel($event)"
+        >
+          <ng-container *ngIf="!verse.error; else verseError">
+            <p class="verse-text">{{ verse.text }}</p>
+            <p class="verse-ref">{{ verse.reference }}<span *ngIf="verse.version"> · {{ verse.version }}</span></p>
 
-        <div class="verse-actions">
-          <button
-            type="button"
-            class="action-button"
-            [class.active]="favoriteRefs.has(verse.reference)"
-            (click)="toggleFavorite(verse)"
-            [attr.aria-label]="favoriteRefs.has(verse.reference) ? 'Remove favorite' : 'Favorite verse'"
-            [attr.title]="favoriteRefs.has(verse.reference) ? 'Remove favorite' : 'Favorite verse'"
-          >
-            <span
-              nz-icon
-              nzType="heart"
-              [nzTheme]="favoriteRefs.has(verse.reference) ? 'fill' : 'outline'"
-            ></span>
-          </button>
-          <button type="button" class="action-button" (click)="shareVerse(verse)" aria-label="Share verse" title="Share verse">
-            <span nz-icon nzType="share-alt" nzTheme="outline"></span>
-          </button>
-          <button type="button" class="action-button" (click)="randomVerse()" aria-label="Random verse">
-            <span nz-icon nzType="reload" nzTheme="outline"></span>
-          </button>
+            <div class="verse-actions">
+              <button
+                type="button"
+                class="action-button"
+                [class.active]="favoriteRefs.has(verse.reference)"
+                (click)="toggleFavorite(verse)"
+                [attr.aria-label]="favoriteRefs.has(verse.reference) ? 'Remove favorite' : 'Favorite verse'"
+                [attr.title]="favoriteRefs.has(verse.reference) ? 'Remove favorite' : 'Favorite verse'"
+              >
+                <span
+                  nz-icon
+                  nzType="heart"
+                  [nzTheme]="favoriteRefs.has(verse.reference) ? 'fill' : 'outline'"
+                ></span>
+              </button>
+              <button type="button" class="action-button" (click)="shareVerse(verse)" aria-label="Share verse" title="Share verse">
+                <span nz-icon nzType="share-alt" nzTheme="outline"></span>
+              </button>
+              <button type="button" class="action-button" (click)="randomVerse()" aria-label="Random verse">
+                <span nz-icon nzType="reload" nzTheme="outline"></span>
+              </button>
+            </div>
+          </ng-container>
+
+          <ng-template #verseError>
+            <div class="verse-error-state">
+              <p class="error-title">{{ verse.text }}</p>
+              <p class="error-copy">{{ verse.reference }}</p>
+              <button type="button" class="retry-button" (click)="retryVerse(i)">
+                <span nz-icon nzType="reload" nzTheme="outline"></span>
+                Retry
+              </button>
+            </div>
+          </ng-template>
         </div>
       </div>
     </article>
   </section>
 
+  <div class="empty-panel" *ngIf="!loading && !verses.length">
+    <div class="empty-cross" aria-hidden="true"></div>
+    <p>{{ emptyMessage }}</p>
+    <button type="button" class="retry-button" (click)="retrySelection()">
+      <span nz-icon nzType="reload" nzTheme="outline"></span>
+      Retry
+    </button>
+  </div>
+
   <div class="scroll-progress" *ngIf="!loading && verses.length">
     <span>{{ activeIndex + 1 }}</span>
     <i></i>
     <span>{{ verses.length }}</span>
+  </div>
+
+  <div class="scroll-toast" *ngIf="toastMessage" role="status" aria-live="polite">
+    {{ toastMessage }}
   </div>
 </main>

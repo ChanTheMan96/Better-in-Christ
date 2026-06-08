@@ -5,20 +5,20 @@ import { TextSizeService } from '../services/text-size.service';
 import { BibleVersionService } from '../services/bible-version.service';
 import { from, of, Subject } from 'rxjs';
 import { concatMap, toArray, map, catchError, takeUntil, distinctUntilChanged } from 'rxjs/operators';
-import { MENS_HELP_EMOTIONS, MensHelpEmotion } from '../data/mens-help-emotions.data';
+import { EMOTIONS, EmotionCategory } from '../data/emotions.data';
 
-interface MensHelp extends MensHelpEmotion {
+interface EmotionItem extends EmotionCategory {
   relevantVerses: Array<{ reference: string; version: string; text: string }>;
 }
 
 @Component({
-  selector: 'app-mens-help',
-  templateUrl: './mens-help.component.html',
-  styleUrls: ['./mens-help.component.scss'],
+  selector: 'app-emotions',
+  templateUrl: './emotions.component.html',
+  styleUrls: ['./emotions.component.scss'],
 })
-export class MensHelpComponent implements OnInit, OnDestroy {
+export class EmotionsComponent implements OnInit, OnDestroy {
   selectedEmotion: string | null = null;
-  selectedEmotionData: MensHelp | null = null;
+  selectedEmotionData: EmotionItem | null = null;
   showingVerses = false;
   loadingVerses = false;
   verseTextSize = 16;
@@ -96,7 +96,7 @@ export class MensHelpComponent implements OnInit, OnDestroy {
     Impatience: 'Steady in His timing.'
   };
 
-  emotions: MensHelp[] = MENS_HELP_EMOTIONS.map((emotion) => ({ ...emotion, relevantVerses: [] }));
+  emotions: EmotionItem[] = EMOTIONS.map((emotion) => ({ ...emotion, relevantVerses: [] }));
 
   constructor(
     private bibleApiService: BibleService,
@@ -223,8 +223,7 @@ export class MensHelpComponent implements OnInit, OnDestroy {
           this.updateVisibleVersePage();
           this.loadingVerses = false;
         },
-        error: (err) => {
-          console.error(err);
+        error: () => {
           this.allLoadedVerseResults = refs.map((s) => ({
             reference: s,
             version: '',

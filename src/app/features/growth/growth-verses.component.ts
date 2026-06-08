@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { MensHelp, MensHelpVerseResult } from '../../models/mens-help.model';
+import { GuidanceCategory, GuidanceVerseResult } from '../../models/guidance.model';
 import { BibleVersionService } from '../../services/bible-version.service';
 import { NavigationService } from '../../services/navigation.service';
 import { TextSizeService } from '../../services/text-size.service';
@@ -14,16 +14,16 @@ import { GrowthService } from './growth.service';
   styleUrls: ['./growth-verses.component.scss']
 })
 export class GrowthVersesComponent implements OnInit, OnDestroy {
-  trait: MensHelp | null = null;
+  trait: GuidanceCategory | null = null;
   traitSlug = '';
   loadingVerses = false;
   verseTextSize = 16;
   versePageIndex = 1;
   readonly versePageSize = 4;
-  displayedVerses: MensHelpVerseResult[] = [];
+  displayedVerses: GuidanceVerseResult[] = [];
 
   private readonly destroy$ = new Subject<void>();
-  private allVerseResults: MensHelpVerseResult[] = [];
+  private allVerseResults: GuidanceVerseResult[] = [];
 
   constructor(
     private readonly route: ActivatedRoute,

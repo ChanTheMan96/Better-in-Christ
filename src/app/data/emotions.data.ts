@@ -1,4 +1,4 @@
-export interface MensHelpEmotion {
+export interface EmotionCategory {
   emotion: string;
   description: string;
   icon: string;
@@ -6,7 +6,7 @@ export interface MensHelpEmotion {
   keywordVerses: string[];
 }
 
-export const MENS_HELP_EMOTIONS: MensHelpEmotion[] = [
+export const EMOTIONS: EmotionCategory[] = [
     {
       emotion: 'Anger',
       description:

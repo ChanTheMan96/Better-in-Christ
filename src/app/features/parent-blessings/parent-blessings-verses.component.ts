@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { ParentBlessingCategory } from '../../data/parent-blessings.data';
-import { MensHelpVerseResult } from '../../models/mens-help.model';
+import { GuidanceVerseResult } from '../../models/guidance.model';
 import { BibleVersionService } from '../../services/bible-version.service';
 import { NavigationService } from '../../services/navigation.service';
 import { TextSizeService } from '../../services/text-size.service';
@@ -21,10 +21,10 @@ export class ParentBlessingsVersesComponent implements OnInit, OnDestroy {
   verseTextSize = 16;
   versePageIndex = 1;
   readonly versePageSize = 4;
-  displayedVerses: MensHelpVerseResult[] = [];
+  displayedVerses: GuidanceVerseResult[] = [];
 
   private readonly destroy$ = new Subject<void>();
-  private allVerseResults: MensHelpVerseResult[] = [];
+  private allVerseResults: GuidanceVerseResult[] = [];
 
   constructor(
     private readonly route: ActivatedRoute,

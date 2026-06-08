@@ -1,4 +1,4 @@
-export interface MensHelp {
+export interface GuidanceCategory {
   emotion: string;
   description: string;
   icon: string;
@@ -6,9 +6,8 @@ export interface MensHelp {
   keywordVerses: string[];
 }
 
-export interface MensHelpVerseResult {
+export interface GuidanceVerseResult {
   reference: string;
   version: string;
   text: string;
 }
-

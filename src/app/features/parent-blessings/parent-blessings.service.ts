@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
 import { catchError, concatMap, map, toArray } from 'rxjs/operators';
 import { ParentBlessingCategory, PARENT_BLESSINGS } from '../../data/parent-blessings.data';
-import { MensHelpVerseResult } from '../../models/mens-help.model';
+import { GuidanceVerseResult } from '../../models/guidance.model';
 import { BibleService } from '../../services/bible.service';
 import { BibleVersionService } from '../../services/bible-version.service';
 
@@ -10,7 +10,7 @@ import { BibleVersionService } from '../../services/bible-version.service';
   providedIn: 'root'
 })
 export class ParentBlessingsService {
-  private readonly verseResultsCache = new Map<string, MensHelpVerseResult[]>();
+  private readonly verseResultsCache = new Map<string, GuidanceVerseResult[]>();
 
   constructor(
     private readonly bibleService: BibleService,
@@ -44,7 +44,7 @@ export class ParentBlessingsService {
     this.verseResultsCache.clear();
   }
 
-  loadCategoryVerses(category: ParentBlessingCategory): Observable<MensHelpVerseResult[]> {
+  loadCategoryVerses(category: ParentBlessingCategory): Observable<GuidanceVerseResult[]> {
     const version = this.bibleVersions.getSelectedVersion();
     const cacheKey = `${this.toSlug(category.emotion)}|${version}`;
     const cached = this.verseResultsCache.get(cacheKey);

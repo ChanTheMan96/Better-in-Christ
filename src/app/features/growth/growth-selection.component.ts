@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavigationService } from '../../services/navigation.service';
-import { MensHelp } from '../../models/mens-help.model';
+import { GuidanceCategory } from '../../models/guidance.model';
 import { GrowthService } from './growth.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { GrowthService } from './growth.service';
   styleUrls: ['./growth-selection.component.scss']
 })
 export class GrowthSelectionComponent {
-  readonly traits: MensHelp[] = this.growthService.getTraits();
+  readonly traits: GuidanceCategory[] = this.growthService.getTraits();
 
   constructor(
     private readonly growthService: GrowthService,
@@ -20,7 +20,7 @@ export class GrowthSelectionComponent {
     this.navSvc.setBackVisible(false);
   }
 
-  openTrait(trait: MensHelp): void {
+  openTrait(trait: GuidanceCategory): void {
     const slug = this.growthService.toSlug(trait.emotion);
     this.navSvc.setBackVisible(true);
     this.router.navigate(['/growth', slug]);

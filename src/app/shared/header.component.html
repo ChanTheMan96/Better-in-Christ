@@ -1,4 +1,4 @@
-<nav class="app-header text-white">
+<nav class="app-header text-white" [class.faith-scroll-header]="isFaithScrollRoute">
   <div class="container">
     <div class="row align-items-center justify-content-between py-2">
       <div class="col-auto d-flex align-items-center gap-3">
@@ -11,21 +11,39 @@
         >
           <span class="hamburger-icon" aria-hidden="true"></span>
         </button>
-        <a href="#" (click)="goHome($event)" class="h5 mb-0 text-white">Better in Christ</a>
+        <a href="#" (click)="goHome($event)" class="brand-link h5 mb-0 text-white" aria-label="Better in Christ home">
+          <img src="assets/logo.png" alt="" class="brand-logo" aria-hidden="true">
+          <span>Better in Christ</span>
+        </a>
       </div>
       <div class="col-auto">
-        <span
-          class="install-icon-action"
-          (click)="addToHomeScreen()"
-          (keydown.enter)="addToHomeScreen()"
-          (keydown.space)="addToHomeScreen()"
-          role="button"
-          tabindex="0"
-          aria-label="Add to Home Screen"
-          title="Add to Home Screen"
-        >
-          <span nz-icon nzType="book" nzTheme="outline"></span>
-        </span>
+        <label class="header-scroll-picker" *ngIf="isFaithScrollRoute; else installAction">
+          <span>Scroll</span>
+          <select
+            [ngModel]="selectedScrollCategory"
+            (ngModelChange)="onScrollCategoryChange($event)"
+            aria-label="Choose scroll category"
+          >
+            <optgroup *ngFor="let group of scrollCategoryGroups" [label]="group.label">
+              <option *ngFor="let category of group.categories" [value]="category.name">{{ category.name }}</option>
+            </optgroup>
+          </select>
+        </label>
+
+        <ng-template #installAction>
+          <span
+            class="install-icon-action"
+            (click)="addToHomeScreen()"
+            (keydown.enter)="addToHomeScreen()"
+            (keydown.space)="addToHomeScreen()"
+            role="button"
+            tabindex="0"
+            aria-label="Add to Home Screen"
+            title="Add to Home Screen"
+          >
+            <span nz-icon nzType="book" nzTheme="outline"></span>
+          </span>
+        </ng-template>
       </div>
     </div>
   </div>
@@ -39,7 +57,10 @@
 
 <aside class="mobile-menu" [class.open]="mobileMenuOpen">
   <div class="mobile-menu-header">
-    <span>Better in Christ</span>
+    <span class="mobile-brand">
+      <img src="assets/logo.png" alt="" class="brand-logo" aria-hidden="true">
+      <span>Better in Christ</span>
+    </span>
     <button nz-button nzType="text" (click)="closeMobileMenu()" aria-label="Close navigation menu">
       <span nz-icon nzType="close" nzTheme="outline"></span>
     </button>
@@ -53,7 +74,7 @@
     <a routerLink="/relationship-guide" (click)="closeMobileMenu()" class="mobile-link">Relationship Guide</a>
     <a routerLink="/who-i-am" (click)="closeMobileMenu()" class="mobile-link">Who I Am</a>
     <a routerLink="/prayer" (click)="closeMobileMenu()" class="mobile-link">Prayer</a>
-        <a routerLink="/surrender" (click)="closeMobileMenu()" class="mobile-link">Surrender</a>
+    <a routerLink="/surrender" (click)="closeMobileMenu()" class="mobile-link">Surrender</a>
     <a routerLink="/donate" (click)="closeMobileMenu()" class="mobile-link">Donate</a>
     <button nz-button nzType="default" class="mobile-link version-link" (click)="openVersionPicker()">
       Change Bible Version
