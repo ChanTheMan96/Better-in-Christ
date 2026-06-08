@@ -1,0 +1,29 @@
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { NavigationService } from '../../services/navigation.service';
+import { MensHelp } from '../../models/mens-help.model';
+import { GrowthService } from './growth.service';
+
+@Component({
+  selector: 'app-growth-selection',
+  templateUrl: './growth-selection.component.html',
+  styleUrls: ['./growth-selection.component.scss']
+})
+export class GrowthSelectionComponent {
+  readonly traits: MensHelp[] = this.growthService.getTraits();
+
+  constructor(
+    private readonly growthService: GrowthService,
+    private readonly router: Router,
+    private readonly navSvc: NavigationService
+  ) {
+    this.navSvc.setBackVisible(false);
+  }
+
+  openTrait(trait: MensHelp): void {
+    const slug = this.growthService.toSlug(trait.emotion);
+    this.navSvc.setBackVisible(true);
+    this.router.navigate(['/growth', slug]);
+  }
+}
+

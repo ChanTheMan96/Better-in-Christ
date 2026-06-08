@@ -6,9 +6,9 @@
 
 .verse-alert {
   margin-bottom: 12px;
-  background: rgba(7, 13, 24, 0.82);
-  border: 1px solid rgba(24, 144, 255, 0.24);
-  box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.08);
+  background: rgba(25, 36, 30, 0.78);
+  border: 1px solid rgba(255, 232, 179, 0.24);
+  box-shadow: 0 0 0 1px rgba(255, 232, 179, 0.08);
 }
 
 .verse-alert .ant-alert-message,
@@ -48,8 +48,8 @@
 :host ::ng-deep .verse-actions .ant-pagination-prev .ant-pagination-item-link,
 :host ::ng-deep .verse-actions .ant-pagination-next .ant-pagination-item-link {
   border-radius: 8px;
-  border: 1px solid rgba(24, 144, 255, 0.24);
-  background: rgba(7, 13, 24, 0.82);
+  border: 1px solid rgba(255, 232, 179, 0.24);
+  background: rgba(25, 36, 30, 0.82);
   color: #9ba3af;
 }
 
@@ -62,24 +62,24 @@
 :host ::ng-deep .verse-actions .ant-pagination-item:hover,
 :host ::ng-deep .verse-actions .ant-pagination-prev:hover .ant-pagination-item-link,
 :host ::ng-deep .verse-actions .ant-pagination-next:hover .ant-pagination-item-link {
-  border-color: rgba(24, 144, 255, 0.55);
-  box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.14);
+  border-color: rgba(255, 232, 179, 0.55);
+  box-shadow: 0 0 0 1px rgba(255, 232, 179, 0.14);
 }
 
 :host ::ng-deep .verse-actions .ant-pagination-item:hover a,
 :host ::ng-deep .verse-actions .ant-pagination-prev:hover .ant-pagination-item-link,
 :host ::ng-deep .verse-actions .ant-pagination-next:hover .ant-pagination-item-link {
-  color: #9dccff;
+  color: var(--app-accent);
 }
 
 :host ::ng-deep .verse-actions .ant-pagination-item-active {
-  border-color: rgba(24, 144, 255, 0.78);
-  background: linear-gradient(90deg, rgba(24, 144, 255, 0.3), rgba(24, 144, 255, 0.16));
-  box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.24);
+  border-color: rgba(255, 232, 179, 0.78);
+  background: linear-gradient(90deg, rgba(246, 217, 157, 0.3), rgba(117, 184, 163, 0.16));
+  box-shadow: 0 0 0 1px rgba(255, 232, 179, 0.24);
 }
 
 :host ::ng-deep .verse-actions .ant-pagination-item-active a {
-  color: #e6f4ff;
+  color: #fffaf1;
 }
 
 :host ::ng-deep .verse-actions .ant-pagination-disabled .ant-pagination-item-link,

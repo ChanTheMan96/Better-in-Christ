@@ -5,6 +5,11 @@
   overflow: hidden;
   box-sizing: border-box;
   z-index: 10;
+  background:
+    linear-gradient(155deg, rgba(255, 250, 241, 0.11), rgba(255, 250, 241, 0.035)),
+    rgba(17, 29, 24, 0.8);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
 }
 
 .app-header a {
@@ -52,9 +57,9 @@
   border-radius: 10px;
   border-width: 1px;
   border-style: solid;
-  border-color: rgba(24, 144, 255, 0.55);
-  color: #1890ff !important;
-  background-color: transparent;
+  border-color: rgba(255, 232, 179, 0.48);
+  color: var(--app-accent) !important;
+  background-color: rgba(255, 250, 241, 0.04);
   box-shadow: none;
 }
 
@@ -90,17 +95,17 @@
 .menu-toggle:focus,
 .menu-toggle.ant-btn:hover,
 .menu-toggle.ant-btn:focus {
-  border-color: #40a9ff;
-  background-color: rgba(24, 144, 255, 0.12);
-  color: #40a9ff;
+  border-color: var(--app-accent-strong);
+  background-color: rgba(255, 250, 241, 0.12);
+  color: var(--app-accent-strong);
   box-shadow: none;
 }
 
 .menu-toggle:active,
 .menu-toggle.ant-btn:active {
-  border-color: #096dd9;
-  background-color: rgba(9, 109, 217, 0.16);
-  color: #096dd9;
+  border-color: var(--app-accent);
+  background-color: rgba(246, 217, 157, 0.16);
+  color: var(--app-accent);
   box-shadow: none;
 }
 
@@ -110,7 +115,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  color: #9dccff;
+  color: var(--app-accent);
   cursor: pointer;
   transition: color 160ms ease, transform 160ms ease;
 }
@@ -125,7 +130,7 @@
 .mobile-menu-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(14, 17, 22, 0.58);
+  background: rgba(17, 29, 24, 0.62);
   z-index: 999;
 }
 
@@ -136,7 +141,10 @@
   bottom: 0;
   width: min(82vw, 300px);
   padding: 16px;
-  background: var(--app-surface);
+  background:
+    radial-gradient(circle at 10% 8%, rgba(255, 224, 164, 0.16), transparent 18rem),
+    linear-gradient(155deg, rgba(255, 250, 241, 0.1), rgba(255, 250, 241, 0.035)),
+    rgba(25, 36, 30, 0.94);
   border-right: 1px solid var(--app-border);
   box-shadow: 10px 0 28px rgba(0, 0, 0, 0.45);
   transform: translateX(-100%);
@@ -177,16 +185,16 @@
   color: var(--app-text);
   text-decoration: none;
   border: 1px solid var(--app-border);
-  background: rgba(255, 255, 255, 0.015);
+  background: rgba(255, 250, 241, 0.055);
 }
 
 .version-link,
 .version-link.ant-btn {
   justify-content: flex-start;
   height: auto;
-  color: #e6f4ff !important;
-  border-color: rgba(24, 144, 255, 0.7) !important;
-  background: linear-gradient(90deg, rgba(24, 144, 255, 0.32), rgba(24, 144, 255, 0.16)) !important;
+  color: #fffaf1 !important;
+  border-color: rgba(255, 232, 179, 0.56) !important;
+  background: linear-gradient(90deg, rgba(246, 217, 157, 0.28), rgba(117, 184, 163, 0.16)) !important;
 }
 
 .version-link:hover,
@@ -194,17 +202,17 @@
 .version-link.ant-btn:hover,
 .version-link.ant-btn:focus {
   color: #ffffff !important;
-  border-color: rgba(24, 144, 255, 0.95) !important;
-  background: linear-gradient(90deg, rgba(24, 144, 255, 0.48), rgba(24, 144, 255, 0.26)) !important;
+  border-color: rgba(255, 232, 179, 0.86) !important;
+  background: linear-gradient(90deg, rgba(246, 217, 157, 0.42), rgba(117, 184, 163, 0.24)) !important;
 }
 
 .install-link,
 .install-link.ant-btn {
   justify-content: flex-start;
   height: auto;
-  color: #e6f4ff !important;
-  border-color: rgba(24, 144, 255, 0.7) !important;
-  background: linear-gradient(90deg, rgba(24, 144, 255, 0.32), rgba(24, 144, 255, 0.16)) !important;
+  color: #fffaf1 !important;
+  border-color: rgba(255, 232, 179, 0.56) !important;
+  background: linear-gradient(90deg, rgba(246, 217, 157, 0.28), rgba(117, 184, 163, 0.16)) !important;
 }
 
 .install-link:hover,
@@ -212,6 +220,6 @@
 .install-link.ant-btn:hover,
 .install-link.ant-btn:focus {
   color: #ffffff !important;
-  border-color: rgba(24, 144, 255, 0.95) !important;
-  background: linear-gradient(90deg, rgba(24, 144, 255, 0.48), rgba(24, 144, 255, 0.26)) !important;
+  border-color: rgba(255, 232, 179, 0.86) !important;
+  background: linear-gradient(90deg, rgba(246, 217, 157, 0.42), rgba(117, 184, 163, 0.24)) !important;
 }

@@ -1,5 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Better in Christ icon">
-  <rect width="100" height="100" fill="#000" />
-  <rect x="45" y="12" width="10" height="76" fill="#fff" />
-  <rect x="30" y="36" width="40" height="10" fill="#fff" />
+  <defs>
+    <linearGradient id="bg" x1="12" y1="8" x2="88" y2="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#132318"/>
+      <stop offset="1" stop-color="#081108"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="35" y1="18" x2="66" y2="84" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe8b3"/>
+      <stop offset="0.45" stop-color="#f4c35a"/>
+      <stop offset="1" stop-color="#d79b34"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="url(#bg)"/>
+  <path d="M45 18h18v28h26v18H63v22H45V64H19V46h26z" fill="#fff7d6" opacity="0.9" transform="translate(-5 -4)"/>
+  <path d="M45 18h18v28h26v18H63v22H45V64H19V46h26z" fill="#7fa08b" opacity="0.65" transform="translate(5 4)"/>
+  <path d="M45 18h18v28h26v18H63v22H45V64H19V46h26z" fill="url(#gold)"/>
 </svg>

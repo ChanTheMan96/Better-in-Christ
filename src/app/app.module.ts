@@ -17,6 +17,14 @@ import { SurrenderComponent } from './surrender/surrender.component';
 import { PrayerComponent } from './prayer/prayer.component';
 import { ScriptureVersesComponent } from './shared/scripture-verses/scripture-verses.component';
 import { TextSizeSliderComponent } from './shared/text-size-slider/text-size-slider.component';
+import { GrowthSelectionComponent } from './features/growth/growth-selection.component';
+import { GrowthDetailComponent } from './features/growth/growth-detail.component';
+import { GrowthVersesComponent } from './features/growth/growth-verses.component';
+import { ParentBlessingsSelectionComponent } from './features/parent-blessings/parent-blessings-selection.component';
+import { ParentBlessingsDetailComponent } from './features/parent-blessings/parent-blessings-detail.component';
+import { ParentBlessingsVersesComponent } from './features/parent-blessings/parent-blessings-verses.component';
+import { FaithScrollComponent } from './faith-scroll/faith-scroll.component';
+import { DonateComponent } from './donate/donate.component';
 
 import { NZ_I18N, en_US } from 'ng-zorro-antd/i18n';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -48,6 +56,7 @@ import {
   UserOutline,
   CompassOutline,
   WarningOutline,
+  HeartFill,
   HeartOutline,
   CloseCircleOutline,
   ExclamationOutline,
@@ -68,13 +77,33 @@ import {
   MenuOutline,
   CloseOutline,
   UnlockOutline,
-  BookOutline
+  BookOutline,
+  BulbOutline,
+  ShareAltOutline
 } from '@ant-design/icons-angular/icons';
 
 registerLocaleData(en);
 
 @NgModule({
-  declarations: [AppComponent, MensHelpComponent, WhoIAmComponent, HeaderComponent, RelationshipGuideComponent, SurrenderComponent, PrayerComponent, ScriptureVersesComponent, TextSizeSliderComponent],
+  declarations: [
+    AppComponent,
+    MensHelpComponent,
+    WhoIAmComponent,
+    HeaderComponent,
+    RelationshipGuideComponent,
+    SurrenderComponent,
+    PrayerComponent,
+    ScriptureVersesComponent,
+    TextSizeSliderComponent,
+    GrowthSelectionComponent,
+    GrowthDetailComponent,
+    GrowthVersesComponent,
+    ParentBlessingsSelectionComponent,
+    ParentBlessingsDetailComponent,
+    ParentBlessingsVersesComponent,
+    FaithScrollComponent,
+    DonateComponent
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -107,6 +136,7 @@ registerLocaleData(en);
     UserOutline,
     CompassOutline,
     WarningOutline,
+    HeartFill,
     HeartOutline,
     CloseCircleOutline,
     ExclamationOutline,
@@ -128,7 +158,9 @@ registerLocaleData(en);
       MenuOutline,
       CloseOutline,
       UnlockOutline,
-      BookOutline
+      BookOutline,
+      BulbOutline,
+      ShareAltOutline
   ] as IconDefinition[] }],
   bootstrap: [AppComponent]
 })

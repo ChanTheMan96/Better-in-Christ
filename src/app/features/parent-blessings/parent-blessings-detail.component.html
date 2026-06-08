@@ -1,0 +1,54 @@
+<div class="container" *ngIf="category">
+  <div class="page-content">
+    <nz-breadcrumb class="page-breadcrumb">
+      <nz-breadcrumb-item>
+        <a href="#" (click)="goToList($event)">Parent Blessings</a>
+      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>{{ category.emotion }}</nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <div nz-row [nzGutter]="[24, 24]" class="detail-grid">
+      <div nz-col [nzXs]="24">
+        <nz-card [nzTitle]="category.emotion" class="emotion-focus-card">
+          <div class="emotion-header">
+            <div class="emotion-icon-wrapper large">
+              <span nz-icon [nzType]="category.icon" nzTheme="outline" class="emotion-icon"></span>
+            </div>
+            <div class="emotion-details">
+              <p class="emotion-subline">Blessing children in truth.</p>
+              <p class="emotion-description">{{ category.description }}</p>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+
+      <div nz-col [nzXs]="24" [nzMd]="12">
+        <nz-card nzTitle="Areas to Shepherd" class="detail-panel">
+          <div class="problems-list">
+            <div class="problem-item" *ngFor="let item of category.problems">
+              <span class="problem-bullet" aria-hidden="true"></span>
+              <span>{{ item }}</span>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+
+      <div nz-col [nzXs]="24" [nzMd]="12">
+        <nz-card nzTitle="Blessing to Pray" class="guidance-card detail-panel">
+          <p nz-p>{{ category.blessing }}</p>
+        </nz-card>
+      </div>
+
+      <div nz-col [nzXs]="24">
+        <nz-card nzTitle="Biblical Guidance" class="guidance-card detail-panel">
+          <p nz-p>{{ guidanceText }}</p>
+          <button nz-button nzType="primary" nzBlock (click)="openVerses()" class="guidance-action-btn">
+            <span>Find Relevant Verses</span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </button>
+        </nz-card>
+      </div>
+    </div>
+  </div>
+</div>
+

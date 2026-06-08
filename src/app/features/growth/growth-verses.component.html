@@ -1,0 +1,28 @@
+<div class="container" *ngIf="trait">
+  <div class="page-content">
+    <nz-breadcrumb class="page-breadcrumb">
+      <nz-breadcrumb-item>
+        <a href="#" (click)="goToList($event)">Growth</a>
+      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>
+        <a href="#" (click)="goToDetail($event)">{{ trait.emotion }}</a>
+      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>Relevant Scripture</nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <nz-card nzTitle="Relevant Scripture" class="scripture-panel surrender-scripture-panel">
+      <app-scripture-verses
+        [loading]="loadingVerses"
+        [verses]="displayedVerses"
+        [verseTextSize]="verseTextSize"
+        (verseTextSizeChange)="onVerseTextSizeChange($event)"
+        [showPagination]="true"
+        [pageIndex]="versePageIndex"
+        [pageSize]="versePageSize"
+        [total]="totalVerseCount"
+        (pageIndexChange)="onVersePageChange($event)"
+      ></app-scripture-verses>
+    </nz-card>
+  </div>
+</div>
+

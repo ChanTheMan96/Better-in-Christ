@@ -7,7 +7,7 @@
 
 .subtitle {
   margin: 8px 0 0;
-  color: #9dccff;
+  color: var(--app-accent);
   font-weight: 600;
 }
 
@@ -50,7 +50,7 @@
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: rgba(24, 144, 255, 0.92);
+  background: rgba(246, 217, 157, 0.92);
 }
 
 .line-list li:last-child {
@@ -69,8 +69,8 @@
   margin-top: 8px;
   padding: 16px 18px;
   border-radius: 12px;
-  border: 1px solid rgba(24, 144, 255, 0.32);
-  background: linear-gradient(120deg, rgba(24, 144, 255, 0.12), rgba(14, 17, 22, 0.1));
+  border: 1px solid rgba(255, 232, 179, 0.32);
+  background: linear-gradient(120deg, rgba(246, 217, 157, 0.12), rgba(117, 184, 163, 0.08));
 }
 
 .closing p {

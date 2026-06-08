@@ -1,30 +1,43 @@
+<ng-template #versionTitle>
+  <div class="version-title">
+    <span class="version-title-cross" aria-hidden="true"></span>
+    <span>Choose Bible Version</span>
+  </div>
+</ng-template>
+
 <nz-modal
   [nzVisible]="versionModalVisible"
-  nzTitle="Choose Bible Version"
+  [nzTitle]="versionTitle"
+  [nzClassName]="'version-modal'"
+  [nzWidth]="420"
   [nzClosable]="false"
   [nzMaskClosable]="false"
   [nzKeyboard]="false"
   [nzFooter]="null"
 >
   <ng-container *nzModalContent>
-    <div *ngIf="loadingVersions" class="version-loading">
-      <nz-spin nzSimple></nz-spin>
-      <span>Loading versions...</span>
-    </div>
+    <div class="version-modal-body">
+      <p class="version-modal-copy">Select the translation you want to read.</p>
 
-    <p *ngIf="versionLoadError" class="version-error">{{ versionLoadError }}</p>
+      <div *ngIf="loadingVersions" class="version-loading">
+        <nz-spin nzSimple></nz-spin>
+        <span>Loading versions...</span>
+      </div>
 
-    <div *ngIf="!loadingVersions" class="version-grid">
-      <button
-        *ngFor="let version of versions"
-        nz-button
-        nzType="default"
-        class="version-btn"
-        (click)="chooseVersion(version.id)"
-      >
-        <span class="name">{{ version.name }}</span>
-        <span class="meta">{{ version.language || 'English' }}</span>
-      </button>
+      <p *ngIf="versionLoadError" class="version-error">{{ versionLoadError }}</p>
+
+      <div *ngIf="!loadingVersions" class="version-grid">
+        <button
+          *ngFor="let version of versions"
+          nz-button
+          nzType="default"
+          class="version-btn"
+          (click)="chooseVersion(version.id)"
+        >
+          <span class="name">{{ version.name }}</span>
+          <span class="meta">{{ version.language || 'English' }}</span>
+        </button>
+      </div>
     </div>
   </ng-container>
 </nz-modal>
