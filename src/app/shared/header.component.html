@@ -73,6 +73,24 @@
   </div>
 
   <div class="mobile-menu-links">
+    @if (isSignedIn) {
+      <div class="mobile-auth-row">
+        <button nz-button nzType="default" class="mobile-user-chip" (click)="goToDashboard()">
+          <span>{{ userDisplayName || 'Brother' }}</span>
+          <span nz-icon nzType="audit" nzTheme="outline" aria-hidden="true"></span>
+        </button>
+        <button nz-button nzType="default" class="mobile-user-chip icon-only" (click)="signOut()" aria-label="Sign Out">
+          <span nz-icon nzType="logout" nzTheme="outline" aria-hidden="true"></span>
+        </button>
+      </div>
+    } @else {
+      <div class="mobile-auth-row">
+        <button nz-button nzType="default" class="mobile-user-chip icon-only" (click)="goToLogin()" aria-label="Login">
+          <span nz-icon nzType="login" nzTheme="outline" aria-hidden="true"></span>
+        </button>
+      </div>
+    }
+
     <a routerLink="/emotions" (click)="closeMobileMenu()" class="mobile-link">Emotions</a>
     <a routerLink="/faith-scroll" (click)="closeMobileMenu()" class="mobile-link">Faith Scroll</a>
     <a routerLink="/growth" (click)="closeMobileMenu()" class="mobile-link">Growth</a>

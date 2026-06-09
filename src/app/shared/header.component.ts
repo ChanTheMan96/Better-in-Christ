@@ -3,6 +3,7 @@ import { NavigationService } from '../services/navigation.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
+import { ClerkService } from '../services/clerk.service';
 import {
   FaithScrollCategoryGroup,
   FaithScrollSelectionService
@@ -24,6 +25,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Output() changeVersionRequested = new EventEmitter<void>();
   mobileMenuOpen = false;
   isFaithScrollRoute = false;
+  isSignedIn = false;
+  userDisplayName = '';
   selectedScrollCategory = 'Faith';
   scrollCategoryGroups: FaithScrollCategoryGroup[] = [];
   private deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
@@ -34,10 +37,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private navSvc: NavigationService,
-    private faithScrollSelection: FaithScrollSelectionService
+    private faithScrollSelection: FaithScrollSelectionService,
+    private clerkService: ClerkService
   ) {}
 
   ngOnInit(): void {
+    this.clerkService.initialize();
+    this.clerkService.authState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((authState) => {
+        this.isSignedIn = authState.isSignedIn;
+        this.userDisplayName = authState.displayName;
+      });
+
     this.selectedScrollCategory = this.faithScrollSelection.selected;
     this.scrollCategoryGroups = this.faithScrollSelection.categoryGroups;
     this.updateRouteState(this.router.url);
@@ -92,6 +104,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   closeMobileMenu(): void {
     this.mobileMenuOpen = false;
+  }
+
+  async goToLogin(): Promise<void> {
+    this.closeMobileMenu();
+    await this.clerkService.openSignIn();
+  }
+
+  goToDashboard(): void {
+    this.closeMobileMenu();
+    this.router.navigate(['/dashboard']);
+  }
+
+  async signOut(): Promise<void> {
+    this.closeMobileMenu();
+    await this.clerkService.signOut();
   }
 
   openVersionPicker(): void {

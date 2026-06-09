@@ -1,4 +1,5 @@
 export const environment = {
+  clerkPublishableKey: '',
   apiBible: {
     baseUrl: '/api/bible',
     apiKey: '',

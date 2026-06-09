@@ -7,6 +7,8 @@ import { SurrenderComponent } from './surrender/surrender.component';
 import { PrayerComponent } from './prayer/prayer.component';
 import { DonateComponent } from './donate/donate.component';
 import { ContactComponent } from './contact/contact.component';
+import { LoginComponent } from './pages/login/login.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'faith-scroll', pathMatch: 'full' },
@@ -30,7 +32,9 @@ const routes: Routes = [
   },
   { path: 'donate', component: DonateComponent },
   { path: 'contact', component: ContactComponent },
-  { path: '**', redirectTo: 'faith-scroll' }
+  { path: 'login', component: LoginComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: '**', redirectTo: 'faith-scroll' },
 ];
 
 @NgModule({

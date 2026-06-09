@@ -1,0 +1,37 @@
+<section class="dashboard-page page-content">
+	<header class="dashboard-hero panel">
+		<p class="kicker">Dashboard</p>
+		<h1>Welcome back{{ displayName ? ', ' + displayName : '' }}</h1>
+		<p>
+			Your daily spaces for scripture, prayer, and growth are ready. Choose where you want to begin.
+		</p>
+
+		<div class="hero-actions">
+			<a routerLink="/faith-scroll" class="action-link">Open Faith Scroll</a>
+			<a routerLink="/prayer" class="action-link">Go to Prayer</a>
+			<button type="button" class="signout" (click)="signOut()">Sign Out</button>
+		</div>
+	</header>
+
+	<div class="tile-grid">
+		<a routerLink="/who-i-am" class="tile panel">
+			<h2>Identity</h2>
+			<p>Anchor your heart in what God says about you.</p>
+		</a>
+
+		<a routerLink="/relationship-guide" class="tile panel">
+			<h2>Relationships</h2>
+			<p>Find wisdom for boundaries, conflict, and brotherhood.</p>
+		</a>
+
+		<a routerLink="/growth" class="tile panel">
+			<h2>Growth Path</h2>
+			<p>Pick one focused next step and practice it this week.</p>
+		</a>
+
+		<a routerLink="/emotions" class="tile panel">
+			<h2>Emotion Guide</h2>
+			<p>Meet your current emotion with scripture and truth.</p>
+		</a>
+	</div>
+</section>
