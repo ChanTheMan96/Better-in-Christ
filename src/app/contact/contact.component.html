@@ -1,0 +1,45 @@
+<div class="container">
+  <div class="page-content contact-page">
+    <section class="contact-hero">
+      <img src="assets/logo.png" alt="" class="contact-logo-mark" aria-hidden="true">
+      <p class="eyebrow">Report a bug</p>
+      <h1>Help Improve Better in Christ</h1>
+      <p class="hero-copy">
+        Share what went wrong, where it happened, and what device you were using so the issue can be fixed faster.
+      </p>
+    </section>
+
+    <section class="contact-panel">
+      <div class="field-grid">
+        <label>
+          <span>Name</span>
+          <input type="text" [(ngModel)]="name" autocomplete="name" placeholder="Your name">
+        </label>
+
+        <label>
+          <span>Email</span>
+          <input type="email" [(ngModel)]="email" autocomplete="email" placeholder="you@example.com">
+        </label>
+
+        <label>
+          <span>Page or Feature</span>
+          <input type="text" [(ngModel)]="page" placeholder="Faith Scroll, Donate, Emotions...">
+        </label>
+
+        <label>
+          <span>Device or Browser</span>
+          <input type="text" [(ngModel)]="device" placeholder="iPhone Safari, Chrome desktop...">
+        </label>
+      </div>
+
+      <label class="message-field">
+        <span>What happened?</span>
+        <textarea [(ngModel)]="message" rows="6" placeholder="Describe the bug and what you expected to happen."></textarea>
+      </label>
+
+      <a class="contact-action" [href]="bugReportUrl">
+        Send Bug Report
+      </a>
+    </section>
+  </div>
+</div>

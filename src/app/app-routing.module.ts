@@ -6,9 +6,11 @@ import { RelationshipGuideComponent } from './relationship-guide/relationship-gu
 import { SurrenderComponent } from './surrender/surrender.component';
 import { PrayerComponent } from './prayer/prayer.component';
 import { DonateComponent } from './donate/donate.component';
+import { ContactComponent } from './contact/contact.component';
 
 const routes: Routes = [
-  { path: '', component: EmotionsComponent },
+  { path: '', redirectTo: 'faith-scroll', pathMatch: 'full' },
+  { path: 'emotions', component: EmotionsComponent },
   {
     path: 'growth',
     loadChildren: () => import('./features/growth/growth.module').then((m) => m.GrowthModule)
@@ -27,7 +29,8 @@ const routes: Routes = [
     loadChildren: () => import('./faith-scroll/faith-scroll.module').then((m) => m.FaithScrollModule)
   },
   { path: 'donate', component: DonateComponent },
-  { path: '**', redirectTo: '' }
+  { path: 'contact', component: ContactComponent },
+  { path: '**', redirectTo: 'faith-scroll' }
 ];
 
 @NgModule({

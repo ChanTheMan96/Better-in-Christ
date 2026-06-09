@@ -11,13 +11,13 @@
 
     <section class="donate-panel">
       <div class="donate-panel-copy">
-        <h2>Give Once</h2>
+        <h2>Support Once</h2>
         <p>
-          Choose an amount below, then use the donate button to support future features, hosting, Bible tools, and encouragement resources.
+          Choose an amount below, then use the support button to help with future features, hosting, Bible tools, and encouragement resources.
         </p>
       </div>
 
-      <div class="amount-grid" role="group" aria-label="Donation amount">
+      <div class="amount-grid" role="group" aria-label="Support amount">
         <button
           *ngFor="let amount of amounts"
           type="button"
@@ -30,7 +30,7 @@
       </div>
 
       <a class="donate-action" [href]="donationUrl" target="_blank" rel="noopener">
-        Donate {{ selectedAmount | currency:'USD':'symbol':'1.0-0' }}
+        Support {{ selectedAmount | currency:'USD':'symbol':'1.0-0' }}
       </a>
     </section>
   </div>

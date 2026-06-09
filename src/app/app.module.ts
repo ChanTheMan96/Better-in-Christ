@@ -16,6 +16,7 @@ import { RelationshipGuideComponent } from './relationship-guide/relationship-gu
 import { SurrenderComponent } from './surrender/surrender.component';
 import { PrayerComponent } from './prayer/prayer.component';
 import { DonateComponent } from './donate/donate.component';
+import { ContactComponent } from './contact/contact.component';
 import { SharedModule } from './shared/shared.module';
 
 import { NZ_I18N, en_US } from 'ng-zorro-antd/i18n';
@@ -76,7 +77,8 @@ registerLocaleData(en);
     RelationshipGuideComponent,
     SurrenderComponent,
     PrayerComponent,
-    DonateComponent
+    DonateComponent,
+    ContactComponent
   ],
   imports: [
     BrowserModule,

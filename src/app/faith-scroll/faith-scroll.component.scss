@@ -208,8 +208,8 @@
 
 .verse-logo-mark {
   position: absolute;
-  top: 22px;
   right: 24px;
+  bottom: 22px;
   width: 52px;
   height: 52px;
   object-fit: contain;
@@ -221,7 +221,7 @@
 
 .verse-slide.is-active .verse-logo-mark {
   opacity: 0.24;
-  transform: translate3d(-3px, 3px, 0);
+  transform: translate3d(-3px, -3px, 0);
 }
 
 .verse-text {
@@ -406,7 +406,7 @@
   position: absolute;
   z-index: 5;
   left: 50%;
-  bottom: max(18px, env(safe-area-inset-bottom));
+  bottom: max(24px, calc(env(safe-area-inset-bottom) + 12px));
   display: flex;
   align-items: center;
   gap: 10px;
@@ -531,7 +531,7 @@
 
 @media (max-width: 520px) {
   .verse-slide {
-    padding: 18px 16px 68px;
+    padding: 18px 16px max(92px, calc(env(safe-area-inset-bottom) + 76px));
   }
 
   .verse-card {
@@ -541,7 +541,11 @@
   }
 
   .verse-card-content {
-    max-height: calc(100dvh - 230px);
+    max-height: calc(100dvh - 250px);
+  }
+
+  .scroll-progress {
+    bottom: max(34px, calc(env(safe-area-inset-bottom) + 18px));
   }
 
   .is-short-verse {

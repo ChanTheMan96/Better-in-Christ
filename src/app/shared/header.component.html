@@ -67,7 +67,7 @@
   </div>
 
   <div class="mobile-menu-links">
-    <a href="#" (click)="goHome($event)" class="mobile-link">Emotions</a>
+    <a routerLink="/emotions" (click)="closeMobileMenu()" class="mobile-link">Emotions</a>
     <a routerLink="/faith-scroll" (click)="closeMobileMenu()" class="mobile-link">Faith Scroll</a>
     <a routerLink="/growth" (click)="closeMobileMenu()" class="mobile-link">Growth</a>
     <a routerLink="/parent-blessings" (click)="closeMobileMenu()" class="mobile-link">Parent Blessings</a>
@@ -76,6 +76,7 @@
     <a routerLink="/prayer" (click)="closeMobileMenu()" class="mobile-link">Prayer</a>
     <a routerLink="/surrender" (click)="closeMobileMenu()" class="mobile-link">Surrender</a>
     <a routerLink="/donate" (click)="closeMobileMenu()" class="mobile-link">Donate</a>
+    <a routerLink="/contact" (click)="closeMobileMenu()" class="mobile-link">Report a Bug</a>
     <button nz-button nzType="default" class="mobile-link version-link" (click)="openVersionPicker()">
       Change Bible Version
     </button>

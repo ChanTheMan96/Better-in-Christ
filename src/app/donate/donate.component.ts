@@ -11,7 +11,7 @@ interface DonationAmount {
   styleUrls: ['./donate.component.scss']
 })
 export class DonateComponent {
-  private readonly paypalEmail = 'monkeycity230@gmail.com';
+  private readonly paypalEmail = 'betterinchristsupport@gmail.com';
   readonly amounts: DonationAmount[] = [
     { label: '$5', value: 5 },
     { label: '$15', value: 15 },
@@ -22,7 +22,7 @@ export class DonateComponent {
 
   get donationUrl(): string {
     const params = new URLSearchParams({
-      cmd: '_donations',
+      cmd: '_xclick',
       business: this.paypalEmail,
       item_name: 'Better in Christ',
       currency_code: 'USD',
