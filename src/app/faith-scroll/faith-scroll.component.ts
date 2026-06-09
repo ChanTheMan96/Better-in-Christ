@@ -1,13 +1,28 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { of, Subject } from 'rxjs';
-import { catchError, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
-import { FAITH_SCROLL_CATEGORIES, FaithScrollCategory } from '../data/faith-scroll.data';
+import {
+  catchError,
+  distinctUntilChanged,
+  map,
+  takeUntil,
+} from 'rxjs/operators';
+import {
+  FAITH_SCROLL_CATEGORIES,
+  FaithScrollCategory,
+} from '../data/faith-scroll.data';
 import { EMOTIONS } from '../data/emotions.data';
 import { GROWTH_TRAITS } from '../data/growth.data';
 import {
   FAITH_SCROLL_FAVORITES_CATEGORY,
   FaithScrollCategoryGroup,
-  FaithScrollSelectionService
+  FaithScrollSelectionService,
 } from '../services/faith-scroll-selection.service';
 import { ApiService } from '../services/api.service';
 import { BibleService } from '../services/bible.service';
@@ -28,11 +43,11 @@ interface SavedVerse {
 }
 
 @Component({
-    selector: 'app-faith-scroll',
-    templateUrl: './faith-scroll.component.html',
-    styleUrls: ['./faith-scroll.component.scss'],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+  selector: 'app-faith-scroll',
+  templateUrl: './faith-scroll.component.html',
+  styleUrls: ['./faith-scroll.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class FaithScrollComponent implements OnInit, OnDestroy {
   @ViewChild('feed') feed?: ElementRef<HTMLElement>;
@@ -61,7 +76,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     private bibleService: BibleService,
     private selection: FaithScrollSelectionService,
     private clerkService: ClerkService,
-    private apiService: ApiService
+    private apiService: ApiService,
   ) {}
 
   ngOnInit(): void {
@@ -71,7 +86,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       .pipe(
         map((state) => state.isSignedIn),
         distinctUntilChanged(),
-        takeUntil(this.destroy$)
+        takeUntil(this.destroy$),
       )
       .subscribe(() => {
         this.bootstrapUserAndFavorites();
@@ -102,7 +117,10 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
     const nextIndex = Math.round(el.scrollTop / Math.max(1, el.clientHeight));
     if (nextIndex !== this.activeIndex) {
-      this.activeIndex = Math.max(0, Math.min(nextIndex, this.verses.length - 1));
+      this.activeIndex = Math.max(
+        0,
+        Math.min(nextIndex, this.verses.length - 1),
+      );
       this.markSeen(this.activeIndex);
       this.loadVerseWindow(this.activeIndex);
       this.pulse();
@@ -144,7 +162,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     await this.apiService.saveVerse(
       this.dbUser.id,
       verse.reference,
-      verse.text
+      verse.text,
     );
     await this.loadSavedVerses();
     this.showToast('Saved');
@@ -166,17 +184,21 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       result?.data ||
       (Array.isArray(result) ? result : []);
 
-    this.savedVerses = (Array.isArray(rawVerses) ? rawVerses : []).map((verse: any) => ({
-      id: verse.id,
-      verseRef: verse.verseRef || verse.verse_ref || verse.reference || '',
-      verseText: verse.verseText || verse.verse_text || verse.text || ''
-    }));
+    this.savedVerses = (Array.isArray(rawVerses) ? rawVerses : []).map(
+      (verse: any) => ({
+        id: verse.id,
+        verseRef: verse.verseRef || verse.verse_ref || verse.reference || '',
+        verseText: verse.verseText || verse.verse_text || verse.text || '',
+      }),
+    );
 
-    this.favoriteRefs = new Set(this.savedVerses.map((verse) => verse.verseRef).filter(Boolean));
+    this.favoriteRefs = new Set(
+      this.savedVerses.map((verse) => verse.verseRef).filter(Boolean),
+    );
     this.savedVerseIdByRef = new Map(
       this.savedVerses
         .filter((verse) => !!verse.verseRef && !!verse.id)
-        .map((verse) => [verse.verseRef, verse.id] as const)
+        .map((verse) => [verse.verseRef, verse.id] as const),
     );
   }
 
@@ -192,10 +214,14 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     if (verse.error) return;
 
     const shareText = `${verse.text}\n\n${verse.reference}${verse.version ? ` (${verse.version})` : ''}\n\nbetterinchrist.com`;
-    const nav = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
+    const nav = navigator as Navigator & {
+      share?: (data: ShareData) => Promise<void>;
+    };
 
     if (nav.share) {
-      await nav.share({ title: verse.reference, text: shareText }).catch(() => undefined);
+      await nav
+        .share({ title: verse.reference, text: shareText })
+        .catch(() => undefined);
       this.showToast('Shared');
     } else if (navigator.clipboard) {
       await navigator.clipboard.writeText(shareText).catch(() => undefined);
@@ -208,12 +234,18 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     if (!this.verses.length) return;
     const unseenIndexes = this.verses
       .map((verse, index) => ({ verse, index }))
-      .filter(({ verse, index }) => !this.seenRefs.has(verse.reference) && index !== this.activeIndex)
+      .filter(
+        ({ verse, index }) =>
+          !this.seenRefs.has(verse.reference) && index !== this.activeIndex,
+      )
       .map(({ index }) => index);
     const candidates = unseenIndexes.length
       ? unseenIndexes
-      : this.verses.map((_, index) => index).filter((index) => index !== this.activeIndex);
-    const nextIndex = candidates[Math.floor(Math.random() * candidates.length)] ?? 0;
+      : this.verses
+          .map((_, index) => index)
+          .filter((index) => index !== this.activeIndex);
+    const nextIndex =
+      candidates[Math.floor(Math.random() * candidates.length)] ?? 0;
     this.scrollToIndex(nextIndex);
   }
 
@@ -230,7 +262,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       reference: verse.reference,
       text: 'Loading Scripture...',
       version: '',
-      loaded: false
+      loaded: false,
     };
     this.loadVerse(index);
   }
@@ -295,14 +327,15 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       text: 'Loading Scripture...',
       version: '',
       loaded: false,
-      error: false
+      error: false,
     }));
     this.activeIndex = 0;
 
     if (!this.verses.length) {
-      this.emptyMessage = category.name === FAITH_SCROLL_FAVORITES_CATEGORY
-        ? 'Heart verses to build your Favorites scroll.'
-        : 'No verses found for this selection.';
+      this.emptyMessage =
+        category.name === FAITH_SCROLL_FAVORITES_CATEGORY
+          ? 'Heart verses to build your Favorites scroll.'
+          : 'No verses found for this selection.';
       this.loading = false;
       return;
     }
@@ -314,38 +347,45 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   }
 
   private findCategory(categoryName: string): FaithScrollCategory {
-    return this.categories.find((category) => category.name === categoryName) || this.categories[0];
+    return (
+      this.categories.find((category) => category.name === categoryName) ||
+      this.categories[0]
+    );
   }
 
   private buildCategoryGroups(): FaithScrollCategoryGroup[] {
-    const emotionCategories: FaithScrollCategory[] = EMOTIONS.map((emotion) => ({
-      name: emotion.emotion,
-      refs: emotion.keywordVerses
-    }));
-    const growthCategories: FaithScrollCategory[] = GROWTH_TRAITS.map((trait) => ({
-      name: trait.emotion,
-      refs: trait.keywordVerses
-    }));
+    const emotionCategories: FaithScrollCategory[] = EMOTIONS.map(
+      (emotion) => ({
+        name: emotion.emotion,
+        refs: emotion.keywordVerses,
+      }),
+    );
+    const growthCategories: FaithScrollCategory[] = GROWTH_TRAITS.map(
+      (trait) => ({
+        name: trait.emotion,
+        refs: trait.keywordVerses,
+      }),
+    );
     const featuredCategories: FaithScrollCategory[] = [
       {
         name: FAITH_SCROLL_FAVORITES_CATEGORY,
-        refs: []
+        refs: [],
       },
       {
         name: 'All Scripture',
         refs: [
           ...FAITH_SCROLL_CATEGORIES.flatMap((category) => category.refs),
           ...emotionCategories.flatMap((category) => category.refs),
-          ...growthCategories.flatMap((category) => category.refs)
-        ]
+          ...growthCategories.flatMap((category) => category.refs),
+        ],
       },
-      ...FAITH_SCROLL_CATEGORIES
+      ...FAITH_SCROLL_CATEGORIES,
     ];
 
     return [
       { label: 'Featured', categories: featuredCategories },
       { label: 'Emotions', categories: emotionCategories },
-      { label: 'Growth', categories: growthCategories }
+      { label: 'Growth', categories: growthCategories },
     ];
   }
 
@@ -364,12 +404,14 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
   private loadVerse(index: number, token = this.loadToken): void {
     const verse = this.verses[index];
-    if (!verse || verse.loaded || this.inFlightRefs.has(verse.reference)) return;
+    if (!verse || verse.loaded || this.inFlightRefs.has(verse.reference))
+      return;
 
     const requestedRef = verse.reference;
     this.inFlightRefs.add(requestedRef);
 
-    this.bibleService.getPassage(requestedRef)
+    this.bibleService
+      .getPassage(requestedRef)
       .pipe(
         map((passage) => {
           const text = this.bibleService.formatPassageQuote(passage).trim();
@@ -382,21 +424,27 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
             text,
             version: passage.translation_name || passage.translation_id || '',
             loaded: true,
-            error: false
+            error: false,
           };
         }),
-        catchError(() => of({
-          reference: requestedRef,
-          text: 'This verse did not load.',
-          version: '',
-          loaded: true,
-          error: true
-        })),
-        takeUntil(this.destroy$)
+        catchError(() =>
+          of({
+            reference: requestedRef,
+            text: 'This verse did not load.',
+            version: '',
+            loaded: true,
+            error: true,
+          }),
+        ),
+        takeUntil(this.destroy$),
       )
       .subscribe((loadedVerse) => {
         this.inFlightRefs.delete(requestedRef);
-        if (token !== this.loadToken || this.verses[index]?.reference !== requestedRef) return;
+        if (
+          token !== this.loadToken ||
+          this.verses[index]?.reference !== requestedRef
+        )
+          return;
 
         this.verses[index] = loadedVerse;
         if (index === this.activeIndex) {
@@ -405,7 +453,11 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       });
   }
 
-  private scrollToIndex(index: number, behavior: ScrollBehavior = 'smooth', token = this.loadToken): void {
+  private scrollToIndex(
+    index: number,
+    behavior: ScrollBehavior = 'smooth',
+    token = this.loadToken,
+  ): void {
     const el = this.feed?.nativeElement;
     if (!el) return;
 
@@ -433,7 +485,10 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     const shuffled = [...refs];
     for (let index = shuffled.length - 1; index > 0; index -= 1) {
       const swapIndex = Math.floor(Math.random() * (index + 1));
-      [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+      [shuffled[index], shuffled[swapIndex]] = [
+        shuffled[swapIndex],
+        shuffled[index],
+      ];
     }
     return shuffled;
   }
@@ -445,14 +500,20 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
   private removeUnfavoritedFromFavoritesFeed(): void {
     const currentRef = this.verses[this.activeIndex]?.reference;
-    this.verses = this.verses.filter((verse) => this.favoriteRefs.has(verse.reference));
-    this.emptyMessage = this.verses.length ? '' : 'Heart verses to build your Favorites scroll.';
+    this.verses = this.verses.filter((verse) =>
+      this.favoriteRefs.has(verse.reference),
+    );
+    this.emptyMessage = this.verses.length
+      ? ''
+      : 'Heart verses to build your Favorites scroll.';
     if (!this.verses.length) {
       this.activeIndex = 0;
       return;
     }
 
-    const currentIndex = currentRef ? this.verses.findIndex((verse) => verse.reference === currentRef) : -1;
+    const currentIndex = currentRef
+      ? this.verses.findIndex((verse) => verse.reference === currentRef)
+      : -1;
     this.activeIndex = Math.max(0, currentIndex);
     setTimeout(() => this.scrollToIndex(this.activeIndex, 'auto'));
   }
