@@ -16,6 +16,7 @@ import {
 import {
   FAITH_SCROLL_CATEGORIES,
   FaithScrollCategory,
+  JESUS_WORDS_CATEGORY,
 } from '../data/faith-scroll.data';
 import { EMOTIONS } from '../data/emotions.data';
 import { GROWTH_TRAITS } from '../data/growth.data';
@@ -371,9 +372,11 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
         name: FAITH_SCROLL_FAVORITES_CATEGORY,
         refs: [],
       },
+      JESUS_WORDS_CATEGORY,
       {
         name: 'All Scripture',
         refs: [
+          ...JESUS_WORDS_CATEGORY.refs,
           ...FAITH_SCROLL_CATEGORIES.flatMap((category) => category.refs),
           ...emotionCategories.flatMap((category) => category.refs),
           ...growthCategories.flatMap((category) => category.refs),

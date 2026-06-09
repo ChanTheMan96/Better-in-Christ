@@ -3,6 +3,44 @@ export interface FaithScrollCategory {
   refs: string[];
 }
 
+export const JESUS_WORDS_CATEGORY: FaithScrollCategory = {
+  name: 'Words in Red',
+  refs: [
+    'Matthew 4:19',
+    'Matthew 5:3-10',
+    'Matthew 5:14-16',
+    'Matthew 5:44',
+    'Matthew 6:9-13',
+    'Matthew 6:19-21',
+    'Matthew 6:25-34',
+    'Matthew 7:7-8',
+    'Matthew 7:24-27',
+    'Matthew 9:37-38',
+    'Matthew 11:28-30',
+    'Matthew 16:24-26',
+    'Matthew 22:37-39',
+    'Matthew 28:18-20',
+    'Mark 10:45',
+    'Luke 6:31',
+    'Luke 9:23',
+    'Luke 10:27',
+    'Luke 12:32',
+    'Luke 15:4-7',
+    'John 3:16-17',
+    'John 6:35',
+    'John 8:12',
+    'John 10:10',
+    'John 10:27-28',
+    'John 11:25-26',
+    'John 13:34-35',
+    'John 14:1-3',
+    'John 14:6',
+    'John 15:5',
+    'John 15:12-13',
+    'John 16:33'
+  ]
+};
+
 export const FAITH_SCROLL_CATEGORIES: FaithScrollCategory[] = [
   {
     name: 'Faith',
