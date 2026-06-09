@@ -45,23 +45,111 @@ export class ApiService {
 
     return response.json();
   }
-  async deleteSavedVerse(id: number) {
-    console.log('deleteSavedVerse request', { id });
 
+  async deleteSavedVerse(id: number) {
     const response = await fetch(`${this.api}/api/saved-verses/${id}`, {
       method: 'DELETE',
     });
 
-    console.log('deleteSavedVerse response', {
-      id,
-      ok: response.ok,
-      status: response.status,
-      statusText: response.statusText,
+    const result = await response.json();
+    return result;
+  }
+
+  async getPrayerRequests(userId: number) {
+    const response = await fetch(
+      `${this.api}/api/prayer-requests?userId=${userId}`,
+    );
+
+    return response.json();
+  }
+
+  async createPrayerRequest(userId: number, title: string, body: string) {
+    const response = await fetch(`${this.api}/api/prayer-requests`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        title,
+        body,
+      }),
     });
 
-    const result = await response.json();
-    console.log('deleteSavedVerse result', result);
+    return response.json();
+  }
 
-    return result;
+  async updatePrayerRequest(
+    id: number,
+    title: string,
+    body: string,
+    isAnswered: boolean,
+  ) {
+    const response = await fetch(`${this.api}/api/prayer-requests/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title,
+        body,
+        isAnswered,
+      }),
+    });
+
+    return response.json();
+  }
+
+  async deletePrayerRequest(id: number) {
+    const response = await fetch(`${this.api}/api/prayer-requests/${id}`, {
+      method: 'DELETE',
+    });
+
+    return response.json();
+  }
+
+  async getJournalEntries(userId: number) {
+    const response = await fetch(`${this.api}/api/journal?userId=${userId}`);
+
+    return response.json();
+  }
+
+  async createJournalEntry(userId: number, title: string, body: string) {
+    const response = await fetch(`${this.api}/api/journal`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        title,
+        body,
+      }),
+    });
+
+    return response.json();
+  }
+
+  async updateJournalEntry(id: number, title: string, body: string) {
+    const response = await fetch(`${this.api}/api/journal/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title,
+        body,
+      }),
+    });
+
+    return response.json();
+  }
+
+  async deleteJournalEntry(id: number) {
+    const response = await fetch(`${this.api}/api/journal/${id}`, {
+      method: 'DELETE',
+    });
+
+    return response.json();
   }
 }
