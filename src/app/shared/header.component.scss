@@ -14,6 +14,10 @@
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
 }
 
+.app-header.faith-scroll-header {
+  overflow: visible;
+}
+
 .app-header a {
   color: var(--app-text);
   text-decoration: none;
