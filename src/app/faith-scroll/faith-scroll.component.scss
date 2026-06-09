@@ -235,6 +235,13 @@
   text-shadow: 0 3px 24px rgba(0, 0, 0, 0.24);
 }
 
+.words-in-red-scroll .verse-text {
+  color: #ff6f61;
+  text-shadow:
+    0 3px 24px rgba(0, 0, 0, 0.3),
+    0 0 28px rgba(255, 89, 76, 0.14);
+}
+
 .verse-ref {
   position: relative;
   margin: 22px 0 0;
