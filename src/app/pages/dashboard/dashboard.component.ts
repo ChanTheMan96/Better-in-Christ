@@ -146,12 +146,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const result = await this.apiService.getPrayerRequests(this.dbUser.id);
     const rawRequests =
+      result?.prayers ||
       result?.prayerRequests ||
       result?.requests ||
       result?.data ||
       (Array.isArray(result) ? result : []);
 
-    this.prayerRequests = Array.isArray(rawRequests) ? rawRequests : [];
+    this.prayerRequests = (Array.isArray(rawRequests) ? rawRequests : []).map(
+      (request: any) => ({
+        id: request.id,
+        title: request.title || '',
+        body: request.body || '',
+        isAnswered:
+          request.isAnswered === true ||
+          request.is_answered === true ||
+          request.is_answered === 1 ||
+          request.is_answered === '1',
+        createdAt: request.createdAt || request.created_at || null,
+      }),
+    );
   }
 
   async loadJournalEntries(): Promise<void> {
@@ -162,12 +175,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const result = await this.apiService.getJournalEntries(this.dbUser.id);
     const rawEntries =
+      result?.journal ||
       result?.journalEntries ||
       result?.entries ||
       result?.data ||
       (Array.isArray(result) ? result : []);
 
-    this.journalEntries = Array.isArray(rawEntries) ? rawEntries : [];
+    this.journalEntries = (Array.isArray(rawEntries) ? rawEntries : []).map(
+      (entry: any) => ({
+        id: entry.id,
+        title: entry.title || '',
+        body: entry.body || '',
+        createdAt: entry.createdAt || entry.created_at || null,
+      }),
+    );
   }
 
   async saveVerse(): Promise<void> {
