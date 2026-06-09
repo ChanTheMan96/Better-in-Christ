@@ -1,9 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'app-text-size-slider',
-  templateUrl: './text-size-slider.component.html',
-  styleUrls: ['./text-size-slider.component.scss']
+    selector: 'app-text-size-slider',
+    templateUrl: './text-size-slider.component.html',
+    styleUrls: ['./text-size-slider.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class TextSizeSliderComponent {
   @Input() label = 'Reading Comfort';

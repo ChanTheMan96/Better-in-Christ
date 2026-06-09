@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { forkJoin, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, skip, takeUntil } from 'rxjs/operators';
 import { BiblePassage, BibleService } from '../services/bible.service';
@@ -17,9 +17,11 @@ interface SurrenderDisplayVerse {
 }
 
 @Component({
-  selector: 'app-surrender',
-  templateUrl: './surrender.component.html',
-  styleUrls: ['./surrender.component.scss']
+    selector: 'app-surrender',
+    templateUrl: './surrender.component.html',
+    styleUrls: ['./surrender.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class SurrenderComponent implements OnInit, OnDestroy {
   verseTextSize = 16;

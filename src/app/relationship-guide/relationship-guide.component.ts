@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { forkJoin, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { BibleService, BiblePassage } from '../services/bible.service';
@@ -12,9 +12,11 @@ interface GuideEntry {
 }
 
 @Component({
-  selector: 'app-relationship-guide',
-  templateUrl: './relationship-guide.component.html',
-  styleUrls: ['./relationship-guide.component.scss']
+    selector: 'app-relationship-guide',
+    templateUrl: './relationship-guide.component.html',
+    styleUrls: ['./relationship-guide.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class RelationshipGuideComponent implements OnInit, OnDestroy {
   loading = true;

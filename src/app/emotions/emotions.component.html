@@ -1,22 +1,28 @@
 <div class="container">
   <div class="page-content">
-    <nz-breadcrumb class="page-breadcrumb" *ngIf="selectedEmotion">
-      <nz-breadcrumb-item>
-        <a href="#" (click)="deselectEmotion(); $event.preventDefault()">Emotions</a>
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item *ngIf="selectedEmotion">
-        <a
-          href="#"
-          (click)="goToEmotionDetailsFromBreadcrumb(); $event.preventDefault()"
-          [class.disabled-link]="!showingVerses"
-        >
-          {{ selectedEmotion }}
-        </a>
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item *ngIf="selectedEmotion && showingVerses">Relevant Scripture</nz-breadcrumb-item>
-    </nz-breadcrumb>
+    @if (selectedEmotion) {
+      <nz-breadcrumb class="page-breadcrumb">
+        <nz-breadcrumb-item>
+          <a href="#" (click)="deselectEmotion(); $event.preventDefault()">Emotions</a>
+        </nz-breadcrumb-item>
+        @if (selectedEmotion) {
+          <nz-breadcrumb-item>
+            <a
+              href="#"
+              (click)="goToEmotionDetailsFromBreadcrumb(); $event.preventDefault()"
+              [class.disabled-link]="!showingVerses"
+              >
+              {{ selectedEmotion }}
+            </a>
+          </nz-breadcrumb-item>
+        }
+        @if (selectedEmotion && showingVerses) {
+          <nz-breadcrumb-item>Relevant Scripture</nz-breadcrumb-item>
+        }
+      </nz-breadcrumb>
+    }
 
-    <ng-container *ngIf="!selectedEmotion">
+    @if (!selectedEmotion) {
       <section class="emotion-intro page-intro">
         <h1>What are you carrying today?</h1>
         <p>
@@ -25,20 +31,21 @@
         </p>
         <span class="emotion-count">{{ emotions.length }} categories</span>
       </section>
-
       <div nz-row [nzGutter]="[16, 16]" class="emotion-grid">
-        <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" *ngFor="let emotion of emotions">
-          <nz-card (click)="selectEmotion(emotion.emotion)" [nzHoverable]="true" class="emotion-card">
-            <div class="emotion-icon-wrapper">
-              <span nz-icon [nzType]="emotion.icon" nzTheme="outline" class="emotion-icon"></span>
-            </div>
-            <h3 class="emotion-title">{{ emotion.emotion }}</h3>
-          </nz-card>
-        </div>
+        @for (emotion of emotions; track emotion) {
+          <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8">
+            <nz-card (click)="selectEmotion(emotion.emotion)" [nzHoverable]="true" class="emotion-card">
+              <div class="emotion-icon-wrapper">
+                <span nz-icon [nzType]="emotion.icon" nzTheme="outline" class="emotion-icon"></span>
+              </div>
+              <h3 class="emotion-title">{{ emotion.emotion }}</h3>
+            </nz-card>
+          </div>
+        }
       </div>
-    </ng-container>
+    }
 
-    <ng-container *ngIf="selectedEmotion && selectedEmotionData">
+    @if (selectedEmotion && selectedEmotionData) {
       <div nz-row [nzGutter]="[24, 24]" class="detail-grid">
         <div nz-col [nzXs]="24">
           <nz-card [nzTitle]="selectedEmotionData.emotion" class="emotion-focus-card">
@@ -53,31 +60,30 @@
             </div>
           </nz-card>
         </div>
-
-        <ng-container *ngIf="!showingVerses">
+        @if (!showingVerses) {
           <div nz-col [nzXs]="24" [nzMd]="12">
             <nz-card nzTitle="Common Challenges" class="detail-panel">
               <div class="problems-list">
-                <div class="problem-item" *ngFor="let problem of selectedEmotionData.problems">
-                  <span class="problem-bullet" aria-hidden="true"></span>
-                  <span>{{ problem }}</span>
-                </div>
+                @for (problem of selectedEmotionData.problems; track problem) {
+                  <div class="problem-item">
+                    <span class="problem-bullet" aria-hidden="true"></span>
+                    <span>{{ problem }}</span>
+                  </div>
+                }
               </div>
             </nz-card>
           </div>
-
-      <div nz-col [nzXs]="24" [nzMd]="12">
-        <nz-card nzTitle="Biblical Guidance" class="guidance-card detail-panel">
-          <p nz-p>{{ currentGuidance }}</p>
-          <button nz-button nzType="primary" nzBlock (click)="findRelevantVerses()" class="guidance-action-btn">
-            <span>Find Relevant Verses</span>
-            <span class="arrow" aria-hidden="true">→</span>
-          </button>
-        </nz-card>
-      </div>
-        </ng-container>
-
-        <ng-container *ngIf="showingVerses">
+          <div nz-col [nzXs]="24" [nzMd]="12">
+            <nz-card nzTitle="Biblical Guidance" class="guidance-card detail-panel">
+              <p nz-p>{{ currentGuidance }}</p>
+              <button nz-button nzType="primary" nzBlock (click)="findRelevantVerses()" class="guidance-action-btn">
+                <span>Find Relevant Verses</span>
+                <span class="arrow" aria-hidden="true">→</span>
+              </button>
+            </nz-card>
+          </div>
+        }
+        @if (showingVerses) {
           <div nz-col [nzXs]="24">
             <nz-card nzTitle="Relevant Scripture" class="scripture-panel surrender-scripture-panel">
               <app-scripture-verses
@@ -93,8 +99,8 @@
               ></app-scripture-verses>
             </nz-card>
           </div>
-        </ng-container>
+        }
       </div>
-    </ng-container>
+    }
   </div>
 </div>

@@ -1,48 +1,49 @@
-<div class="container" *ngIf="trait">
-  <div class="page-content">
-    <nz-breadcrumb class="page-breadcrumb">
-      <nz-breadcrumb-item>
-        <a href="#" (click)="goToList($event)">Growth</a>
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item>{{ trait.emotion }}</nz-breadcrumb-item>
-    </nz-breadcrumb>
-
-    <div nz-row [nzGutter]="[24, 24]" class="detail-grid">
-      <div nz-col [nzXs]="24">
-        <nz-card [nzTitle]="trait.emotion" class="emotion-focus-card">
-          <div class="emotion-header">
-            <div class="emotion-icon-wrapper large">
-              <span nz-icon [nzType]="trait.icon" nzTheme="outline" class="emotion-icon"></span>
+@if (trait) {
+  <div class="container">
+    <div class="page-content">
+      <nz-breadcrumb class="page-breadcrumb">
+        <nz-breadcrumb-item>
+          <a href="#" (click)="goToList($event)">Growth</a>
+        </nz-breadcrumb-item>
+        <nz-breadcrumb-item>{{ trait.emotion }}</nz-breadcrumb-item>
+      </nz-breadcrumb>
+      <div nz-row [nzGutter]="[24, 24]" class="detail-grid">
+        <div nz-col [nzXs]="24">
+          <nz-card [nzTitle]="trait.emotion" class="emotion-focus-card">
+            <div class="emotion-header">
+              <div class="emotion-icon-wrapper large">
+                <span nz-icon [nzType]="trait.icon" nzTheme="outline" class="emotion-icon"></span>
+              </div>
+              <div class="emotion-details">
+                <p class="emotion-subline">Formed by truth and obedience.</p>
+                <p class="emotion-description">{{ trait.description }}</p>
+              </div>
             </div>
-            <div class="emotion-details">
-              <p class="emotion-subline">Formed by truth and obedience.</p>
-              <p class="emotion-description">{{ trait.description }}</p>
+          </nz-card>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="12">
+          <nz-card nzTitle="Growth Areas" class="detail-panel">
+            <div class="problems-list">
+              @for (item of trait.problems; track item) {
+                <div class="problem-item">
+                  <span class="problem-bullet" aria-hidden="true"></span>
+                  <span>{{ item }}</span>
+                </div>
+              }
             </div>
-          </div>
-        </nz-card>
-      </div>
-
-      <div nz-col [nzXs]="24" [nzMd]="12">
-        <nz-card nzTitle="Growth Areas" class="detail-panel">
-          <div class="problems-list">
-            <div class="problem-item" *ngFor="let item of trait.problems">
-              <span class="problem-bullet" aria-hidden="true"></span>
-              <span>{{ item }}</span>
-            </div>
-          </div>
-        </nz-card>
-      </div>
-
-      <div nz-col [nzXs]="24" [nzMd]="12">
-        <nz-card nzTitle="Biblical Guidance" class="guidance-card detail-panel">
-          <p nz-p>{{ guidanceText }}</p>
-          <button nz-button nzType="primary" nzBlock (click)="openVerses()" class="guidance-action-btn">
-            <span>Find Relevant Verses</span>
-            <span class="arrow" aria-hidden="true">→</span>
-          </button>
-        </nz-card>
+          </nz-card>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="12">
+          <nz-card nzTitle="Biblical Guidance" class="guidance-card detail-panel">
+            <p nz-p>{{ guidanceText }}</p>
+            <button nz-button nzType="primary" nzBlock (click)="openVerses()" class="guidance-action-btn">
+              <span>Find Relevant Verses</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </button>
+          </nz-card>
+        </div>
       </div>
     </div>
   </div>
-</div>
+}
 

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
@@ -9,9 +9,11 @@ import { TextSizeService } from '../../services/text-size.service';
 import { GrowthService } from './growth.service';
 
 @Component({
-  selector: 'app-growth-verses',
-  templateUrl: './growth-verses.component.html',
-  styleUrls: ['./growth-verses.component.scss']
+    selector: 'app-growth-verses',
+    templateUrl: './growth-verses.component.html',
+    styleUrls: ['./growth-verses.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class GrowthVersesComponent implements OnInit, OnDestroy {
   trait: GuidanceCategory | null = null;

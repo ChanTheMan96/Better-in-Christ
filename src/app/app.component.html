@@ -14,38 +14,51 @@
   [nzMaskClosable]="false"
   [nzKeyboard]="false"
   [nzFooter]="null"
->
+  >
   <ng-container *nzModalContent>
     <div class="version-modal-body">
       <p class="version-modal-copy">Select the translation you want to read.</p>
 
-      <div *ngIf="loadingVersions" class="version-loading">
-        <nz-spin nzSimple></nz-spin>
-        <span>Loading versions...</span>
-      </div>
+      @if (loadingVersions) {
+        <div class="version-loading">
+          <nz-spin nzSimple></nz-spin>
+          <span>Loading versions...</span>
+        </div>
+      }
 
-      <p *ngIf="versionLoadError" class="version-error">{{ versionLoadError }}</p>
+      @if (versionLoadError) {
+        <p class="version-error">{{ versionLoadError }}</p>
+      }
 
-      <div *ngIf="!loadingVersions" class="version-grid">
-        <button
-          *ngFor="let version of versions"
-          nz-button
-          nzType="default"
-          class="version-btn"
-          (click)="chooseVersion(version.id)"
-        >
-          <span class="name">{{ version.name }}</span>
-          <span class="meta">{{ version.language || 'English' }}</span>
-        </button>
-      </div>
+      @if (!loadingVersions) {
+        <div class="version-grid">
+          @for (version of versions; track version) {
+            <button
+              nz-button
+              nzType="default"
+              class="version-btn"
+              (click)="chooseVersion(version.id)"
+              >
+              <span class="name">{{ version.name }}</span>
+              <span class="meta">{{ version.language || 'English' }}</span>
+            </button>
+          }
+        </div>
+      }
     </div>
   </ng-container>
 </nz-modal>
 
-<div class="global-bible-loading" *ngIf="bibleService.isBibleLoading$ | async">
-  <nz-spin nzSimple></nz-spin>
-  <span>Loading Bible...</span>
-</div>
+@if (bibleService.isBibleLoading$ | async) {
+  <div class="global-bible-loading">
+    <nz-spin nzSimple></nz-spin>
+    <span>Loading Bible...</span>
+  </div>
+}
 
-<app-header *ngIf="versionReady" (changeVersionRequested)="openVersionModal()"></app-header>
-<router-outlet *ngIf="versionReady"></router-outlet>
+@if (versionReady) {
+  <app-header (changeVersionRequested)="openVersionModal()"></app-header>
+}
+@if (versionReady) {
+  <router-outlet></router-outlet>
+}

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 
 export interface ScriptureDisplayVerse {
   reference: string;
@@ -7,9 +7,11 @@ export interface ScriptureDisplayVerse {
 }
 
 @Component({
-  selector: 'app-scripture-verses',
-  templateUrl: './scripture-verses.component.html',
-  styleUrls: ['./scripture-verses.component.scss']
+    selector: 'app-scripture-verses',
+    templateUrl: './scripture-verses.component.html',
+    styleUrls: ['./scripture-verses.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class ScriptureVersesComponent {
   @Input() loading = false;

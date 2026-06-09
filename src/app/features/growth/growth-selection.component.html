@@ -10,14 +10,16 @@
     </section>
 
     <div nz-row [nzGutter]="[16, 16]" class="emotion-grid">
-      <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" *ngFor="let trait of traits">
-        <nz-card (click)="openTrait(trait)" [nzHoverable]="true" class="emotion-card">
-          <div class="emotion-icon-wrapper">
-            <span nz-icon [nzType]="trait.icon" nzTheme="outline" class="emotion-icon"></span>
-          </div>
-          <h3 class="emotion-title">{{ trait.emotion }}</h3>
-        </nz-card>
-      </div>
+      @for (trait of traits; track trait) {
+        <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8">
+          <nz-card (click)="openTrait(trait)" [nzHoverable]="true" class="emotion-card">
+            <div class="emotion-icon-wrapper">
+              <span nz-icon [nzType]="trait.icon" nzTheme="outline" class="emotion-icon"></span>
+            </div>
+            <h3 class="emotion-title">{{ trait.emotion }}</h3>
+          </nz-card>
+        </div>
+      }
     </div>
   </div>
 </div>

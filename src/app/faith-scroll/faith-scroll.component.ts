@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { FAITH_SCROLL_CATEGORIES, FaithScrollCategory } from '../data/faith-scroll.data';
@@ -22,9 +22,11 @@ interface FaithScrollVerse {
 const FAVORITES_STORAGE_KEY = 'faithScrollFavorites';
 
 @Component({
-  selector: 'app-faith-scroll',
-  templateUrl: './faith-scroll.component.html',
-  styleUrls: ['./faith-scroll.component.scss']
+    selector: 'app-faith-scroll',
+    templateUrl: './faith-scroll.component.html',
+    styleUrls: ['./faith-scroll.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class FaithScrollComponent implements OnInit, OnDestroy {
   @ViewChild('feed') feed?: ElementRef<HTMLElement>;

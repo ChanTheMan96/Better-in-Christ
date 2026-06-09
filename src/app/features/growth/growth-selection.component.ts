@@ -1,13 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavigationService } from '../../services/navigation.service';
 import { GuidanceCategory } from '../../models/guidance.model';
 import { GrowthService } from './growth.service';
 
 @Component({
-  selector: 'app-growth-selection',
-  templateUrl: './growth-selection.component.html',
-  styleUrls: ['./growth-selection.component.scss']
+    selector: 'app-growth-selection',
+    templateUrl: './growth-selection.component.html',
+    styleUrls: ['./growth-selection.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class GrowthSelectionComponent {
   readonly traits: GuidanceCategory[] = this.growthService.getTraits();

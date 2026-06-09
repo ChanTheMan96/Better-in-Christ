@@ -16,7 +16,9 @@
           <h2>What Is Prayer?</h2>
           <p class="panel-caption">It is how we surrender control and place our lives back in God's hands.</p>
           <ul class="line-list">
-            <li *ngFor="let item of whatIsPrayer">{{ item }}</li>
+            @for (item of whatIsPrayer; track item) {
+              <li>{{ item }}</li>
+            }
           </ul>
         </section>
       </div>
@@ -26,7 +28,9 @@
           <h2>When to Pray</h2>
           <p class="panel-caption">You don't have to wait to feel "spiritual." Just start.</p>
           <ul class="line-list">
-            <li *ngFor="let item of whenToPray">{{ item }}</li>
+            @for (item of whenToPray; track item) {
+              <li>{{ item }}</li>
+            }
           </ul>
         </section>
       </div>
@@ -43,16 +47,18 @@
     </section>
 
     <div nz-row [nzGutter]="[16, 16]">
-     
+
       <div nz-col [nzXs]="24" [nzMd]="12">
         <section class="panel">
           <h2>A Simple Prayer Template (ACTS)</h2>
           <ul class="line-list">
-            <li *ngFor="let line of actsModel">{{ line }}</li>
+            @for (line of actsModel; track line) {
+              <li>{{ line }}</li>
+            }
           </ul>
         </section>
       </div>
-       <div nz-col [nzXs]="24" [nzMd]="12">
+      <div nz-col [nzXs]="24" [nzMd]="12">
         <section class="panel">
           <h2>The Lord's Prayer</h2>
           <pre class="prayer-text">{{ lordsPrayer }}</pre>

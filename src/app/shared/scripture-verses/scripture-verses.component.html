@@ -1,43 +1,53 @@
-<app-text-size-slider
-  *ngIf="!loading && showSlider"
-  [label]="sliderLabel"
-  [value]="verseTextSize"
-  [min]="sliderMin"
-  [max]="sliderMax"
-  [step]="sliderStep"
-  (valueChange)="onTextSizeChange($event)"
-></app-text-size-slider>
+@if (!loading && showSlider) {
+  <app-text-size-slider
+    [label]="sliderLabel"
+    [value]="verseTextSize"
+    [min]="sliderMin"
+    [max]="sliderMax"
+    [step]="sliderStep"
+    (valueChange)="onTextSizeChange($event)"
+  ></app-text-size-slider>
+}
 
-<div *ngIf="loading" class="loading-container">
-  <nz-spin nzSimple></nz-spin>
-  <p>{{ loadingText }}</p>
-</div>
+@if (loading) {
+  <div class="loading-container">
+    <nz-spin nzSimple></nz-spin>
+    <p>{{ loadingText }}</p>
+  </div>
+}
 
-<div *ngIf="!loading" class="verses-list" [style.--sidebar-text-size.px]="verseTextSize">
-  <nz-alert
-    *ngFor="let verse of verses"
-    nzType="info"
-    [nzMessage]="verseMessageTpl"
-    [nzDescription]="verse.text"
-    [nzCloseable]="false"
-    class="verse-alert"
-  >
-    <ng-template #verseMessageTpl>
-      <div class="verse-header-row">
-        <span class="verse-reference">{{ verse.reference }}</span>
-        <span *ngIf="verse.version" class="verse-version-tag">{{ verse.version }}</span>
-      </div>
-    </ng-template>
-  </nz-alert>
-</div>
+@if (!loading) {
+  <div class="verses-list" [style.--sidebar-text-size.px]="verseTextSize">
+    @for (verse of verses; track verse) {
+      <nz-alert
+        nzType="info"
+        [nzMessage]="verseMessageTpl"
+        [nzDescription]="verse.text"
+        [nzCloseable]="false"
+        class="verse-alert"
+        >
+        <ng-template #verseMessageTpl>
+          <div class="verse-header-row">
+            <span class="verse-reference">{{ verse.reference }}</span>
+            @if (verse.version) {
+              <span class="verse-version-tag">{{ verse.version }}</span>
+            }
+          </div>
+        </ng-template>
+      </nz-alert>
+    }
+  </div>
+}
 
-<div class="verse-actions" *ngIf="!loading && showPagination && total > pageSize">
-  <nz-pagination
-    [nzPageIndex]="pageIndex"
-    [nzTotal]="total"
-    [nzPageSize]="pageSize"
-    [nzShowSizeChanger]="false"
-    [nzResponsive]="true"
-    (nzPageIndexChange)="onPageChange($event)"
-  ></nz-pagination>
-</div>
+@if (!loading && showPagination && total > pageSize) {
+  <div class="verse-actions">
+    <nz-pagination
+      [nzPageIndex]="pageIndex"
+      [nzTotal]="total"
+      [nzPageSize]="pageSize"
+      [nzShowSizeChanger]="false"
+      [nzResponsive]="true"
+      (nzPageIndexChange)="onPageChange($event)"
+    ></nz-pagination>
+  </div>
+}

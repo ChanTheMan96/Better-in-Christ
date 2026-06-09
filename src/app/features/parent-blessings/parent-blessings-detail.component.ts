@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -7,9 +7,11 @@ import { NavigationService } from '../../services/navigation.service';
 import { ParentBlessingsService } from './parent-blessings.service';
 
 @Component({
-  selector: 'app-parent-blessings-detail',
-  templateUrl: './parent-blessings-detail.component.html',
-  styleUrls: ['./parent-blessings-detail.component.scss']
+    selector: 'app-parent-blessings-detail',
+    templateUrl: './parent-blessings-detail.component.html',
+    styleUrls: ['./parent-blessings-detail.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class ParentBlessingsDetailComponent implements OnInit, OnDestroy {
   category: ParentBlessingCategory | null = null;

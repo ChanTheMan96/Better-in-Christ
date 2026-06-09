@@ -18,15 +18,16 @@
       </div>
 
       <div class="amount-grid" role="group" aria-label="Support amount">
-        <button
-          *ngFor="let amount of amounts"
-          type="button"
-          class="amount-button"
-          [class.active]="selectedAmount === amount.value"
-          (click)="selectAmount(amount.value)"
-        >
-          {{ amount.label }}
-        </button>
+        @for (amount of amounts; track amount) {
+          <button
+            type="button"
+            class="amount-button"
+            [class.active]="selectedAmount === amount.value"
+            (click)="selectAmount(amount.value)"
+            >
+            {{ amount.label }}
+          </button>
+        }
       </div>
 
       <a class="donate-action" [href]="donationUrl" target="_blank" rel="noopener">

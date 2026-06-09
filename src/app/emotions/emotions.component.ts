@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BibleService } from '../services/bible.service';
 import { NavigationService } from '../services/navigation.service';
 import { TextSizeService } from '../services/text-size.service';
@@ -12,9 +12,11 @@ interface EmotionItem extends EmotionCategory {
 }
 
 @Component({
-  selector: 'app-emotions',
-  templateUrl: './emotions.component.html',
-  styleUrls: ['./emotions.component.scss'],
+    selector: 'app-emotions',
+    templateUrl: './emotions.component.html',
+    styleUrls: ['./emotions.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class EmotionsComponent implements OnInit, OnDestroy {
   selectedEmotion: string | null = null;

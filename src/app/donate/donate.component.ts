@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 interface DonationAmount {
   label: string;
@@ -6,9 +6,11 @@ interface DonationAmount {
 }
 
 @Component({
-  selector: 'app-donate',
-  templateUrl: './donate.component.html',
-  styleUrls: ['./donate.component.scss']
+    selector: 'app-donate',
+    templateUrl: './donate.component.html',
+    styleUrls: ['./donate.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class DonateComponent {
   private readonly paypalEmail = 'betterinchristsupport@gmail.com';

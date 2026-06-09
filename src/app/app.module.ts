@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 import { EmotionsComponent } from './emotions/emotions.component';
 import { WhoIAmComponent } from './who-i-am/who-i-am.component';
@@ -68,75 +68,69 @@ import {
 
 registerLocaleData(en);
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    EmotionsComponent,
-    WhoIAmComponent,
-    HeaderComponent,
-    RelationshipGuideComponent,
-    SurrenderComponent,
-    PrayerComponent,
-    DonateComponent,
-    ContactComponent
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    SharedModule,
-    NzButtonModule,
-    NzCardModule,
-    NzGridModule,
-    NzIconModule,
-    NzSpinModule,
-    NzModalModule,
-    NzBreadCrumbModule,
-  ],
-  providers: [
-    { provide: NZ_I18N, useValue: en_US },
-    {
-      provide: NZ_ICONS,
-      useValue: [
-        AimOutline,
-        AlertOutline,
-        BarChartOutline,
-        ClockCircleOutline,
-        CloudOutline,
-        ClusterOutline,
-        ExclamationCircleOutline,
-        FrownOutline,
-        FireOutline,
-        CrownOutline,
-        UserOutline,
-        CompassOutline,
-        WarningOutline,
-        HeartFill,
-        HeartOutline,
-        CloseCircleOutline,
-        ExclamationOutline,
-        EyeOutline,
-        WalletOutline,
-        QuestionCircleOutline,
-        EyeInvisibleOutline,
-        MehOutline,
-        SafetyCertificateOutline,
-        ShakeOutline,
-        StarOutline,
-        StopOutline,
-        TeamOutline,
-        LockOutline,
-        ReloadOutline,
-        CloseOutline,
-        UnlockOutline,
-        BookOutline,
-        BulbOutline,
-        ShareAltOutline
-      ] as IconDefinition[]
-    }
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        EmotionsComponent,
+        WhoIAmComponent,
+        HeaderComponent,
+        RelationshipGuideComponent,
+        SurrenderComponent,
+        PrayerComponent,
+        DonateComponent,
+        ContactComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        FormsModule,
+        SharedModule,
+        NzButtonModule,
+        NzCardModule,
+        NzGridModule,
+        NzIconModule,
+        NzSpinModule,
+        NzModalModule,
+        NzBreadCrumbModule], providers: [
+        { provide: NZ_I18N, useValue: en_US },
+        {
+            provide: NZ_ICONS,
+            useValue: [
+                AimOutline,
+                AlertOutline,
+                BarChartOutline,
+                ClockCircleOutline,
+                CloudOutline,
+                ClusterOutline,
+                ExclamationCircleOutline,
+                FrownOutline,
+                FireOutline,
+                CrownOutline,
+                UserOutline,
+                CompassOutline,
+                WarningOutline,
+                HeartFill,
+                HeartOutline,
+                CloseCircleOutline,
+                ExclamationOutline,
+                EyeOutline,
+                WalletOutline,
+                QuestionCircleOutline,
+                EyeInvisibleOutline,
+                MehOutline,
+                SafetyCertificateOutline,
+                ShakeOutline,
+                StarOutline,
+                StopOutline,
+                TeamOutline,
+                LockOutline,
+                ReloadOutline,
+                CloseOutline,
+                UnlockOutline,
+                BookOutline,
+                BulbOutline,
+                ShareAltOutline
+            ] as IconDefinition[]
+        },
+        provideHttpClient(withXhr(), withInterceptorsFromDi())
+    ] })
 export class AppModule { }

@@ -1,13 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ParentBlessingCategory } from '../../data/parent-blessings.data';
 import { NavigationService } from '../../services/navigation.service';
 import { ParentBlessingsService } from './parent-blessings.service';
 
 @Component({
-  selector: 'app-parent-blessings-selection',
-  templateUrl: './parent-blessings-selection.component.html',
-  styleUrls: ['./parent-blessings-selection.component.scss']
+    selector: 'app-parent-blessings-selection',
+    templateUrl: './parent-blessings-selection.component.html',
+    styleUrls: ['./parent-blessings-selection.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class ParentBlessingsSelectionComponent {
   readonly categories: ParentBlessingCategory[] = this.parentBlessings.getCategories();

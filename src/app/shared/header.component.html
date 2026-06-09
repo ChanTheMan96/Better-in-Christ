@@ -8,7 +8,7 @@
           class="menu-toggle"
           (click)="toggleMobileMenu()"
           aria-label="Open navigation menu"
-        >
+          >
           <span class="hamburger-icon" aria-hidden="true"></span>
         </button>
         <a href="#" (click)="goHome($event)" class="brand-link h5 mb-0 text-white" aria-label="Better in Christ home">
@@ -17,20 +17,24 @@
         </a>
       </div>
       <div class="col-auto">
-        <label class="header-scroll-picker" *ngIf="isFaithScrollRoute; else installAction">
-          <span>Scroll</span>
-          <select
-            [ngModel]="selectedScrollCategory"
-            (ngModelChange)="onScrollCategoryChange($event)"
-            aria-label="Choose scroll category"
-          >
-            <optgroup *ngFor="let group of scrollCategoryGroups" [label]="group.label">
-              <option *ngFor="let category of group.categories" [value]="category.name">{{ category.name }}</option>
-            </optgroup>
-          </select>
-        </label>
-
-        <ng-template #installAction>
+        @if (isFaithScrollRoute) {
+          <label class="header-scroll-picker">
+            <span>Scroll</span>
+            <select
+              [ngModel]="selectedScrollCategory"
+              (ngModelChange)="onScrollCategoryChange($event)"
+              aria-label="Choose scroll category"
+              >
+              @for (group of scrollCategoryGroups; track group) {
+                <optgroup [label]="group.label">
+                  @for (category of group.categories; track category) {
+                    <option [value]="category.name">{{ category.name }}</option>
+                  }
+                </optgroup>
+              }
+            </select>
+          </label>
+        } @else {
           <span
             class="install-icon-action"
             (click)="addToHomeScreen()"
@@ -40,20 +44,22 @@
             tabindex="0"
             aria-label="Add to Home Screen"
             title="Add to Home Screen"
-          >
+            >
             <span nz-icon nzType="book" nzTheme="outline"></span>
           </span>
-        </ng-template>
+        }
+
       </div>
     </div>
   </div>
 </nav>
 
-<div
-  class="mobile-menu-backdrop"
-  *ngIf="mobileMenuOpen"
-  (click)="closeMobileMenu()"
-></div>
+@if (mobileMenuOpen) {
+  <div
+    class="mobile-menu-backdrop"
+    (click)="closeMobileMenu()"
+  ></div>
+}
 
 <aside class="mobile-menu" [class.open]="mobileMenuOpen">
   <div class="mobile-menu-header">

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { forkJoin, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { BiblePassage, BibleService } from '../services/bible.service';
@@ -17,9 +17,11 @@ interface PrayerDisplayVerse {
 }
 
 @Component({
-  selector: 'app-prayer',
-  templateUrl: './prayer.component.html',
-  styleUrls: ['./prayer.component.scss']
+    selector: 'app-prayer',
+    templateUrl: './prayer.component.html',
+    styleUrls: ['./prayer.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class PrayerComponent implements OnInit, OnDestroy {
   loadingVerses = false;

@@ -15,7 +15,9 @@
         <section class="panel">
           <h2>What Surrender Really Means</h2>
           <ul class="line-list">
-            <li *ngFor="let item of meanings">{{ item }}</li>
+            @for (item of meanings; track item) {
+              <li>{{ item }}</li>
+            }
           </ul>
         </section>
       </div>
@@ -23,7 +25,9 @@
         <section class="panel">
           <h2>Signs You Need to Surrender</h2>
           <ul class="line-list">
-            <li *ngFor="let sign of signs">{{ sign }}</li>
+            @for (sign of signs; track sign) {
+              <li>{{ sign }}</li>
+            }
           </ul>
         </section>
       </div>
@@ -55,7 +59,9 @@
         <section class="panel">
           <h2>Steps to Surrender</h2>
           <ul class="line-list">
-            <li *ngFor="let step of steps">{{ step }}</li>
+            @for (step of steps; track step) {
+              <li>{{ step }}</li>
+            }
           </ul>
         </section>
       </div>

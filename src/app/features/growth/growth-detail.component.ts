@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -7,9 +7,11 @@ import { NavigationService } from '../../services/navigation.service';
 import { GrowthService } from './growth.service';
 
 @Component({
-  selector: 'app-growth-detail',
-  templateUrl: './growth-detail.component.html',
-  styleUrls: ['./growth-detail.component.scss']
+    selector: 'app-growth-detail',
+    templateUrl: './growth-detail.component.html',
+    styleUrls: ['./growth-detail.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class GrowthDetailComponent implements OnInit, OnDestroy {
   trait: GuidanceCategory | null = null;
