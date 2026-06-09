@@ -153,12 +153,6 @@ export class ApiService {
     return response.json();
   }
 
-  async getStreak(userId: number) {
-    const response = await fetch(`${this.api}/api/streak?userId=${userId}`);
-
-    return response.json();
-  }
-
   async checkInStreak(userId: number) {
     const response = await fetch(`${this.api}/api/streak/checkin`, {
       method: 'POST',

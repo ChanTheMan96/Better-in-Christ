@@ -20,9 +20,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   savedVerses: any[] = [];
   prayerRequests: any[] = [];
   journalEntries: any[] = [];
-  currentStreak = 0;
-  hasCheckedInToday = false;
-  lastCheckInDate = '';
+  streak = 0;
+  lastCheckinDate = '';
   isCheckingIn = false;
 
   verseRef = 'John 3:16';
@@ -49,11 +48,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.dbUser?.name || this.user?.firstName || this.user?.fullName || '';
       console.log('D1 user:', this.dbUser);
 
-      this.syncStreakFromUser(this.dbUser);
-      await this.loadStreak();
-      await this.loadSavedVerses();
-      await this.loadPrayerRequests();
-      await this.loadJournalEntries();
+      // Streak failures should not block dashboard content.
+      try {
+        await this.runStreakCheckIn();
+      } catch (error) {
+        console.error('Streak check-in failed:', error);
+      }
+
+      await Promise.allSettled([
+        this.loadSavedVerses(),
+        this.loadPrayerRequests(),
+        this.loadJournalEntries(),
+      ]);
     }
 
     this.clerkService.authState$
@@ -74,46 +80,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.clerkService.signOut();
   }
 
-  async loadStreak(): Promise<void> {
-    if (!this.dbUser?.id) {
-      this.currentStreak = 0;
-      this.hasCheckedInToday = false;
-      this.lastCheckInDate = '';
-      return;
-    }
-
-    this.syncStreakFromUser(this.dbUser);
-
-    const result = await this.apiService.getStreak(this.dbUser.id);
-    const streak = result?.streak || result?.data || result || {};
-
-    this.syncStreakFromUser(streak);
-  }
-
   async checkInStreak(): Promise<void> {
-    if (!this.dbUser?.id || this.isCheckingIn || this.hasCheckedInToday) {
+    if (!this.dbUser?.id || this.isCheckingIn) {
       return;
     }
 
-    this.isCheckingIn = true;
-
-    try {
-      const result = await this.apiService.checkInStreak(this.dbUser.id);
-
-      if (result?.user) {
-        this.dbUser = {
-          ...this.dbUser,
-          ...result.user,
-        };
-      }
-
-      this.syncStreakFromUser(
-        result?.user || result?.streak || result?.data || result,
-      );
-      await this.loadStreak();
-    } finally {
-      this.isCheckingIn = false;
-    }
+    await this.runStreakCheckIn();
   }
 
   async loadSavedVerses(): Promise<void> {
@@ -270,50 +242,43 @@ export class DashboardComponent implements OnInit, OnDestroy {
     await this.loadJournalEntries();
   }
 
-  private isSameDay(
-    value: string | Date | undefined,
-    compareDate: Date,
-  ): boolean {
-    if (!value) {
-      return false;
-    }
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-      return false;
-    }
-
-    return date.toDateString() === compareDate.toDateString();
-  }
-
-  private syncStreakFromUser(source: any): void {
-    if (!source) {
+  private async runStreakCheckIn(): Promise<void> {
+    if (!this.dbUser?.id || this.isCheckingIn) {
       return;
     }
 
-    const rawDate =
-      source?.lastCheckInDate ||
-      source?.lastCheckInAt ||
-      source?.last_check_in_at ||
-      source?.lastCheckinDate;
+    this.isCheckingIn = true;
 
-    const streakValue = Number(
-      source?.currentStreak ??
-        source?.current_streak ??
-        source?.streakCount ??
-        source?.streak ??
-        source?.count ??
-        this.currentStreak,
-    );
+    try {
+      const streakResult = await this.apiService.checkInStreak(this.dbUser.id);
 
-    this.currentStreak = Number.isFinite(streakValue)
-      ? streakValue
-      : this.currentStreak;
+      const rawStreak =
+        streakResult?.streak ??
+        streakResult?.currentStreak ??
+        streakResult?.current_streak ??
+        streakResult?.data?.streak ??
+        this.streak;
 
-    if (rawDate) {
-      this.lastCheckInDate = new Date(rawDate).toLocaleDateString();
-      this.hasCheckedInToday = this.isSameDay(rawDate, new Date());
+      const rawLastCheckinDate =
+        streakResult?.lastCheckinDate ??
+        streakResult?.lastCheckInDate ??
+        streakResult?.lastCheckInAt ??
+        streakResult?.last_check_in_at ??
+        streakResult?.data?.lastCheckinDate ??
+        streakResult?.data?.lastCheckInDate ??
+        streakResult?.data?.lastCheckInAt ??
+        streakResult?.data?.last_check_in_at ??
+        this.dbUser?.lastCheckinDate ??
+        this.dbUser?.lastCheckInDate ??
+        this.dbUser?.lastCheckInAt ??
+        this.dbUser?.last_check_in_at;
+
+      this.streak = Number(rawStreak) || 0;
+      this.lastCheckinDate = rawLastCheckinDate
+        ? new Date(rawLastCheckinDate).toLocaleDateString()
+        : '';
+    } finally {
+      this.isCheckingIn = false;
     }
   }
 }
