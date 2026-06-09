@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { EmotionsComponent } from './emotions/emotions.component';
 import { WhoIAmComponent } from './who-i-am/who-i-am.component';
@@ -137,6 +137,6 @@ registerLocaleData(en);
                 ShareAltOutline
             ] as IconDefinition[]
         },
-        provideHttpClient(withXhr(), withInterceptorsFromDi())
+        provideHttpClient(withInterceptorsFromDi())
     ] })
 export class AppModule { }
