@@ -4,7 +4,7 @@ export interface FaithScrollCategory {
 }
 
 export const JESUS_WORDS_CATEGORY: FaithScrollCategory = {
-  name: 'Words in Red',
+  name: 'Christ Words',
   refs: [
     'Matthew 4:19',
     'Matthew 5:3-10',
