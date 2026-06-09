@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Clerk } from '@clerk/clerk-js';
+import type { Clerk as ClerkType } from '@clerk/clerk-js';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -12,7 +12,7 @@ export interface AuthState {
   providedIn: 'root',
 })
 export class ClerkService {
-  clerk = new Clerk(environment.clerkPublishableKey);
+  private _clerk?: ClerkType;
   private loadPromise?: Promise<void>;
   private initialized = false;
   private readonly authStateSubject = new BehaviorSubject<AuthState>({
@@ -21,11 +21,21 @@ export class ClerkService {
   });
   readonly authState$ = this.authStateSubject.asObservable();
 
-  async load() {
-    if (!this.loadPromise) {
-      this.loadPromise = this.clerk.load();
+  private async getClerk(): Promise<ClerkType> {
+    if (!this._clerk) {
+      const { Clerk } = await import('@clerk/clerk-js');
+      this._clerk = new Clerk(environment.clerkPublishableKey);
     }
+    return this._clerk;
+  }
 
+  async load(): Promise<void> {
+    if (!this.loadPromise) {
+      this.loadPromise = (async () => {
+        const clerk = await this.getClerk();
+        await clerk.load();
+      })();
+    }
     await this.loadPromise;
   }
 
@@ -38,22 +48,25 @@ export class ClerkService {
     }
 
     this.initialized = true;
-    this.clerk.addListener(() => {
+    const clerk = await this.getClerk();
+    clerk.addListener(() => {
       this.emitAuthState();
     });
     this.emitAuthState();
   }
 
-  async openSignIn() {
+  async openSignIn(): Promise<void> {
     await this.initialize();
-    await this.clerk.redirectToSignIn({
+    const clerk = await this.getClerk();
+    await clerk.redirectToSignIn({
       signInForceRedirectUrl: '/dashboard',
       signUpForceRedirectUrl: '/dashboard',
     });
   }
 
-  async signOut() {
-    await this.clerk.signOut();
+  async signOut(): Promise<void> {
+    const clerk = await this.getClerk();
+    await clerk.signOut();
     window.location.href = '/';
   }
 
@@ -62,11 +75,11 @@ export class ClerkService {
   }
 
   get user() {
-    return this.clerk.user;
+    return this._clerk?.user;
   }
 
   private emitAuthState(): void {
-    const user = this.clerk.user;
+    const user = this._clerk?.user;
     const displayName =
       user?.firstName ||
       user?.username ||
