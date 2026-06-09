@@ -46,10 +46,22 @@ export class ApiService {
     return response.json();
   }
   async deleteSavedVerse(id: number) {
+    console.log('deleteSavedVerse request', { id });
+
     const response = await fetch(`${this.api}/api/saved-verses/${id}`, {
       method: 'DELETE',
     });
 
-    return response.json();
+    console.log('deleteSavedVerse response', {
+      id,
+      ok: response.ok,
+      status: response.status,
+      statusText: response.statusText,
+    });
+
+    const result = await response.json();
+    console.log('deleteSavedVerse result', result);
+
+    return result;
   }
 }
