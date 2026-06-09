@@ -28,9 +28,6 @@
 		</div>
 
 		<div class="hero-actions">
-			<button type="button" class="checkin-action" (click)="checkInStreak()" [disabled]="isCheckingIn">
-				{{ isCheckingIn ? 'Checking In...' : 'Check In Today' }}
-			</button>
 			<a routerLink="/faith-scroll" class="action-link">Open Faith Scroll</a>
 			<a routerLink="/prayer" class="action-link">Go to Prayer</a>
 			<button type="button" class="signout" (click)="signOut()">Sign Out</button>
@@ -56,7 +53,7 @@
 		<ng-template #prayerTitleTpl>
 			<span class="tab-title">
 				<span class="tab-title-copy">
-					<span class="tab-title-label">Prayer Requests</span>
+					<span class="tab-title-label">Prayers</span>
 					<span class="tab-title-subcopy">What you are bringing to God</span>
 				</span>
 				<span class="tab-title-count">{{ prayerRequests.length }}</span>
@@ -92,10 +89,10 @@
 					} @else {
 						<ul class="saved-list">
 							@for (verse of savedVerses; track verse.id || verse.verseRef) {
-								<li class="saved-item">
-									<div class="saved-item-head">
-										<p class="ref">{{ verse.verseRef }}</p>
-										<button type="button" class="remove-verse-btn" (click)="removeVerse(verse.id)">Remove</button>
+							<li class="saved-item clickable-item" role="button" tabindex="0" (click)="openModal(verse.verseRef, verse.verseText)" (keydown.enter)="openModal(verse.verseRef, verse.verseText)" (keydown.space)="openModal(verse.verseRef, verse.verseText); $event.preventDefault()">
+								<div class="saved-item-head">
+									<p class="ref">{{ verse.verseRef }}</p>
+									<button type="button" class="remove-verse-btn" (click)="$event.stopPropagation(); removeVerse(verse.id)">Remove</button>
 									</div>
 									<p class="text">{{ verse.verseText }}</p>
 								</li>
@@ -110,25 +107,22 @@
 					<div class="entry-form">
 						<input [(ngModel)]="prayerTitle" type="text" placeholder="Prayer request title" />
 						<textarea [(ngModel)]="prayerBody" rows="4" placeholder="Write your prayer request..."></textarea>
-						<button type="button" class="primary-action" (click)="addPrayerRequest()">Add Prayer Request</button>
+						<button type="button" class="primary-action" (click)="addPrayerRequest()">Add Prayer</button>
 					</div>
 
 					@if (!prayerRequests.length) {
 						<div class="saved-empty-state">
-							<p class="saved-empty">No prayer requests yet.</p>
+							<p class="saved-empty">No prayers yet.</p>
 							<p class="saved-empty-copy">Keep track of what you are asking God for and what He answers.</p>
 						</div>
 					} @else {
 						<ul class="saved-list">
 							@for (request of prayerRequests; track request.id) {
-								<li class="saved-item">
-									<div class="saved-item-head">
-										<p class="ref">{{ request.title }}</p>
-										<div class="item-actions">
-											<button type="button" class="toggle-answer-btn" (click)="togglePrayerAnswered(request)">
-												{{ request.isAnswered ? 'Mark Open' : 'Mark Answered' }}
-											</button>
-											<button type="button" class="remove-verse-btn" (click)="removePrayerRequest(request.id)">Remove</button>
+							<li class="saved-item clickable-item" role="button" tabindex="0" (click)="openModal(request.title, request.body)" (keydown.enter)="openModal(request.title, request.body)" (keydown.space)="openModal(request.title, request.body); $event.preventDefault()">
+								<div class="saved-item-head">
+									<p class="ref">{{ request.title }}</p>
+									<div class="item-actions">
+											<button type="button" class="remove-verse-btn" (click)="$event.stopPropagation(); removePrayerRequest(request.id)">Remove</button>
 										</div>
 									</div>
 									<p class="text">{{ request.body }}</p>
@@ -155,10 +149,10 @@
 					} @else {
 						<ul class="saved-list">
 							@for (entry of journalEntries; track entry.id) {
-								<li class="saved-item">
-									<div class="saved-item-head">
-										<p class="ref">{{ entry.title }}</p>
-										<button type="button" class="remove-verse-btn" (click)="removeJournalEntry(entry.id)">Remove</button>
+							<li class="saved-item clickable-item" role="button" tabindex="0" (click)="openModal(entry.title, entry.body)" (keydown.enter)="openModal(entry.title, entry.body)" (keydown.space)="openModal(entry.title, entry.body); $event.preventDefault()">
+								<div class="saved-item-head">
+									<p class="ref">{{ entry.title }}</p>
+									<button type="button" class="remove-verse-btn" (click)="$event.stopPropagation(); removeJournalEntry(entry.id)">Remove</button>
 									</div>
 									<p class="text">{{ entry.body }}</p>
 								</li>
@@ -192,3 +186,13 @@
 		</a>
 	</div>
 </section>
+
+@if (modalItem) {
+	<div class="item-modal-backdrop" (click)="closeModal()">
+		<div class="item-modal" (click)="$event.stopPropagation()">
+			<button type="button" class="item-modal-close" (click)="closeModal()">&#x2715;</button>
+			<p class="item-modal-title">{{ modalItem.title }}</p>
+			<p class="item-modal-text">{{ modalItem.text }}</p>
+		</div>
+	</div>
+}

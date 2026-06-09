@@ -23,9 +23,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   streak = 0;
   lastCheckinDate = '';
   isCheckingIn = false;
+  modalItem: { title: string; text: string } | null = null;
 
-  verseRef = 'John 3:16';
-  verseText = 'For God so loved the world...';
   prayerTitle = '';
   prayerBody = '';
   journalTitle = '';
@@ -46,7 +45,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.dbUser = result.user;
       this.displayName =
         this.dbUser?.name || this.user?.firstName || this.user?.fullName || '';
-      console.log('D1 user:', this.dbUser);
 
       // Streak failures should not block dashboard content.
       try {
@@ -80,6 +78,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.clerkService.signOut();
   }
 
+  openModal(title: string, text: string): void {
+    this.modalItem = { title, text };
+  }
+
+  closeModal(): void {
+    this.modalItem = null;
+  }
+
   async checkInStreak(): Promise<void> {
     if (!this.dbUser?.id || this.isCheckingIn) {
       return;
@@ -102,11 +108,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       (Array.isArray(result) ? result : []);
 
     this.savedVerses = (Array.isArray(rawVerses) ? rawVerses : []).map(
-      (verse: any) => ({
-        id: verse.id,
-        verseRef: verse.verseRef || verse.verse_ref || verse.reference || '',
-        verseText: verse.verseText || verse.verse_text || verse.text || '',
-      }),
+      (verse: any) => this.normalizeSavedVerse(verse),
     );
   }
 
@@ -125,17 +127,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       (Array.isArray(result) ? result : []);
 
     this.prayerRequests = (Array.isArray(rawRequests) ? rawRequests : []).map(
-      (request: any) => ({
-        id: request.id,
-        title: request.title || '',
-        body: request.body || '',
-        isAnswered:
-          request.isAnswered === true ||
-          request.is_answered === true ||
-          request.is_answered === 1 ||
-          request.is_answered === '1',
-        createdAt: request.createdAt || request.created_at || null,
-      }),
+      (request: any) => this.normalizePrayerRequest(request),
     );
   }
 
@@ -154,27 +146,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       (Array.isArray(result) ? result : []);
 
     this.journalEntries = (Array.isArray(rawEntries) ? rawEntries : []).map(
-      (entry: any) => ({
-        id: entry.id,
-        title: entry.title || '',
-        body: entry.body || '',
-        createdAt: entry.createdAt || entry.created_at || null,
-      }),
+      (entry: any) => this.normalizeJournalEntry(entry),
     );
-  }
-
-  async saveVerse(): Promise<void> {
-    if (!this.dbUser?.id) {
-      return;
-    }
-
-    await this.apiService.saveVerse(
-      this.dbUser.id,
-      this.verseRef,
-      this.verseText,
-    );
-
-    await this.loadSavedVerses();
   }
 
   async removeVerse(id: number) {
@@ -280,5 +253,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
     } finally {
       this.isCheckingIn = false;
     }
+  }
+
+  private normalizeSavedVerse(verse: any): any {
+    return {
+      id: verse.id,
+      verseRef: verse.verseRef || verse.verse_ref || verse.reference || '',
+      verseText: verse.verseText || verse.verse_text || verse.text || '',
+    };
+  }
+
+  private normalizePrayerRequest(request: any): any {
+    return {
+      id: request.id,
+      title: request.title || '',
+      body: request.body || '',
+      isAnswered:
+        request.isAnswered === true ||
+        request.is_answered === true ||
+        request.is_answered === 1 ||
+        request.is_answered === '1',
+      createdAt: request.createdAt || request.created_at || null,
+    };
+  }
+
+  private normalizeJournalEntry(entry: any): any {
+    return {
+      id: entry.id,
+      title: entry.title || '',
+      body: entry.body || '',
+      createdAt: entry.createdAt || entry.created_at || null,
+    };
   }
 }

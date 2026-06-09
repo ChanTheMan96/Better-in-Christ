@@ -6,8 +6,16 @@ import { Injectable } from '@angular/core';
 export class ApiService {
   private api = 'https://better-in-christ-api.monkeycity230.workers.dev';
 
+  private async requestJson<T = any>(
+    path: string,
+    init?: RequestInit,
+  ): Promise<T> {
+    const response = await fetch(`${this.api}${path}`, init);
+    return response.json() as Promise<T>;
+  }
+
   async createOrGetUser(user: any) {
-    const response = await fetch(`${this.api}/api/me`, {
+    return this.requestJson('/api/me', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -18,12 +26,10 @@ export class ApiService {
         name: user.fullName,
       }),
     });
-
-    return response.json();
   }
 
   async saveVerse(userId: number, verseRef: string, verseText: string) {
-    const response = await fetch(`${this.api}/api/saved-verses`, {
+    return this.requestJson('/api/saved-verses', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -34,37 +40,24 @@ export class ApiService {
         verseText,
       }),
     });
-
-    return response.json();
   }
 
   async getSavedVerses(userId: number) {
-    const response = await fetch(
-      `${this.api}/api/saved-verses?userId=${userId}`,
-    );
-
-    return response.json();
+    return this.requestJson(`/api/saved-verses?userId=${userId}`);
   }
 
   async deleteSavedVerse(id: number) {
-    const response = await fetch(`${this.api}/api/saved-verses/${id}`, {
+    return this.requestJson(`/api/saved-verses/${id}`, {
       method: 'DELETE',
     });
-
-    const result = await response.json();
-    return result;
   }
 
   async getPrayerRequests(userId: number) {
-    const response = await fetch(
-      `${this.api}/api/prayer-requests?userId=${userId}`,
-    );
-
-    return response.json();
+    return this.requestJson(`/api/prayer-requests?userId=${userId}`);
   }
 
   async createPrayerRequest(userId: number, title: string, body: string) {
-    const response = await fetch(`${this.api}/api/prayer-requests`, {
+    return this.requestJson('/api/prayer-requests', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -75,8 +68,6 @@ export class ApiService {
         body,
       }),
     });
-
-    return response.json();
   }
 
   async updatePrayerRequest(
@@ -85,7 +76,7 @@ export class ApiService {
     body: string,
     isAnswered: boolean,
   ) {
-    const response = await fetch(`${this.api}/api/prayer-requests/${id}`, {
+    return this.requestJson(`/api/prayer-requests/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -96,26 +87,20 @@ export class ApiService {
         isAnswered,
       }),
     });
-
-    return response.json();
   }
 
   async deletePrayerRequest(id: number) {
-    const response = await fetch(`${this.api}/api/prayer-requests/${id}`, {
+    return this.requestJson(`/api/prayer-requests/${id}`, {
       method: 'DELETE',
     });
-
-    return response.json();
   }
 
   async getJournalEntries(userId: number) {
-    const response = await fetch(`${this.api}/api/journal?userId=${userId}`);
-
-    return response.json();
+    return this.requestJson(`/api/journal?userId=${userId}`);
   }
 
   async createJournalEntry(userId: number, title: string, body: string) {
-    const response = await fetch(`${this.api}/api/journal`, {
+    return this.requestJson('/api/journal', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -126,12 +111,10 @@ export class ApiService {
         body,
       }),
     });
-
-    return response.json();
   }
 
   async updateJournalEntry(id: number, title: string, body: string) {
-    const response = await fetch(`${this.api}/api/journal/${id}`, {
+    return this.requestJson(`/api/journal/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -141,20 +124,16 @@ export class ApiService {
         body,
       }),
     });
-
-    return response.json();
   }
 
   async deleteJournalEntry(id: number) {
-    const response = await fetch(`${this.api}/api/journal/${id}`, {
+    return this.requestJson(`/api/journal/${id}`, {
       method: 'DELETE',
     });
-
-    return response.json();
   }
 
   async checkInStreak(userId: number) {
-    const response = await fetch(`${this.api}/api/streak/checkin`, {
+    return this.requestJson('/api/streak/checkin', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -163,7 +142,5 @@ export class ApiService {
         userId,
       }),
     });
-
-    return response.json();
   }
 }
