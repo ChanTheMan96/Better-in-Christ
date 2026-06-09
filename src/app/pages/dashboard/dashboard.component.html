@@ -9,6 +9,14 @@
 		</div>
 
 		<div class="hero-meta">
+			<div class="meta-chip streak-chip">
+				<span class="label">Current Streak</span>
+				<strong>{{ currentStreak }}</strong>
+				<span class="meta-note">
+					{{ hasCheckedInToday ? 'Checked in today' : (lastCheckInDate ? 'Last check-in ' + lastCheckInDate : 'Start with today') }}
+				</span>
+			</div>
+
 			<div class="meta-chip">
 				<span class="label">Saved Verses</span>
 				<strong>{{ savedVerses.length }}</strong>
@@ -20,6 +28,9 @@
 		</div>
 
 		<div class="hero-actions">
+			<button type="button" class="checkin-action" (click)="checkInStreak()" [disabled]="hasCheckedInToday || isCheckingIn">
+				{{ hasCheckedInToday ? 'Checked In Today' : (isCheckingIn ? 'Checking In...' : 'Check In Today') }}
+			</button>
 			<a routerLink="/faith-scroll" class="action-link">Open Faith Scroll</a>
 			<a routerLink="/prayer" class="action-link">Go to Prayer</a>
 			<button type="button" class="signout" (click)="signOut()">Sign Out</button>
