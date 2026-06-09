@@ -107,7 +107,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         };
       }
 
-      this.syncStreakFromUser(result?.user || result?.streak || result?.data || result);
+      this.syncStreakFromUser(
+        result?.user || result?.streak || result?.data || result,
+      );
       await this.loadStreak();
     } finally {
       this.isCheckingIn = false;
@@ -247,7 +249,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     await this.loadJournalEntries();
   }
 
-  private isSameDay(value: string | Date | undefined, compareDate: Date): boolean {
+  private isSameDay(
+    value: string | Date | undefined,
+    compareDate: Date,
+  ): boolean {
     if (!value) {
       return false;
     }
@@ -281,7 +286,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.currentStreak,
     );
 
-    this.currentStreak = Number.isFinite(streakValue) ? streakValue : this.currentStreak;
+    this.currentStreak = Number.isFinite(streakValue)
+      ? streakValue
+      : this.currentStreak;
 
     if (rawDate) {
       this.lastCheckInDate = new Date(rawDate).toLocaleDateString();
