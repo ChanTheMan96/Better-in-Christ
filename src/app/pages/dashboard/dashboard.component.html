@@ -1,7 +1,7 @@
 <section class="dashboard-page page-content">
 	<header class="dashboard-hero panel">
 		<p class="kicker">Dashboard</p>
-		<h1>Welcome back{{ displayName ? ', ' + displayName : '' }}</h1>
+		<h1>Welcome back{{ user?.firstName || user?.emailAddresses?.[0]?.emailAddress ? ', ' + (user?.firstName || user?.emailAddresses?.[0]?.emailAddress) : '' }}</h1>
 		<p>
 			Your daily spaces for scripture, prayer, and growth are ready. Choose where you want to begin.
 		</p>
@@ -12,6 +12,26 @@
 			<button type="button" class="signout" (click)="signOut()">Sign Out</button>
 		</div>
 	</header>
+
+	<section class="saved-verses panel">
+		<div class="saved-head">
+			<h2>Saved Verses</h2>
+            
+		</div>
+
+		@if (!savedVerses.length) {
+			<p class="saved-empty">No saved verses yet.</p>
+		} @else {
+			<ul class="saved-list">
+				@for (verse of savedVerses; track verse.id || verse.verseRef) {
+					<li class="saved-item">
+						<p class="ref">{{ verse.verseRef }}</p>
+						<p class="text">{{ verse.verseText }}</p>
+					</li>
+				}
+			</ul>
+		}
+	</section>
 
 	<div class="tile-grid">
 		<a routerLink="/who-i-am" class="tile panel">

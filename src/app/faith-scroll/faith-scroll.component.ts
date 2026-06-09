@@ -9,7 +9,9 @@ import {
   FaithScrollCategoryGroup,
   FaithScrollSelectionService
 } from '../services/faith-scroll-selection.service';
+import { ApiService } from '../services/api.service';
 import { BibleService } from '../services/bible.service';
+import { ClerkService } from '../services/clerk.service';
 
 interface FaithScrollVerse {
   reference: string;
@@ -19,7 +21,11 @@ interface FaithScrollVerse {
   error?: boolean;
 }
 
-const FAVORITES_STORAGE_KEY = 'faithScrollFavorites';
+interface SavedVerse {
+  id: number;
+  verseRef: string;
+  verseText: string;
+}
 
 @Component({
     selector: 'app-faith-scroll',
@@ -37,23 +43,40 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   loading = true;
   activeIndex = 0;
   favoriteRefs = new Set<string>();
+  savedVerses: SavedVerse[] = [];
   toastMessage = '';
   emptyMessage = '';
+  user: any = null;
+  dbUser: any = null;
 
   private readonly destroy$ = new Subject<void>();
   private inFlightRefs = new Set<string>();
   private seenRefs = new Set<string>();
+  private savedVerseIdByRef = new Map<string, number>();
   private loadToken = 0;
   private cardTouchStartY: number | null = null;
   private toastTimeoutId: number | null = null;
 
   constructor(
     private bibleService: BibleService,
-    private selection: FaithScrollSelectionService
+    private selection: FaithScrollSelectionService,
+    private clerkService: ClerkService,
+    private apiService: ApiService
   ) {}
 
   ngOnInit(): void {
-    this.favoriteRefs = this.readFavorites();
+    this.bootstrapUserAndFavorites();
+
+    this.clerkService.authState$
+      .pipe(
+        map((state) => state.isSignedIn),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.bootstrapUserAndFavorites();
+      });
+
     this.selection.setCategoryGroups(this.buildCategoryGroups());
     this.categories = this.selection.categories;
     this.selection.resetToFaith();
@@ -87,20 +110,82 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   }
 
   toggleFavorite(verse: FaithScrollVerse): void {
-    if (verse.error) return;
+    this.saveVerse(verse);
+  }
+
+  async saveVerse(verse: FaithScrollVerse): Promise<void> {
+    if (verse.error || !verse.reference) return;
 
     if (this.favoriteRefs.has(verse.reference)) {
-      this.favoriteRefs.delete(verse.reference);
+      const savedId = this.savedVerseIdByRef.get(verse.reference);
+      if (savedId) {
+        await this.removeVerse(savedId, verse.reference);
+      } else {
+        // If we do not have an id locally, refresh from API before deciding.
+        await this.loadSavedVerses();
+        const refreshedId = this.savedVerseIdByRef.get(verse.reference);
+        if (refreshedId) {
+          await this.removeVerse(refreshedId, verse.reference);
+        }
+      }
       this.showToast('Removed');
-    } else {
-      this.favoriteRefs.add(verse.reference);
-      this.showToast('Saved');
+      if (this.selectedCategory === FAITH_SCROLL_FAVORITES_CATEGORY) {
+        this.removeUnfavoritedFromFavoritesFeed();
+      }
+      this.pulse();
+      return;
     }
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...this.favoriteRefs]));
-    if (this.selectedCategory === FAITH_SCROLL_FAVORITES_CATEGORY) {
-      this.removeUnfavoritedFromFavoritesFeed();
+
+    if (!this.dbUser?.id) {
+      this.showToast('Log in to save');
+      return;
     }
+
+    await this.apiService.saveVerse(
+      this.dbUser.id,
+      verse.reference,
+      verse.text
+    );
+    await this.loadSavedVerses();
+    this.showToast('Saved');
     this.pulse();
+  }
+
+  async loadSavedVerses(): Promise<void> {
+    if (!this.dbUser?.id) {
+      this.savedVerses = [];
+      this.favoriteRefs = new Set<string>();
+      this.savedVerseIdByRef.clear();
+      return;
+    }
+
+    const result = await this.apiService.getSavedVerses(this.dbUser.id);
+    const rawVerses =
+      result?.verses ||
+      result?.savedVerses ||
+      result?.data ||
+      (Array.isArray(result) ? result : []);
+
+    this.savedVerses = (Array.isArray(rawVerses) ? rawVerses : []).map((verse: any) => ({
+      id: verse.id,
+      verseRef: verse.verseRef || verse.verse_ref || verse.reference || '',
+      verseText: verse.verseText || verse.verse_text || verse.text || ''
+    }));
+
+    this.favoriteRefs = new Set(this.savedVerses.map((verse) => verse.verseRef).filter(Boolean));
+    this.savedVerseIdByRef = new Map(
+      this.savedVerses
+        .filter((verse) => !!verse.verseRef && !!verse.id)
+        .map((verse) => [verse.verseRef, verse.id] as const)
+    );
+  }
+
+  async removeVerse(id: number, verseRef?: string): Promise<void> {
+    await this.apiService.deleteSavedVerse(id);
+    if (verseRef) {
+      this.savedVerseIdByRef.delete(verseRef);
+    }
+    await this.loadSavedVerses();
   }
 
   async shareVerse(verse: FaithScrollVerse): Promise<void> {
@@ -266,7 +351,6 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
   private getCategoryRefs(category: FaithScrollCategory): string[] {
     if (category.name === FAITH_SCROLL_FAVORITES_CATEGORY) {
-      this.favoriteRefs = this.readFavorites();
       return this.uniqueRefs([...this.favoriteRefs]);
     }
     return this.uniqueRefs(category.refs);
@@ -373,12 +457,25 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     setTimeout(() => this.scrollToIndex(this.activeIndex, 'auto'));
   }
 
-  private readFavorites(): Set<string> {
-    try {
-      const raw = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || '[]');
-      return new Set(Array.isArray(raw) ? raw : []);
-    } catch {
-      return new Set();
+  private async bootstrapUserAndFavorites(): Promise<void> {
+    await this.clerkService.load();
+    this.user = this.clerkService.user;
+
+    if (!this.user) {
+      this.dbUser = null;
+      await this.loadSavedVerses();
+      if (this.selectedCategory === FAITH_SCROLL_FAVORITES_CATEGORY) {
+        this.loadCategory(this.selectedCategory);
+      }
+      return;
+    }
+
+    const result = await this.apiService.createOrGetUser(this.user);
+    this.dbUser = result.user;
+    await this.loadSavedVerses();
+
+    if (this.selectedCategory === FAITH_SCROLL_FAVORITES_CATEGORY) {
+      this.loadCategory(this.selectedCategory);
     }
   }
 

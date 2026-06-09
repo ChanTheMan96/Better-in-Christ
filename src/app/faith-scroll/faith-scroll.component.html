@@ -40,28 +40,30 @@
               <p class="verse-ref">{{ verse.reference }}@if (verse.version) {
                 <span> · {{ verse.version }}</span>
               }</p>
-              <div class="verse-actions">
-                <button
-                  type="button"
-                  class="action-button"
-                  [class.active]="favoriteRefs.has(verse.reference)"
-                  (click)="toggleFavorite(verse)"
-                  [attr.aria-label]="favoriteRefs.has(verse.reference) ? 'Remove favorite' : 'Favorite verse'"
-                  [attr.title]="favoriteRefs.has(verse.reference) ? 'Remove favorite' : 'Favorite verse'"
-                  >
-                  <span
-                    nz-icon
-                    nzType="heart"
-                    [nzTheme]="favoriteRefs.has(verse.reference) ? 'fill' : 'outline'"
-                  ></span>
-                </button>
-                <button type="button" class="action-button" (click)="shareVerse(verse)" aria-label="Share verse" title="Share verse">
-                  <span nz-icon nzType="share-alt" nzTheme="outline"></span>
-                </button>
-                <button type="button" class="action-button" (click)="randomVerse()" aria-label="Random verse">
-                  <span nz-icon nzType="reload" nzTheme="outline"></span>
-                </button>
-              </div>
+              @if (verse.loaded) {
+                <div class="verse-actions">
+                  <button
+                    type="button"
+                    class="action-button"
+                    [class.active]="favoriteRefs.has(verse.reference)"
+                    (click)="saveVerse(verse)"
+                    [attr.aria-label]="'Save verse'"
+                    [attr.title]="'Save verse'"
+                    >
+                    <span
+                      nz-icon
+                      nzType="heart"
+                      [nzTheme]="favoriteRefs.has(verse.reference) ? 'fill' : 'outline'"
+                    ></span>
+                  </button>
+                  <button type="button" class="action-button" (click)="shareVerse(verse)" aria-label="Share verse" title="Share verse">
+                    <span nz-icon nzType="share-alt" nzTheme="outline"></span>
+                  </button>
+                  <button type="button" class="action-button" (click)="randomVerse()" aria-label="Random verse">
+                    <span nz-icon nzType="reload" nzTheme="outline"></span>
+                  </button>
+                </div>
+              }
             } @else {
               <div class="verse-error-state">
                 <p class="error-title">{{ verse.text }}</p>
