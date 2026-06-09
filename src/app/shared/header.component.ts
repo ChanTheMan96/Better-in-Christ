@@ -29,6 +29,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   userDisplayName = '';
   selectedScrollCategory = 'Faith';
   scrollCategoryGroups: FaithScrollCategoryGroup[] = [];
+  scrollPickerOpen = false;
   private deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
   private readonly destroy$ = new Subject<void>();
   private readonly isIosDevice =
@@ -90,6 +91,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.deferredInstallPrompt = null;
   }
 
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.scrollPickerOpen = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onDocumentEscape(): void {
+    this.scrollPickerOpen = false;
+  }
+
   goHome(event: MouseEvent): void {
     event.preventDefault();
     this.closeMobileMenu();
@@ -126,7 +137,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.changeVersionRequested.emit();
   }
 
+  toggleScrollPicker(): void {
+    this.scrollPickerOpen = !this.scrollPickerOpen;
+  }
+
   onScrollCategoryChange(categoryName: string): void {
+    this.scrollPickerOpen = false;
     this.faithScrollSelection.select(categoryName);
   }
 
