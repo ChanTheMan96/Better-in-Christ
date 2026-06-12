@@ -47,8 +47,7 @@
               "src/styles.scss"
             ],
             "scripts": [],
-            "browser": "src/main.ts",
-            "serviceWorker": "ngsw-config.json"
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
@@ -110,7 +109,6 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/manifest.webmanifest",
               "src/assets",
               {
                 "glob": "_redirects",

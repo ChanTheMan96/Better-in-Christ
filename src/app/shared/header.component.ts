@@ -9,11 +9,6 @@ import {
   FaithScrollSelectionService
 } from '../services/faith-scroll-selection.service';
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
-}
-
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
@@ -30,11 +25,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   selectedScrollCategory = 'Faith';
   scrollCategoryGroups: FaithScrollCategoryGroup[] = [];
   scrollPickerOpen = false;
-  showInstallAction = true;
-  private deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
   private readonly destroy$ = new Subject<void>();
-  private readonly isIosDevice =
-    typeof navigator !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent);
 
   constructor(
     private router: Router,
@@ -55,7 +46,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.selectedScrollCategory = this.faithScrollSelection.selected;
     this.scrollCategoryGroups = this.faithScrollSelection.categoryGroups;
     this.updateRouteState(this.router.url);
-    this.showInstallAction = !this.isRunningStandalone();
 
     this.router.events
       .pipe(
@@ -80,18 +70,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  @HostListener('window:beforeinstallprompt', ['$event'])
-  onBeforeInstallPrompt(event: Event): void {
-    event.preventDefault();
-    this.deferredInstallPrompt = event as BeforeInstallPromptEvent;
-  }
-
-  @HostListener('window:appinstalled')
-  onAppInstalled(): void {
-    this.deferredInstallPrompt = null;
-    this.showInstallAction = false;
   }
 
   @HostListener('document:click')
@@ -149,30 +127,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.faithScrollSelection.select(categoryName);
   }
 
-  async addToHomeScreen(): Promise<void> {
-    this.closeMobileMenu();
-
-    if (this.deferredInstallPrompt) {
-      this.deferredInstallPrompt.prompt();
-      await this.deferredInstallPrompt.userChoice.catch(() => undefined);
-      this.deferredInstallPrompt = null;
-      return;
-    }
-
-    if (this.isIosDevice) {
-      alert('On iPhone/iPad: tap Share, then tap "Add to Home Screen".');
-      return;
-    }
-
-    alert('Use your browser menu and select "Install app" or "Add to Home screen".');
-  }
-
   private updateRouteState(url: string): void {
     this.isFaithScrollRoute = url.split('?')[0].split('#')[0] === '/faith-scroll';
-  }
-
-  private isRunningStandalone(): boolean {
-    const nav = navigator as Navigator & { standalone?: boolean };
-    return window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true;
   }
 }

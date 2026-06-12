@@ -56,19 +56,6 @@
               </div>
             }
           </div>
-        } @else {
-          @if (showInstallAction) {
-            <button
-              type="button"
-              class="install-action"
-              (click)="addToHomeScreen()"
-              aria-label="Add to Home Screen"
-              title="Add to Home Screen"
-            >
-              <span nz-icon nzType="share-alt" nzTheme="outline" aria-hidden="true"></span>
-              <span>Install App</span>
-            </button>
-          }
         }
 
       </div>
@@ -123,12 +110,6 @@
     <a routerLink="/surrender" (click)="closeMobileMenu()" class="mobile-link">Surrender</a>
     <a routerLink="/donate" (click)="closeMobileMenu()" class="mobile-link">Donate</a>
     <a routerLink="/contact" (click)="closeMobileMenu()" class="mobile-link">Report a Bug</a>
-    @if (showInstallAction) {
-      <button nz-button nzType="default" class="mobile-link install-link" (click)="addToHomeScreen()">
-        <span nz-icon nzType="share-alt" nzTheme="outline" aria-hidden="true"></span>
-        Install App
-      </button>
-    }
     <button nz-button nzType="default" class="mobile-link version-link" (click)="openVersionPicker()">
       Change Bible Version
     </button>

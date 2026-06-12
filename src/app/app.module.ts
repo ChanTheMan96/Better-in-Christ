@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ServiceWorkerModule } from '@angular/service-worker';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { FormsModule } from '@angular/forms';
@@ -22,7 +21,6 @@ import { PrayerComponent } from './prayer/prayer.component';
 import { DonateComponent } from './donate/donate.component';
 import { ContactComponent } from './contact/contact.component';
 import { SharedModule } from './shared/shared.module';
-import { environment } from '../environments/environment';
 
 import { NZ_I18N, en_US } from 'ng-zorro-antd/i18n';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -104,10 +102,6 @@ registerLocaleData(en);
     NzModalModule,
     NzTabsModule,
     NzBreadCrumbModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
-      registrationStrategy: 'registerWhenStable:30000',
-    }),
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US },
