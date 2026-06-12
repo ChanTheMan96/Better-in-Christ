@@ -9,6 +9,11 @@ import {
   FaithScrollSelectionService
 } from '../services/faith-scroll-selection.service';
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+}
+
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
@@ -25,7 +30,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   selectedScrollCategory = 'Faith';
   scrollCategoryGroups: FaithScrollCategoryGroup[] = [];
   scrollPickerOpen = false;
+  private deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
   private readonly destroy$ = new Subject<void>();
+  private readonly isIosDevice =
+    typeof navigator !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent);
 
   constructor(
     private router: Router,
@@ -70,6 +78,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  @HostListener('window:beforeinstallprompt', ['$event'])
+  onBeforeInstallPrompt(event: Event): void {
+    event.preventDefault();
+    this.deferredInstallPrompt = event as BeforeInstallPromptEvent;
+  }
+
+  @HostListener('window:appinstalled')
+  onAppInstalled(): void {
+    this.deferredInstallPrompt = null;
   }
 
   @HostListener('document:click')
@@ -125,6 +144,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
   onScrollCategoryChange(categoryName: string): void {
     this.scrollPickerOpen = false;
     this.faithScrollSelection.select(categoryName);
+  }
+
+  async addToHomeScreen(): Promise<void> {
+    this.closeMobileMenu();
+
+    if (this.deferredInstallPrompt) {
+      this.deferredInstallPrompt.prompt();
+      await this.deferredInstallPrompt.userChoice.catch(() => undefined);
+      this.deferredInstallPrompt = null;
+      return;
+    }
+
+    if (this.isIosDevice) {
+      alert('On iPhone/iPad: tap Share, then tap "Add to Home Screen".');
+      return;
+    }
+
+    alert('Use your browser menu and select "Install app" or "Add to Home screen".');
   }
 
   private updateRouteState(url: string): void {

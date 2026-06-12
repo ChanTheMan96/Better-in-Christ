@@ -56,6 +56,19 @@
               </div>
             }
           </div>
+        } @else {
+          <span
+            class="install-icon-action"
+            (click)="addToHomeScreen()"
+            (keydown.enter)="addToHomeScreen()"
+            (keydown.space)="addToHomeScreen()"
+            role="button"
+            tabindex="0"
+            aria-label="Add to Home Screen"
+            title="Add to Home Screen"
+            >
+            <span nz-icon nzType="book" nzTheme="outline"></span>
+          </span>
         }
 
       </div>

@@ -130,6 +130,24 @@
   box-shadow: none;
 }
 
+.install-icon-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--app-accent);
+  cursor: pointer;
+  transition: color 160ms ease, transform 160ms ease;
+}
+
+.install-icon-action:hover,
+.install-icon-action:focus {
+  color: #ffffff;
+  transform: translateY(-1px);
+  outline: none;
+}
+
 .header-scroll-picker {
   position: relative;
 }
