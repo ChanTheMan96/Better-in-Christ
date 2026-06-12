@@ -71,6 +71,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   dbUser: any = null;
   categoryGroups: FaithScrollCategoryGroup[] = [];
   moreCategoriesOpen = false;
+  moreChips: ScrollChip[] = [];
   readonly primaryChips: ScrollChip[] = [
     { label: 'For You', categoryName: 'Faith' },
     { label: 'Anxiety', categoryName: 'Anxiety' },
@@ -111,6 +112,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.categoryGroups = this.buildCategoryGroups();
     this.selection.setCategoryGroups(this.categoryGroups);
     this.categories = this.selection.categories;
+    this.moreChips = this.buildMoreChips();
     this.selection.resetToFaith();
     this.selection.selected$
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
@@ -285,7 +287,6 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   }
 
   selectCategory(categoryName: string): void {
-    this.moreCategoriesOpen = false;
     this.selection.select(categoryName);
   }
 
@@ -299,6 +300,20 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
   isMoreChipActive(): boolean {
     return !this.primaryChips.some((chip) => this.isPrimaryChipActive(chip));
+  }
+
+  private buildMoreChips(): ScrollChip[] {
+    const primaryCategoryNames = new Set(
+      this.primaryChips.map((chip) => chip.categoryName),
+    );
+
+    return this.categoryGroups
+      .flatMap((group) => group.categories)
+      .filter((category) => !primaryCategoryNames.has(category.name))
+      .map((category) => ({
+        label: category.name,
+        categoryName: category.name,
+      }));
   }
 
   getVerseLengthClass(verse: FaithScrollVerse): string {

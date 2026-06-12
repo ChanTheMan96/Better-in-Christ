@@ -1,4 +1,4 @@
-<main class="faith-scroll-shell" aria-label="Faith Scroll">
+<main class="faith-scroll-shell" [class.chips-expanded]="moreCategoriesOpen" aria-label="Faith Scroll">
   <div class="scroll-glow glow-one"></div>
   <div class="scroll-glow glow-two"></div>
 
@@ -22,31 +22,22 @@
         aria-label="More scroll categories"
         (click)="toggleMoreCategories()"
         >
-        +
+        {{ moreCategoriesOpen ? '−' : '+' }}
       </button>
-    </div>
 
-    @if (moreCategoriesOpen) {
-      <div class="scroll-category-panel">
-        @for (group of categoryGroups; track group.label) {
-          <section class="scroll-category-group">
-            <p>{{ group.label }}</p>
-            <div>
-              @for (category of group.categories; track category.name) {
-                <button
-                  type="button"
-                  class="scroll-category-option"
-                  [class.active]="category.name === selectedCategory"
-                  (click)="selectCategory(category.name)"
-                  >
-                  {{ category.name }}
-                </button>
-              }
-            </div>
-          </section>
+      @if (moreCategoriesOpen) {
+        @for (chip of moreChips; track chip.categoryName) {
+          <button
+            type="button"
+            class="scroll-chip extra-chip"
+            [class.active]="chip.categoryName === selectedCategory"
+            (click)="selectCategory(chip.categoryName)"
+            >
+            {{ chip.label }}
+          </button>
         }
-      </div>
-    }
+      }
+    </div>
   </nav>
 
   @if (loading) {
