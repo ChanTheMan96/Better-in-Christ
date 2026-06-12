@@ -48,6 +48,11 @@ interface ScrollChip {
   categoryName: string;
 }
 
+interface ScrollChipGroup {
+  label: string;
+  chips: ScrollChip[];
+}
+
 @Component({
   selector: 'app-faith-scroll',
   templateUrl: './faith-scroll.component.html',
@@ -71,14 +76,13 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   dbUser: any = null;
   categoryGroups: FaithScrollCategoryGroup[] = [];
   moreCategoriesOpen = false;
-  moreChips: ScrollChip[] = [];
+  moreChipGroups: ScrollChipGroup[] = [];
   readonly primaryChips: ScrollChip[] = [
     { label: 'For You', categoryName: 'Faith' },
     { label: 'Anxiety', categoryName: 'Anxiety' },
     { label: 'Shame', categoryName: 'Shame & Guilt' },
     { label: 'Lust', categoryName: 'Lust' },
     { label: 'Prayer', categoryName: 'Prayer' },
-    { label: 'Wisdom', categoryName: 'Wisdom' },
   ];
 
   private readonly destroy$ = new Subject<void>();
@@ -112,7 +116,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.categoryGroups = this.buildCategoryGroups();
     this.selection.setCategoryGroups(this.categoryGroups);
     this.categories = this.selection.categories;
-    this.moreChips = this.buildMoreChips();
+    this.moreChipGroups = this.buildMoreChipGroups();
     this.selection.resetToFaith();
     this.selection.selected$
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
@@ -288,6 +292,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
   selectCategory(categoryName: string): void {
     this.selection.select(categoryName);
+    this.moreCategoriesOpen = false;
   }
 
   toggleMoreCategories(): void {
@@ -302,18 +307,22 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     return !this.primaryChips.some((chip) => this.isPrimaryChipActive(chip));
   }
 
-  private buildMoreChips(): ScrollChip[] {
+  private buildMoreChipGroups(): ScrollChipGroup[] {
     const primaryCategoryNames = new Set(
       this.primaryChips.map((chip) => chip.categoryName),
     );
 
     return this.categoryGroups
-      .flatMap((group) => group.categories)
-      .filter((category) => !primaryCategoryNames.has(category.name))
-      .map((category) => ({
-        label: category.name,
-        categoryName: category.name,
-      }));
+      .map((group) => ({
+        label: group.label,
+        chips: group.categories
+          .filter((category) => !primaryCategoryNames.has(category.name))
+          .map((category) => ({
+            label: category.name,
+            categoryName: category.name,
+          })),
+      }))
+      .filter((group) => group.chips.length > 0);
   }
 
   getVerseLengthClass(verse: FaithScrollVerse): string {

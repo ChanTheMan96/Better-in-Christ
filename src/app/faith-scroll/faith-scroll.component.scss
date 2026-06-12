@@ -64,14 +64,13 @@
 
 .scroll-chip-row {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
   max-width: min(100%, 760px);
   margin: 0 auto;
-  max-height: 92px;
-  overflow-y: auto;
+  overflow-x: auto;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
   pointer-events: auto;
 }
 
@@ -118,6 +117,104 @@
 
 .extra-chip {
   animation: chipIn 140ms ease both;
+}
+
+.scroll-chip-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 18px;
+  padding: max(18px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  color: #fffaf1;
+  background:
+    radial-gradient(circle at 50% 14%, rgba(255, 232, 179, 0.16), transparent 22rem),
+    rgba(3, 3, 3, 0.72);
+  backdrop-filter: blur(24px);
+  animation: overlayIn 160ms ease both;
+}
+
+.scroll-chip-overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 42px;
+}
+
+.scroll-chip-overlay-header p {
+  margin: 0;
+  color: #fff4d3;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.chip-overlay-close {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 232, 179, 0.34);
+  border-radius: 999px;
+  color: #fffaf1;
+  background: rgba(10, 9, 7, 0.56);
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.chip-overlay-close:hover,
+.chip-overlay-close:focus-visible {
+  border-color: rgba(255, 232, 179, 0.68);
+  background: rgba(255, 250, 241, 0.12);
+  outline: none;
+}
+
+.scroll-chip-groups {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  width: min(100%, 860px);
+  margin: 0 auto;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-chip-groups::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-chip-group {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.scroll-chip-group p {
+  margin: 0;
+  color: rgba(255, 232, 179, 0.82);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.scroll-chip-group div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 9px;
 }
 
 .action-button {
@@ -177,10 +274,6 @@
   scroll-snap-align: start;
   scroll-snap-stop: always;
   box-sizing: border-box;
-}
-
-.chips-expanded .verse-slide {
-  padding-top: 130px;
 }
 
 .verse-card {
@@ -576,6 +669,15 @@
   }
 }
 
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .verse-card,
   .verse-logo-mark,
@@ -618,17 +720,14 @@
     padding: 74px 16px max(92px, calc(env(safe-area-inset-bottom) + 76px));
   }
 
-  .chips-expanded .verse-slide {
-    padding-top: 132px;
-  }
-
   .scroll-chip-shell {
     padding: 8px 10px 6px;
   }
 
   .scroll-chip-row {
     gap: 6px;
-    max-height: 114px;
+    justify-content: flex-start;
+    max-width: 100%;
   }
 
   .scroll-chip {
@@ -640,6 +739,19 @@
   .more-chip {
     width: 34px;
     padding: 0;
+  }
+
+  .scroll-chip-overlay {
+    gap: 14px;
+    padding: 14px 12px max(18px, env(safe-area-inset-bottom));
+  }
+
+  .scroll-chip-groups {
+    gap: 16px;
+  }
+
+  .scroll-chip-group div {
+    gap: 7px;
   }
 
   .verse-card {

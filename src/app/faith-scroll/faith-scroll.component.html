@@ -24,21 +24,39 @@
         >
         {{ moreCategoriesOpen ? '−' : '+' }}
       </button>
-
-      @if (moreCategoriesOpen) {
-        @for (chip of moreChips; track chip.categoryName) {
-          <button
-            type="button"
-            class="scroll-chip extra-chip"
-            [class.active]="chip.categoryName === selectedCategory"
-            (click)="selectCategory(chip.categoryName)"
-            >
-            {{ chip.label }}
-          </button>
-        }
-      }
     </div>
   </nav>
+
+  @if (moreCategoriesOpen) {
+    <div class="scroll-chip-overlay" role="dialog" aria-modal="true" aria-label="Scroll categories">
+      <div class="scroll-chip-overlay-header">
+        <p>Choose Scroll</p>
+        <button type="button" class="chip-overlay-close" aria-label="Close categories" (click)="toggleMoreCategories()">
+          −
+        </button>
+      </div>
+
+      <div class="scroll-chip-groups">
+        @for (group of moreChipGroups; track group.label) {
+          <section class="scroll-chip-group" [attr.aria-label]="group.label">
+            <p>{{ group.label }}</p>
+            <div>
+              @for (chip of group.chips; track chip.categoryName) {
+                <button
+                  type="button"
+                  class="scroll-chip extra-chip"
+                  [class.active]="chip.categoryName === selectedCategory"
+                  (click)="selectCategory(chip.categoryName)"
+                  >
+                  {{ chip.label }}
+                </button>
+              }
+            </div>
+          </section>
+        }
+      </div>
+    </div>
+  }
 
   @if (loading) {
     <div class="loading-panel">
