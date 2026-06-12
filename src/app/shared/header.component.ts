@@ -30,6 +30,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   selectedScrollCategory = 'Faith';
   scrollCategoryGroups: FaithScrollCategoryGroup[] = [];
   scrollPickerOpen = false;
+  showInstallAction = true;
   private deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
   private readonly destroy$ = new Subject<void>();
   private readonly isIosDevice =
@@ -54,6 +55,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.selectedScrollCategory = this.faithScrollSelection.selected;
     this.scrollCategoryGroups = this.faithScrollSelection.categoryGroups;
     this.updateRouteState(this.router.url);
+    this.showInstallAction = !this.isRunningStandalone();
 
     this.router.events
       .pipe(
@@ -89,6 +91,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @HostListener('window:appinstalled')
   onAppInstalled(): void {
     this.deferredInstallPrompt = null;
+    this.showInstallAction = false;
   }
 
   @HostListener('document:click')
@@ -166,5 +169,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private updateRouteState(url: string): void {
     this.isFaithScrollRoute = url.split('?')[0].split('#')[0] === '/faith-scroll';
+  }
+
+  private isRunningStandalone(): boolean {
+    const nav = navigator as Navigator & { standalone?: boolean };
+    return window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true;
   }
 }
