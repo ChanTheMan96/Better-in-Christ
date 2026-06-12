@@ -1,13 +1,9 @@
 import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationService } from '../services/navigation.service';
-import { NavigationEnd, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ClerkService } from '../services/clerk.service';
-import {
-  FaithScrollCategoryGroup,
-  FaithScrollSelectionService
-} from '../services/faith-scroll-selection.service';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -24,12 +20,8 @@ interface BeforeInstallPromptEvent extends Event {
 export class HeaderComponent implements OnInit, OnDestroy {
   @Output() changeVersionRequested = new EventEmitter<void>();
   mobileMenuOpen = false;
-  isFaithScrollRoute = false;
   isSignedIn = false;
   userDisplayName = '';
-  selectedScrollCategory = 'Faith';
-  scrollCategoryGroups: FaithScrollCategoryGroup[] = [];
-  scrollPickerOpen = false;
   private deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
   private readonly destroy$ = new Subject<void>();
   private readonly isIosDevice =
@@ -38,7 +30,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private navSvc: NavigationService,
-    private faithScrollSelection: FaithScrollSelectionService,
     private clerkService: ClerkService
   ) {}
 
@@ -51,28 +42,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.userDisplayName = authState.displayName;
       });
 
-    this.selectedScrollCategory = this.faithScrollSelection.selected;
-    this.scrollCategoryGroups = this.faithScrollSelection.categoryGroups;
-    this.updateRouteState(this.router.url);
-
-    this.router.events
-      .pipe(
-        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((event) => this.updateRouteState(event.urlAfterRedirects));
-
-    this.faithScrollSelection.selected$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((categoryName) => {
-        this.selectedScrollCategory = categoryName;
-      });
-
-    this.faithScrollSelection.categoryGroupsChanges$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((groups) => {
-        this.scrollCategoryGroups = groups;
-      });
   }
 
   ngOnDestroy(): void {
@@ -89,16 +58,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @HostListener('window:appinstalled')
   onAppInstalled(): void {
     this.deferredInstallPrompt = null;
-  }
-
-  @HostListener('document:click')
-  onDocumentClick(): void {
-    this.scrollPickerOpen = false;
-  }
-
-  @HostListener('document:keydown.escape')
-  onDocumentEscape(): void {
-    this.scrollPickerOpen = false;
   }
 
   goHome(event: MouseEvent): void {
@@ -137,15 +96,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.changeVersionRequested.emit();
   }
 
-  toggleScrollPicker(): void {
-    this.scrollPickerOpen = !this.scrollPickerOpen;
-  }
-
-  onScrollCategoryChange(categoryName: string): void {
-    this.scrollPickerOpen = false;
-    this.faithScrollSelection.select(categoryName);
-  }
-
   async addToHomeScreen(): Promise<void> {
     this.closeMobileMenu();
 
@@ -164,7 +114,4 @@ export class HeaderComponent implements OnInit, OnDestroy {
     alert('Use your browser menu and select "Install app" or "Add to Home screen".');
   }
 
-  private updateRouteState(url: string): void {
-    this.isFaithScrollRoute = url.split('?')[0].split('#')[0] === '/faith-scroll';
-  }
 }

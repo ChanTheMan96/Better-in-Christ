@@ -1,4 +1,4 @@
-<nav class="app-header text-white" [class.faith-scroll-header]="isFaithScrollRoute">
+<nav class="app-header text-white">
   <div class="container">
     <div class="row align-items-center justify-content-between py-2">
       <div class="col-auto d-flex align-items-center gap-3">
@@ -17,60 +17,18 @@
         </a>
       </div>
       <div class="col-auto">
-        @if (isFaithScrollRoute) {
-          <div class="header-scroll-picker" (click)="$event.stopPropagation()">
-            <button
-              type="button"
-              class="scroll-picker-trigger"
-              (click)="toggleScrollPicker()"
-              [attr.aria-expanded]="scrollPickerOpen"
-              aria-haspopup="listbox"
-              aria-label="Choose scroll category"
-              >
-              <span class="scroll-picker-kicker">Scroll</span>
-              <span class="scroll-picker-value">{{ selectedScrollCategory }}</span>
-              <span class="scroll-picker-chevron" aria-hidden="true"></span>
-            </button>
-
-            @if (scrollPickerOpen) {
-              <div class="scroll-picker-panel" role="listbox" [attr.aria-label]="'Scroll categories'">
-                @for (group of scrollCategoryGroups; track group.label) {
-                  <section class="scroll-picker-group">
-                    <p class="scroll-picker-group-label">{{ group.label }}</p>
-                    <div class="scroll-picker-options">
-                      @for (category of group.categories; track category.name) {
-                        <button
-                          type="button"
-                          class="scroll-picker-option"
-                          [class.active]="category.name === selectedScrollCategory"
-                          role="option"
-                          [attr.aria-selected]="category.name === selectedScrollCategory"
-                          (click)="onScrollCategoryChange(category.name)"
-                          >
-                          {{ category.name }}
-                        </button>
-                      }
-                    </div>
-                  </section>
-                }
-              </div>
-            }
-          </div>
-        } @else {
-          <span
-            class="install-icon-action"
-            (click)="addToHomeScreen()"
-            (keydown.enter)="addToHomeScreen()"
-            (keydown.space)="addToHomeScreen()"
-            role="button"
-            tabindex="0"
-            aria-label="Add to Home Screen"
-            title="Add to Home Screen"
-            >
-            <span nz-icon nzType="book" nzTheme="outline"></span>
-          </span>
-        }
-
+        <span
+          class="install-icon-action"
+          (click)="addToHomeScreen()"
+          (keydown.enter)="addToHomeScreen()"
+          (keydown.space)="addToHomeScreen()"
+          role="button"
+          tabindex="0"
+          aria-label="Add to Home Screen"
+          title="Add to Home Screen"
+          >
+          <span nz-icon nzType="book" nzTheme="outline"></span>
+        </span>
       </div>
     </div>
   </div>

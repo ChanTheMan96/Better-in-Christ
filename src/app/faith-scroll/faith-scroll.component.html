@@ -2,6 +2,53 @@
   <div class="scroll-glow glow-one"></div>
   <div class="scroll-glow glow-two"></div>
 
+  <nav class="scroll-chip-shell" aria-label="Faith Scroll categories">
+    <div class="scroll-chip-row">
+      @for (chip of primaryChips; track chip.label) {
+        <button
+          type="button"
+          class="scroll-chip"
+          [class.active]="isPrimaryChipActive(chip)"
+          (click)="selectCategory(chip.categoryName)"
+          >
+          {{ chip.label }}
+        </button>
+      }
+      <button
+        type="button"
+        class="scroll-chip more-chip"
+        [class.active]="isMoreChipActive()"
+        [attr.aria-expanded]="moreCategoriesOpen"
+        aria-label="More scroll categories"
+        (click)="toggleMoreCategories()"
+        >
+        +
+      </button>
+    </div>
+
+    @if (moreCategoriesOpen) {
+      <div class="scroll-category-panel">
+        @for (group of categoryGroups; track group.label) {
+          <section class="scroll-category-group">
+            <p>{{ group.label }}</p>
+            <div>
+              @for (category of group.categories; track category.name) {
+                <button
+                  type="button"
+                  class="scroll-category-option"
+                  [class.active]="category.name === selectedCategory"
+                  (click)="selectCategory(category.name)"
+                  >
+                  {{ category.name }}
+                </button>
+              }
+            </div>
+          </section>
+        }
+      </div>
+    }
+  </nav>
+
   @if (loading) {
     <div class="loading-panel">
       <div class="loading-cross" aria-hidden="true"></div>

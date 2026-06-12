@@ -43,6 +43,11 @@ interface SavedVerse {
   verseText: string;
 }
 
+interface ScrollChip {
+  label: string;
+  categoryName: string;
+}
+
 @Component({
   selector: 'app-faith-scroll',
   templateUrl: './faith-scroll.component.html',
@@ -64,6 +69,16 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   emptyMessage = '';
   user: any = null;
   dbUser: any = null;
+  categoryGroups: FaithScrollCategoryGroup[] = [];
+  moreCategoriesOpen = false;
+  readonly primaryChips: ScrollChip[] = [
+    { label: 'For You', categoryName: 'Faith' },
+    { label: 'Anxiety', categoryName: 'Anxiety' },
+    { label: 'Shame', categoryName: 'Shame & Guilt' },
+    { label: 'Lust', categoryName: 'Lust' },
+    { label: 'Prayer', categoryName: 'Prayer' },
+    { label: 'Wisdom', categoryName: 'Wisdom' },
+  ];
 
   private readonly destroy$ = new Subject<void>();
   private inFlightRefs = new Set<string>();
@@ -93,7 +108,8 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
         this.bootstrapUserAndFavorites();
       });
 
-    this.selection.setCategoryGroups(this.buildCategoryGroups());
+    this.categoryGroups = this.buildCategoryGroups();
+    this.selection.setCategoryGroups(this.categoryGroups);
     this.categories = this.selection.categories;
     this.selection.resetToFaith();
     this.selection.selected$
@@ -268,6 +284,23 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.loadVerse(index);
   }
 
+  selectCategory(categoryName: string): void {
+    this.moreCategoriesOpen = false;
+    this.selection.select(categoryName);
+  }
+
+  toggleMoreCategories(): void {
+    this.moreCategoriesOpen = !this.moreCategoriesOpen;
+  }
+
+  isPrimaryChipActive(chip: ScrollChip): boolean {
+    return this.selectedCategory === chip.categoryName;
+  }
+
+  isMoreChipActive(): boolean {
+    return !this.primaryChips.some((chip) => this.isPrimaryChipActive(chip));
+  }
+
   getVerseLengthClass(verse: FaithScrollVerse): string {
     if (verse.error || !verse.loaded) return '';
     const length = verse.text.length;
@@ -373,6 +406,36 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
         refs: [],
       },
       JESUS_WORDS_CATEGORY,
+      {
+        name: 'Prayer',
+        refs: [
+          'Matthew 6:6',
+          'Matthew 6:9-13',
+          'Philippians 4:6-7',
+          '1 Thessalonians 5:16-18',
+          'James 5:16',
+          'Hebrews 4:16',
+          'Psalm 145:18',
+          'Jeremiah 33:3',
+          'Romans 8:26',
+          '1 John 5:14-15',
+        ],
+      },
+      {
+        name: 'Wisdom',
+        refs: [
+          'James 1:5',
+          'Proverbs 3:5-6',
+          'Proverbs 9:10',
+          'Proverbs 16:9',
+          'Psalm 119:105',
+          'Colossians 3:16',
+          'Ephesians 5:15-17',
+          'Proverbs 11:14',
+          'Psalm 25:4-5',
+          'Isaiah 30:21',
+        ],
+      },
       {
         name: 'All Scripture',
         refs: [
