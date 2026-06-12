@@ -12,10 +12,8 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 
-import { EmotionsComponent } from './emotions/emotions.component';
 import { WhoIAmComponent } from './who-i-am/who-i-am.component';
 import { HeaderComponent } from './shared/header.component';
-import { RelationshipGuideComponent } from './relationship-guide/relationship-guide.component';
 import { SurrenderComponent } from './surrender/surrender.component';
 import { PrayerComponent } from './prayer/prayer.component';
 import { DonateComponent } from './donate/donate.component';
@@ -78,10 +76,8 @@ registerLocaleData(en);
 @NgModule({
   declarations: [
     AppComponent,
-    EmotionsComponent,
     WhoIAmComponent,
     HeaderComponent,
-    RelationshipGuideComponent,
     SurrenderComponent,
     PrayerComponent,
     DonateComponent,
