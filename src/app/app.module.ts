@@ -15,56 +15,23 @@ import {
 import { HeaderComponent } from './shared/header.component';
 import { DonateComponent } from './donate/donate.component';
 import { ContactComponent } from './contact/contact.component';
-import { SharedModule } from './shared/shared.module';
 
 import { NZ_I18N, en_US } from 'ng-zorro-antd/i18n';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzCardModule } from 'ng-zorro-antd/card';
-import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NZ_ICONS } from 'ng-zorro-antd/icon';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
-import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { IconDefinition } from '@ant-design/icons-angular';
 import {
-  AimOutline,
-  AlertOutline,
-  BarChartOutline,
-  ClockCircleOutline,
-  CloudOutline,
-  ClusterOutline,
-  ExclamationCircleOutline,
-  FrownOutline,
-  FireOutline,
-  CrownOutline,
-  UserOutline,
-  CompassOutline,
-  WarningOutline,
   HeartFill,
   HeartOutline,
-  CloseCircleOutline,
-  ExclamationOutline,
-  EyeOutline,
-  WalletOutline,
   AuditOutline,
   LoginOutline,
   LogoutOutline,
-  QuestionCircleOutline,
-  EyeInvisibleOutline,
-  MehOutline,
-  SafetyCertificateOutline,
-  ShakeOutline,
-  StarOutline,
-  StopOutline,
-  TeamOutline,
-  LockOutline,
   ReloadOutline,
   CloseOutline,
-  UnlockOutline,
   BookOutline,
-  BulbOutline,
   ShareAltOutline,
 } from '@ant-design/icons-angular/icons';
 
@@ -83,57 +50,24 @@ registerLocaleData(en);
     BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
-    SharedModule,
     NzButtonModule,
-    NzCardModule,
-    NzGridModule,
     NzIconModule,
     NzSpinModule,
     NzModalModule,
-    NzTabsModule,
-    NzBreadCrumbModule,
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US },
     {
       provide: NZ_ICONS,
       useValue: [
-        AimOutline,
-        AlertOutline,
-        BarChartOutline,
-        ClockCircleOutline,
-        CloudOutline,
-        ClusterOutline,
-        ExclamationCircleOutline,
-        FrownOutline,
-        FireOutline,
-        CrownOutline,
-        UserOutline,
-        CompassOutline,
-        WarningOutline,
         HeartFill,
         HeartOutline,
-        CloseCircleOutline,
-        ExclamationOutline,
-        EyeOutline,
-        WalletOutline,
         AuditOutline,
         LoginOutline,
         LogoutOutline,
-        QuestionCircleOutline,
-        EyeInvisibleOutline,
-        MehOutline,
-        SafetyCertificateOutline,
-        ShakeOutline,
-        StarOutline,
-        StopOutline,
-        TeamOutline,
-        LockOutline,
         ReloadOutline,
         CloseOutline,
-        UnlockOutline,
         BookOutline,
-        BulbOutline,
         ShareAltOutline,
       ] as IconDefinition[],
     },
