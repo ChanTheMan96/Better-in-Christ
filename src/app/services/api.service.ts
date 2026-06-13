@@ -28,7 +28,12 @@ export class ApiService {
     });
   }
 
-  async saveVerse(userId: number, verseRef: string, verseText: string) {
+  async saveVerse(
+    userId: number,
+    verseRef: string,
+    verseText: string,
+    category?: string,
+  ) {
     return this.requestJson('/api/saved-verses', {
       method: 'POST',
       headers: {
@@ -38,6 +43,8 @@ export class ApiService {
         userId,
         verseRef,
         verseText,
+        category,
+        verseCategory: category,
       }),
     });
   }

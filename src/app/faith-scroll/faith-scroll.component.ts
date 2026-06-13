@@ -217,6 +217,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       this.dbUser.id,
       verse.reference,
       verse.text,
+      this.selectedCategory,
     );
     await this.loadSavedVerses();
     this.showToast('Saved');

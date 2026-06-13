@@ -103,9 +103,14 @@
 						<ul class="saved-list">
 							@for (verse of savedVerses; track verse.id || verse.verseRef) {
 							<li class="saved-item clickable-item" role="button" tabindex="0" (click)="openModal(verse.verseRef, verse.verseText)" (keydown.enter)="openModal(verse.verseRef, verse.verseText)" (keydown.space)="openModal(verse.verseRef, verse.verseText); $event.preventDefault()">
+								<button type="button" class="remove-verse-btn remove-verse-x" aria-label="Remove saved truth" (click)="$event.stopPropagation(); removeVerse(verse.id)">&#x2715;</button>
 								<div class="saved-item-head">
-									<p class="ref">{{ verse.verseRef }}</p>
-									<button type="button" class="remove-verse-btn" (click)="$event.stopPropagation(); removeVerse(verse.id)">Remove</button>
+									<div>
+										@if (verse.category) {
+											<p class="saved-category">{{ verse.category }}</p>
+										}
+										<p class="ref">{{ verse.verseRef }}</p>
+									</div>
 									</div>
 									<p class="text">{{ verse.verseText }}</p>
 								</li>

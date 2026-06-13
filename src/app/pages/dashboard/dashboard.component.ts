@@ -11,6 +11,12 @@ import { BibleService } from 'src/app/services/bible.service';
 import { BibleVersionService } from 'src/app/services/bible-version.service';
 import { EMOTIONS, EmotionCategory } from 'src/app/data/emotions.data';
 import { UserBattlesService } from 'src/app/services/user-battles.service';
+import {
+  FAITH_SCROLL_CATEGORIES,
+  JESUS_WORDS_CATEGORY,
+  WHO_I_AM_CATEGORIES,
+} from 'src/app/data/faith-scroll.data';
+import { GROWTH_TRAITS } from 'src/app/data/growth.data';
 
 @Component({
   selector: 'app-dashboard',
@@ -417,10 +423,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private normalizeSavedVerse(verse: any): any {
+    const verseRef = verse.verseRef || verse.verse_ref || verse.reference || '';
     return {
       id: verse.id,
-      verseRef: verse.verseRef || verse.verse_ref || verse.reference || '',
+      verseRef,
       verseText: verse.verseText || verse.verse_text || verse.text || '',
+      category:
+        verse.category ||
+        verse.verseCategory ||
+        verse.verse_category ||
+        verse.scrollCategory ||
+        verse.scroll_category ||
+        this.inferSavedVerseCategory(verseRef),
     };
   }
 
@@ -463,5 +477,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .filter((battle) => typeof battle === 'string')
       .map((battle) => battle.trim())
       .filter(Boolean);
+  }
+
+  private inferSavedVerseCategory(verseRef: string): string {
+    if (!verseRef) {
+      return '';
+    }
+
+    const categories = [
+      ...EMOTIONS.map((emotion) => ({
+        name: emotion.emotion,
+        refs: emotion.keywordVerses,
+      })),
+      ...GROWTH_TRAITS.map((trait) => ({
+        name: trait.emotion,
+        refs: trait.keywordVerses,
+      })),
+      ...WHO_I_AM_CATEGORIES,
+      JESUS_WORDS_CATEGORY,
+      ...FAITH_SCROLL_CATEGORIES,
+    ];
+
+    return (
+      categories.find((category) => category.refs.includes(verseRef))?.name ||
+      ''
+    );
   }
 }
