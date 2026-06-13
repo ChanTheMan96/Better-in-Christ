@@ -29,16 +29,3 @@ jobs:
           ls -la
           ls -la dist || true
           find . -maxdepth 4 -type d -name "dist" -o -name "build" -o -name "out"
-
-      # ⚠️ Change this to your real build folder
-      - name: Upload to cPanel
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.CPANEL_HOST }}
-          username: ${{ secrets.CPANEL_USER }}
-          password: ${{ secrets.CPANEL_PASS }}
-          port: ${{ secrets.CPANEL_PORT }}
-          protocol: ftps
-          local-dir: ./dist/
-          server-dir: ${{ secrets.CPANEL_PATH }}
-          dangerous-clean-slate: false
