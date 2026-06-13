@@ -214,13 +214,17 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
 .mobile-user-chip {
+  flex: 1 1 0;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
+  min-height: 34px;
+  min-width: 0;
   cursor: pointer;
   padding: 8px 12px;
   border-radius: 999px;
@@ -231,24 +235,16 @@
   letter-spacing: 0.02em;
 }
 
+.mobile-user-chip .anticon {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
 .mobile-user-chip.ant-btn:hover,
 .mobile-user-chip.ant-btn:focus {
   border-color: rgba(255, 232, 179, 0.66);
   background: rgba(255, 232, 179, 0.16);
   color: #fffaf1;
-}
-
-.mobile-user-chip .anticon.anticon-audit {
-  margin: 0;
-}
-
-.mobile-user-chip.icon-only,
-.mobile-user-chip.icon-only.ant-btn {
-  width: 34px;
-  min-width: 34px;
-  height: 34px;
-  padding: 0;
-  justify-content: center;
 }
 
 .version-link,

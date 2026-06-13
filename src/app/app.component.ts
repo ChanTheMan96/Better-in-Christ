@@ -65,6 +65,10 @@ export class AppComponent implements OnInit {
     this.loadVersions(this.bibleVersions.getSelectedVersion());
   }
 
+  closeVersionModal(): void {
+    this.versionModalVisible = false;
+  }
+
   chooseVersion(versionId: string): void {
     if (!versionId) return;
     this.bibleVersions.setSelectedVersion(versionId);

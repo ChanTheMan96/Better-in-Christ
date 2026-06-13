@@ -1,8 +1,9 @@
 <ng-template #versionTitle>
   <div class="version-title">
-    <span class="version-title-cross" aria-hidden="true"></span>
+    <img src="assets/logo.png" alt="" class="version-title-logo" aria-hidden="true">
     <span>Choose Bible Version</span>
   </div>
+  <button type="button" class="version-modal-close" aria-label="Close Bible version modal" (click)="closeVersionModal()">&#x2715;</button>
 </ng-template>
 
 <nz-modal
