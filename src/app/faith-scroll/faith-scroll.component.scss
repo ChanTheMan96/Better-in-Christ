@@ -57,8 +57,8 @@
   left: 0;
   right: 0;
   z-index: 6;
-  padding: 12px 12px 12px;
-  background: linear-gradient(180deg, rgba(3, 3, 3, 0.78), rgba(3, 3, 3, 0));
+  padding: 10px 12px 0;
+  background: none;
   pointer-events: none;
 }
 
@@ -102,11 +102,12 @@
   max-width: 180px;
   min-height: 36px;
   padding: 0 14px;
-  border: 1px solid rgba(255, 250, 241, 0.18);
+  border: 1px solid rgba(255, 250, 241, 0.14);
   border-radius: 999px;
-  color: rgba(255, 250, 241, 0.78);
-  background: rgba(10, 9, 7, 0.56);
-  backdrop-filter: blur(16px);
+  color: rgba(255, 250, 241, 0.72);
+  background: rgba(10, 9, 7, 0.28);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   font-size: 0.84rem;
   font-weight: 850;
@@ -120,11 +121,11 @@
 .scroll-chip:hover,
 .scroll-chip:focus-visible,
 .scroll-chip.active {
-  border-color: rgba(255, 232, 179, 0.62);
+  border-color: rgba(255, 232, 179, 0.46);
   color: #fffaf1;
   background:
-    linear-gradient(135deg, rgba(246, 217, 157, 0.24), rgba(255, 250, 241, 0.08)),
-    rgba(10, 9, 7, 0.72);
+    linear-gradient(135deg, rgba(246, 217, 157, 0.15), rgba(255, 250, 241, 0.05)),
+    rgba(10, 9, 7, 0.4);
   outline: none;
 }
 
@@ -323,10 +324,6 @@
   scroll-snap-align: start;
   scroll-snap-stop: always;
   box-sizing: border-box;
-}
-
-.identity-chips-visible .verse-slide {
-  padding-top: 150px;
 }
 
 .verse-card {
@@ -801,24 +798,26 @@
   }
 
   .identity-chips-visible .verse-slide {
-    padding-top: 142px;
+    padding-top: 74px;
   }
 
   .scroll-chip-shell {
-    padding: 10px 0 12px;
+    padding: 10px 0 0;
   }
 
   .scroll-chip-row {
-    justify-content: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 7px;
-    max-width: 100%;
-    padding: 0 14px;
-    scroll-padding: 0 14px;
-    scroll-snap-type: x proximity;
+    width: min(100%, 360px);
+    max-width: calc(100vw - 24px);
+    margin: 0 auto;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
   }
 
   .identity-chip-row {
-    justify-content: flex-start;
     max-width: 100%;
   }
 
