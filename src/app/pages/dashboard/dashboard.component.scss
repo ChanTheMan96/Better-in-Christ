@@ -904,41 +904,42 @@
 		margin-bottom: 12px;
 		padding: 4px;
 		border-radius: 14px;
-		overflow-x: auto;
-		scrollbar-width: none;
-		-webkit-overflow-scrolling: touch;
-	}
-
-	.content-tabs ::ng-deep .ant-tabs-nav::-webkit-scrollbar {
-		display: none;
+		overflow: hidden;
 	}
 
 	.content-tabs ::ng-deep .ant-tabs-nav-list {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 4px;
 		width: 100%;
 		min-width: 100%;
 	}
 
 	.content-tabs ::ng-deep .ant-tabs-tab {
-		flex: 1 1 0;
+		display: block;
 		min-width: 0;
 		border-radius: 12px;
 	}
 
 	.content-tabs ::ng-deep .ant-tabs-tab .ant-tabs-tab-btn {
 		width: 100%;
-		padding: 9px 10px;
+		padding: 8px 6px;
 	}
 
 	.content-tabs ::ng-deep .ant-tabs-tab-btn .tab-title {
-		grid-template-columns: minmax(0, 1fr) auto;
-		align-items: center;
-		gap: 6px;
+		grid-template-columns: 1fr;
+		justify-items: center;
+		gap: 5px;
+		text-align: center;
 	}
 
 	.content-tabs ::ng-deep .ant-tabs-tab-btn .tab-title-label {
-		font-size: 0.82rem;
+		max-width: 100%;
+		font-size: 0.76rem;
 		line-height: 1.1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.content-tabs ::ng-deep .ant-tabs-tab-btn .tab-title-subcopy {
@@ -946,10 +947,10 @@
 	}
 
 	.content-tabs ::ng-deep .ant-tabs-tab-btn .tab-title-count {
-		min-width: 24px;
-		height: 24px;
-		padding: 0 7px;
-		font-size: 0.72rem;
+		min-width: 22px;
+		height: 22px;
+		padding: 0 6px;
+		font-size: 0.68rem;
 	}
 
 	.content-tabs ::ng-deep .ant-tabs-content-holder {
