@@ -42,7 +42,6 @@
 
 		<div class="hero-actions">
 			<a routerLink="/faith-scroll" class="action-link">Open Faith Scroll</a>
-			<a routerLink="/prayer" class="action-link">Go to Prayer</a>
 			<button type="button" class="signout" (click)="signOut()">Sign Out</button>
 		</div>
 	</header>
@@ -50,7 +49,7 @@
 	<section class="dashboard-tabs panel">
 		<div class="tabs-intro">
 			<p class="tabs-kicker">Daily Spaces</p>
-			<h2>Keep your scripture, prayer, and reflection in one place</h2>
+			<h2>Keep Scripture, prayer, and reflection close.</h2>
 		</div>
 
 		<ng-template #savedTitle>
@@ -101,7 +100,7 @@
 						</div>
 					} @else {
 						<ul class="saved-list">
-							@for (verse of savedVerses; track verse.id || verse.verseRef) {
+							@for (verse of pagedSavedVerses; track verse.id || verse.verseRef) {
 							<li class="saved-item clickable-item" role="button" tabindex="0" (click)="openModal(verse.verseRef, verse.verseText)" (keydown.enter)="openModal(verse.verseRef, verse.verseText)" (keydown.space)="openModal(verse.verseRef, verse.verseText); $event.preventDefault()">
 								<button type="button" class="remove-verse-btn remove-verse-x" aria-label="Remove saved truth" (click)="$event.stopPropagation(); removeVerse(verse.id)">&#x2715;</button>
 								<div class="saved-item-head">
@@ -116,6 +115,17 @@
 								</li>
 							}
 						</ul>
+						@if (shouldShowSavedTruthsPagination) {
+							<div class="saved-pagination" aria-label="Saved Truths pagination">
+								<button type="button" (click)="goToSavedTruthsPage(savedTruthsPage - 1)" [disabled]="savedTruthsPage === 1">
+									Previous
+								</button>
+								<span>Page {{ savedTruthsPage }} of {{ savedTruthsTotalPages }}</span>
+								<button type="button" (click)="goToSavedTruthsPage(savedTruthsPage + 1)" [disabled]="savedTruthsPage === savedTruthsTotalPages">
+									Next
+								</button>
+							</div>
+						}
 					}
 				</div>
 			</nz-tab>
@@ -182,60 +192,42 @@
 		</nz-tabs>
 	</section>
 
+	<section class="key-facts-grid" aria-label="Prayer and surrender key facts">
+		<article class="key-fact-panel panel">
+			<p class="key-fact-kicker">Prayer</p>
+			<h2>Draw near to God.</h2>
+			<ul>
+				@for (fact of prayerKeyFacts; track fact) {
+					<li>{{ fact }}</li>
+				}
+			</ul>
+		</article>
+
+		<article class="key-fact-panel panel">
+			<p class="key-fact-kicker">Surrender</p>
+			<h2>Let go. Trust God. Follow fully.</h2>
+			<ul>
+				@for (fact of surrenderKeyFacts; track fact) {
+					<li>{{ fact }}</li>
+				}
+			</ul>
+		</article>
+	</section>
+
 </section>
 
 @if (isBattlePickerOpen) {
-	<div class="battle-picker-backdrop" (click)="closeBattlePicker()">
-		<section class="battle-picker" role="dialog" aria-modal="true" aria-labelledby="battle-picker-title" (click)="$event.stopPropagation()">
-			<div class="battle-picker-head">
-				<div>
-					<p class="battle-picker-kicker">{{ selectedBattles.length }} / {{ maxBattles }} selected</p>
-					<h2 id="battle-picker-title">What are you battling today?</h2>
-					<p>Choose up to 5 areas you want God's Word to speak into.</p>
-				</div>
-				<button type="button" class="battle-picker-close" aria-label="Close battle picker" (click)="closeBattlePicker()">&#x2715;</button>
-			</div>
-
-			<div class="battle-selected-panel">
-				<p>Selected</p>
-				@if (selectedBattles.length) {
-					<div class="battle-selected-row">
-						@for (battle of selectedBattles; track battle) {
-							<button type="button" class="selected-battle-chip" (click)="removeBattle(battle)" [attr.aria-label]="'Remove ' + battle">
-								<span>{{ battle }}</span>
-								<span aria-hidden="true">&#x2715;</span>
-							</button>
-						}
-					</div>
-				} @else {
-					<p class="battle-selected-empty">Choose today's battles below.</p>
-				}
-			</div>
-
-			<div class="battle-picker-grid">
-				@for (item of emotions; track item.emotion) {
-					<button
-						type="button"
-						class="battle-option"
-						[class.selected]="isBattleSelected(item.emotion)"
-						[disabled]="isBattleDisabled(item.emotion)"
-						(click)="toggleBattle(item.emotion)"
-						>
-						{{ item.emotion }}
-					</button>
-				}
-			</div>
-
-			<div class="battle-picker-actions">
-				<button type="button" class="battle-clear" (click)="clearBattles()" [disabled]="isSavingBattles || !selectedBattles.length">
-					Clear
-				</button>
-				<button type="button" class="battle-save" (click)="saveBattles()" [disabled]="isSavingBattles">
-					Shape My Scroll
-				</button>
-			</div>
-		</section>
-	</div>
+	<app-battle-picker
+		[emotions]="emotions"
+		[selectedBattles]="selectedBattles"
+		[maxBattles]="maxBattles"
+		[isSavingBattles]="isSavingBattles"
+		(closePicker)="closeBattlePicker()"
+		(toggleBattle)="toggleBattle($event)"
+		(removeBattle)="removeBattle($event)"
+		(clearBattles)="clearBattles()"
+		(saveBattles)="saveBattles()"
+	></app-battle-picker>
 }
 
 @if (modalItem) {

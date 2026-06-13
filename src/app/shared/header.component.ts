@@ -21,8 +21,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Output() changeVersionRequested = new EventEmitter<void>();
   mobileMenuOpen = false;
   isSignedIn = false;
+  isStandaloneApp = false;
   userDisplayName = '';
   private deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
+  private standaloneMediaQuery?: MediaQueryList;
   private readonly destroy$ = new Subject<void>();
   private readonly isIosDevice =
     typeof navigator !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -34,6 +36,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.setupStandaloneDetection();
     this.clerkService.initialize();
     this.clerkService.authState$
       .pipe(takeUntil(this.destroy$))
@@ -58,6 +61,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @HostListener('window:appinstalled')
   onAppInstalled(): void {
     this.deferredInstallPrompt = null;
+    this.isStandaloneApp = true;
   }
 
   goHome(event: MouseEvent): void {
@@ -99,6 +103,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   async addToHomeScreen(): Promise<void> {
     this.closeMobileMenu();
 
+    if (this.isStandaloneApp) {
+      return;
+    }
+
     if (this.deferredInstallPrompt) {
       this.deferredInstallPrompt.prompt();
       await this.deferredInstallPrompt.userChoice.catch(() => undefined);
@@ -112,6 +120,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     alert('Use your browser menu and select "Install app" or "Add to Home screen".');
+  }
+
+  private setupStandaloneDetection(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    this.standaloneMediaQuery = window.matchMedia('(display-mode: standalone)');
+    this.isStandaloneApp =
+      this.standaloneMediaQuery.matches ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true;
+
+    this.standaloneMediaQuery.addEventListener?.('change', (event) => {
+      this.isStandaloneApp = event.matches;
+    });
   }
 
 }

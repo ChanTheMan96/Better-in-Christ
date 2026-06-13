@@ -13,8 +13,6 @@ import {
 } from '@angular/common/http';
 
 import { HeaderComponent } from './shared/header.component';
-import { SurrenderComponent } from './surrender/surrender.component';
-import { PrayerComponent } from './prayer/prayer.component';
 import { DonateComponent } from './donate/donate.component';
 import { ContactComponent } from './contact/contact.component';
 import { SharedModule } from './shared/shared.module';
@@ -76,8 +74,6 @@ registerLocaleData(en);
   declarations: [
     AppComponent,
     HeaderComponent,
-    SurrenderComponent,
-    PrayerComponent,
     DonateComponent,
     ContactComponent,
   ],

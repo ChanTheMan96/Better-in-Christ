@@ -1,0 +1,51 @@
+<div class="battle-picker-backdrop" (click)="closePicker.emit()">
+	<section class="battle-picker" role="dialog" aria-modal="true" aria-labelledby="battle-picker-title" (click)="$event.stopPropagation()">
+		<div class="battle-picker-head">
+			<div>
+				<p class="battle-picker-kicker">{{ selectedBattles.length }} / {{ maxBattles }} selected</p>
+				<h2 id="battle-picker-title">What are you battling today?</h2>
+				<p>Choose up to 5 areas you want God's Word to speak into.</p>
+			</div>
+			<button type="button" class="battle-picker-close" aria-label="Close battle picker" (click)="closePicker.emit()">&#x2715;</button>
+		</div>
+
+		<div class="battle-selected-panel">
+			<p>Selected</p>
+			@if (selectedBattles.length) {
+				<div class="battle-selected-row">
+					@for (battle of selectedBattles; track battle) {
+						<button type="button" class="selected-battle-chip" (click)="removeBattle.emit(battle)" [attr.aria-label]="'Remove ' + battle">
+							<span>{{ battle }}</span>
+							<span aria-hidden="true">&#x2715;</span>
+						</button>
+					}
+				</div>
+			} @else {
+				<p class="battle-selected-empty">Choose today's battles below.</p>
+			}
+		</div>
+
+		<div class="battle-picker-grid">
+			@for (item of emotions; track item.emotion) {
+				<button
+					type="button"
+					class="battle-option"
+					[class.selected]="isBattleSelected(item.emotion)"
+					[disabled]="isBattleDisabled(item.emotion)"
+					(click)="toggleBattle.emit(item.emotion)"
+					>
+					{{ item.emotion }}
+				</button>
+			}
+		</div>
+
+		<div class="battle-picker-actions">
+			<button type="button" class="battle-clear" (click)="clearBattles.emit()" [disabled]="isSavingBattles || !selectedBattles.length">
+				Clear
+			</button>
+			<button type="button" class="battle-save" (click)="saveBattles.emit()" [disabled]="isSavingBattles">
+				Shape My Scroll
+			</button>
+		</div>
+	</section>
+</div>

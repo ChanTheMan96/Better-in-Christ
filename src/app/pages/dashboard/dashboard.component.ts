@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ClerkService } from 'src/app/services/clerk.service';
 import { ApiService } from 'src/app/services/api.service';
 import { firstValueFrom, of, Subject } from 'rxjs';
@@ -17,10 +17,11 @@ import {
   WHO_I_AM_CATEGORIES,
 } from 'src/app/data/faith-scroll.data';
 import { GROWTH_TRAITS } from 'src/app/data/growth.data';
+import { BattlePickerComponent } from './battle-picker.component';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, FormsModule, NzTabsModule],
+  imports: [RouterLink, FormsModule, NzTabsModule, BattlePickerComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -28,6 +29,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly emotions: EmotionCategory[] = EMOTIONS;
   readonly maxBattles = 5;
   readonly verseOfDay = this.getDailyVerse();
+  readonly prayerKeyFacts = [
+    'Prayer is honest relationship with God, not performance.',
+    'Pray when you feel overwhelmed, tempted, grateful, confused, or distant.',
+    'Use ACTS: Adoration, Confession, Thanksgiving, Supplication.',
+    'Come boldly to the throne of grace through Jesus.',
+  ];
+  readonly surrenderKeyFacts = [
+    'Surrender is not quitting; it is trusting God with control and outcomes.',
+    'Name what you are holding onto, confess it honestly, and release the outcome.',
+    'Choose obedience over emotion when God shows the next step.',
+    'Real strength begins where self-rule ends.',
+  ];
   verseOfDayText = 'Loading verse...';
   selectedBattles: string[] = [];
   quickChips: string[] = ['Anxiety', 'Shame'];
@@ -37,10 +50,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   user: any = null;
   dbUser: any = null;
   savedVerses: any[] = [];
+  savedTruthsPage = 1;
+  readonly savedTruthsPageSize = 5;
   prayerRequests: any[] = [];
   journalEntries: any[] = [];
   streak = 0;
-  lastCheckinDate = '';
   isCheckingIn = false;
   modalItem: { title: string; text: string } | null = null;
 
@@ -57,12 +71,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
       : 'What are you battling today?';
   }
 
+  get savedTruthsTotalPages(): number {
+    return Math.max(
+      1,
+      Math.ceil(this.savedVerses.length / this.savedTruthsPageSize),
+    );
+  }
+
+  get pagedSavedVerses(): any[] {
+    const start = (this.savedTruthsPage - 1) * this.savedTruthsPageSize;
+    return this.savedVerses.slice(start, start + this.savedTruthsPageSize);
+  }
+
+  get shouldShowSavedTruthsPagination(): boolean {
+    return this.savedVerses.length > this.savedTruthsPageSize;
+  }
+
   constructor(
     private clerkService: ClerkService,
     private apiService: ApiService,
     private bibleService: BibleService,
     private bibleVersions: BibleVersionService,
     private userBattlesService: UserBattlesService,
+    private router: Router,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -72,6 +103,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     await this.clerkService.load();
     this.user = this.clerkService.user;
+
+    if (!this.user) {
+      await this.router.navigate(['/login'], { replaceUrl: true });
+      return;
+    }
 
     if (this.user) {
       const result = await this.apiService.createOrGetUser(this.user);
@@ -97,6 +133,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.clerkService.authState$
       .pipe(takeUntil(this.destroy$))
       .subscribe((authState) => {
+        if (!authState.isSignedIn) {
+          this.router.navigate(['/login'], { replaceUrl: true });
+          return;
+        }
+
         if (!this.displayName) {
           this.displayName = authState.displayName;
         }
@@ -145,20 +186,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.selectedBattles = [...this.selectedBattles, emotion];
   }
 
-  isBattleSelected(emotion: string): boolean {
-    return this.selectedBattles.includes(emotion);
-  }
-
   removeBattle(emotion: string): void {
     this.selectedBattles = this.selectedBattles.filter(
       (battle) => battle !== emotion,
-    );
-  }
-
-  isBattleDisabled(emotion: string): boolean {
-    return (
-      this.selectedBattles.length >= this.maxBattles &&
-      !this.isBattleSelected(emotion)
     );
   }
 
@@ -232,17 +262,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return aliases[chip] || chip;
   }
 
-  async checkInStreak(): Promise<void> {
-    if (!this.dbUser?.id || this.isCheckingIn) {
-      return;
-    }
-
-    await this.runStreakCheckIn();
-  }
-
   async loadSavedVerses(): Promise<void> {
     if (!this.dbUser?.id) {
       this.savedVerses = [];
+      this.savedTruthsPage = 1;
       return;
     }
 
@@ -255,6 +278,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.savedVerses = (Array.isArray(rawVerses) ? rawVerses : []).map(
       (verse: any) => this.normalizeSavedVerse(verse),
+    );
+    this.savedTruthsPage = Math.min(
+      this.savedTruthsPage,
+      this.savedTruthsTotalPages,
+    );
+  }
+
+  goToSavedTruthsPage(page: number): void {
+    this.savedTruthsPage = Math.max(
+      1,
+      Math.min(page, this.savedTruthsTotalPages),
     );
   }
 
@@ -399,24 +433,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         streakResult?.data?.streak ??
         this.streak;
 
-      const rawLastCheckinDate =
-        streakResult?.lastCheckinDate ??
-        streakResult?.lastCheckInDate ??
-        streakResult?.lastCheckInAt ??
-        streakResult?.last_check_in_at ??
-        streakResult?.data?.lastCheckinDate ??
-        streakResult?.data?.lastCheckInDate ??
-        streakResult?.data?.lastCheckInAt ??
-        streakResult?.data?.last_check_in_at ??
-        this.dbUser?.lastCheckinDate ??
-        this.dbUser?.lastCheckInDate ??
-        this.dbUser?.lastCheckInAt ??
-        this.dbUser?.last_check_in_at;
-
       this.streak = Number(rawStreak) || 0;
-      this.lastCheckinDate = rawLastCheckinDate
-        ? new Date(rawLastCheckinDate).toLocaleDateString()
-        : '';
     } finally {
       this.isCheckingIn = false;
     }

@@ -794,50 +794,47 @@
 
 @media (max-width: 520px) {
   .verse-slide {
-    padding: 74px 16px max(92px, calc(env(safe-area-inset-bottom) + 76px));
+    padding: 66px 16px max(92px, calc(env(safe-area-inset-bottom) + 76px));
   }
 
   .identity-chips-visible .verse-slide {
-    padding-top: 74px;
+    padding-top: 66px;
   }
 
   .scroll-chip-shell {
-    padding: 10px 0 0;
+    padding: 8px 0 0;
   }
 
   .scroll-chip-row {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 7px;
-    width: min(100%, 360px);
-    max-width: calc(100vw - 24px);
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 6px;
+    width: max-content;
+    max-width: calc(100vw - 42px);
     margin: 0 auto;
     padding: 0;
-    overflow: visible;
-    scroll-snap-type: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
   }
 
+  .identity-chip-title,
   .identity-chip-row {
-    max-width: 100%;
-  }
-
-  .identity-chip-title {
-    margin-top: 18px;
-    font-size: 0.78rem;
+    display: none;
   }
 
   .scroll-chip {
-    max-width: 42vw;
-    min-height: 34px;
-    padding: 0 11px;
-    font-size: 0.78rem;
+    max-width: 38vw;
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 0.74rem;
     scroll-snap-align: start;
   }
 
   .more-chip {
-    flex-basis: 34px;
-    min-width: 34px;
-    width: 34px;
+    flex-basis: 32px;
+    min-width: 32px;
+    width: 32px;
     padding: 0;
   }
 
