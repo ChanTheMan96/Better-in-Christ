@@ -12,7 +12,6 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 
-import { WhoIAmComponent } from './who-i-am/who-i-am.component';
 import { HeaderComponent } from './shared/header.component';
 import { SurrenderComponent } from './surrender/surrender.component';
 import { PrayerComponent } from './prayer/prayer.component';
@@ -76,7 +75,6 @@ registerLocaleData(en);
 @NgModule({
   declarations: [
     AppComponent,
-    WhoIAmComponent,
     HeaderComponent,
     SurrenderComponent,
     PrayerComponent,

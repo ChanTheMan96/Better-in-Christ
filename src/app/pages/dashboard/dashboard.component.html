@@ -2,28 +2,41 @@
 	<header class="dashboard-hero panel">
 		<div class="hero-copy">
 			<p class="kicker">Dashboard</p>
-			<h1>Welcome back{{ user?.firstName || user?.emailAddresses?.[0]?.emailAddress ? ', ' + (user?.firstName || user?.emailAddresses?.[0]?.emailAddress) : '' }}</h1>
-			<p>
-				Your daily spaces for scripture, prayer, and growth are ready. Return to what is shaping you most right now.
-			</p>
+			<h1>{{ battleQuestion }}</h1>
+			<p class="battle-subtitle">Choose up to 5 areas you want God's Word to speak into.</p>
+			<div class="carrying-chip-row" aria-label="Today's battle shortcuts">
+				@for (chip of quickChips; track chip) {
+					<a
+						routerLink="/faith-scroll"
+						[queryParams]="{ scroll: getQuickChipCategory(chip) }"
+						class="carrying-chip"
+						>
+						{{ chip }}
+					</a>
+				}
+				<button type="button" class="carrying-chip add-battle-chip" aria-label="Edit today's battles" (click)="openBattlePicker()">
+					+
+				</button>
+			</div>
 		</div>
 
 		<div class="hero-meta">
-			<div class="meta-chip streak-chip">
-				<span class="label">Current Streak</span>
-				<strong>{{ streak }}</strong>
-				<span class="meta-note">
-					{{ lastCheckinDate ? 'Last check-in ' + lastCheckinDate : 'Start with today' }}
-				</span>
+			<div class="hero-stat-stack">
+				<div class="meta-chip streak-chip">
+					<span class="label">Current Streak</span>
+					<strong>{{ streak }}</strong>
+				</div>
+
+				<div class="meta-chip">
+					<span class="label">Saved Truths</span>
+					<strong>{{ savedVerses.length }}</strong>
+				</div>
 			</div>
 
-			<div class="meta-chip">
-				<span class="label">Saved Truths</span>
-				<strong>{{ savedVerses.length }}</strong>
-			</div>
-			<div class="meta-chip">
-				<span class="label">Account</span>
-				<strong>{{ dbUser?.email || user?.emailAddresses?.[0]?.emailAddress || 'Ready' }}</strong>
+			<div class="meta-chip verse-day-chip">
+				<span class="label">Verse of the Day</span>
+				<p class="verse-day-text">{{ verseOfDayText }}</p>
+				<p class="verse-day-ref">{{ verseOfDay.ref }}</p>
 			</div>
 		</div>
 
@@ -164,14 +177,61 @@
 		</nz-tabs>
 	</section>
 
-	<div class="tile-grid">
-		<a routerLink="/who-i-am" class="tile panel">
-			<h2>Identity</h2>
-			<p>Anchor your heart in what God says about you.</p>
-		</a>
-
-	</div>
 </section>
+
+@if (isBattlePickerOpen) {
+	<div class="battle-picker-backdrop" (click)="closeBattlePicker()">
+		<section class="battle-picker" role="dialog" aria-modal="true" aria-labelledby="battle-picker-title" (click)="$event.stopPropagation()">
+			<div class="battle-picker-head">
+				<div>
+					<p class="battle-picker-kicker">{{ selectedBattles.length }} / {{ maxBattles }} selected</p>
+					<h2 id="battle-picker-title">What are you battling today?</h2>
+					<p>Choose up to 5 areas you want God's Word to speak into.</p>
+				</div>
+				<button type="button" class="battle-picker-close" aria-label="Close battle picker" (click)="closeBattlePicker()">&#x2715;</button>
+			</div>
+
+			<div class="battle-selected-panel">
+				<p>Selected</p>
+				@if (selectedBattles.length) {
+					<div class="battle-selected-row">
+						@for (battle of selectedBattles; track battle) {
+							<button type="button" class="selected-battle-chip" (click)="removeBattle(battle)" [attr.aria-label]="'Remove ' + battle">
+								<span>{{ battle }}</span>
+								<span aria-hidden="true">&#x2715;</span>
+							</button>
+						}
+					</div>
+				} @else {
+					<p class="battle-selected-empty">Choose today's battles below.</p>
+				}
+			</div>
+
+			<div class="battle-picker-grid">
+				@for (item of emotions; track item.emotion) {
+					<button
+						type="button"
+						class="battle-option"
+						[class.selected]="isBattleSelected(item.emotion)"
+						[disabled]="isBattleDisabled(item.emotion)"
+						(click)="toggleBattle(item.emotion)"
+						>
+						{{ item.emotion }}
+					</button>
+				}
+			</div>
+
+			<div class="battle-picker-actions">
+				<button type="button" class="battle-clear" (click)="clearBattles()" [disabled]="isSavingBattles || !selectedBattles.length">
+					Clear
+				</button>
+				<button type="button" class="battle-save" (click)="saveBattles()" [disabled]="isSavingBattles">
+					Shape My Scroll
+				</button>
+			</div>
+		</section>
+	</div>
+}
 
 @if (modalItem) {
 	<div class="item-modal-backdrop" (click)="closeModal()">

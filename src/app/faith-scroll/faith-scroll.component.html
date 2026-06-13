@@ -1,4 +1,9 @@
-<main class="faith-scroll-shell" [class.chips-expanded]="moreCategoriesOpen" aria-label="Faith Scroll">
+<main
+  class="faith-scroll-shell"
+  [class.chips-expanded]="moreCategoriesOpen"
+  [class.identity-chips-visible]="shouldShowIdentityChips()"
+  aria-label="Faith Scroll"
+  >
   <div class="scroll-glow glow-one"></div>
   <div class="scroll-glow glow-two"></div>
 
@@ -25,6 +30,21 @@
         {{ moreCategoriesOpen ? '−' : '+' }}
       </button>
     </div>
+    @if (shouldShowIdentityChips()) {
+      <p class="identity-chip-title">Who I Am in Christ</p>
+      <div class="scroll-chip-row identity-chip-row" aria-label="Who I Am in Christ sections">
+        @for (chip of identityChips; track chip.label) {
+          <button
+            type="button"
+            class="scroll-chip identity-chip"
+            [class.active]="chip.categoryName === selectedCategory"
+            (click)="selectCategory(chip.categoryName)"
+            >
+            {{ chip.label }}
+          </button>
+        }
+      </div>
+    }
   </nav>
 
   @if (moreCategoriesOpen) {
@@ -32,7 +52,7 @@
       <div class="scroll-chip-overlay-header">
         <p>Choose Scroll</p>
         <button type="button" class="chip-overlay-close" aria-label="Close categories" (click)="toggleMoreCategories()">
-          −
+          ×
         </button>
       </div>
 
@@ -82,6 +102,7 @@
         >
         <div
           class="verse-card"
+          [class.is-static-text-card]="verse.staticText"
           [ngClass]="getVerseLengthClass(verse)"
           >
           <img src="assets/logo.png" alt="" class="verse-logo-mark" aria-hidden="true">
@@ -91,12 +112,15 @@
             (touchend)="onVerseCardTouchEnd($event)"
             (wheel)="onVerseCardWheel($event)"
             >
+            @if (verse.sectionTitle) {
+              <p class="verse-section-title">{{ verse.sectionTitle }}</p>
+            }
             @if (!verse.error) {
               <p class="verse-text">{{ verse.text }}</p>
               <p class="verse-ref">{{ verse.reference }}@if (verse.version) {
                 <span> · {{ verse.version }}</span>
               }</p>
-              @if (verse.loaded) {
+              @if (verse.loaded && !verse.staticText) {
                 <div class="verse-actions">
                   <button
                     type="button"

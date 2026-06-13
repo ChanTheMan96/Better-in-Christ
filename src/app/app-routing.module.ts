@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WhoIAmComponent } from './who-i-am/who-i-am.component';
 import { SurrenderComponent } from './surrender/surrender.component';
 import { PrayerComponent } from './prayer/prayer.component';
 import { DonateComponent } from './donate/donate.component';
@@ -9,13 +8,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'faith-scroll', pathMatch: 'full' },
-  {
-    path: 'parent-blessings',
-    loadChildren: () =>
-      import('./features/parent-blessings/parent-blessings.module').then((m) => m.ParentBlessingsModule)
-  },
-  { path: 'who-i-am', component: WhoIAmComponent },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'surrender', component: SurrenderComponent },
   { path: 'prayer', component: PrayerComponent },
   {

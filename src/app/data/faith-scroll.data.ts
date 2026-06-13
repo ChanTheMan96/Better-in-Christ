@@ -1,6 +1,9 @@
 export interface FaithScrollCategory {
   name: string;
   refs: string[];
+  sectionTitleByRef?: Record<string, string>;
+  textByRef?: Record<string, string>;
+  preserveOrder?: boolean;
 }
 
 export const JESUS_WORDS_CATEGORY: FaithScrollCategory = {
@@ -41,6 +44,136 @@ export const JESUS_WORDS_CATEGORY: FaithScrollCategory = {
     'John 16:33',
   ],
 };
+
+const ACCEPTED_TITLE = 'I Am Accepted...';
+const SECURE_TITLE = 'I Am Secure...';
+const SIGNIFICANT_TITLE = 'I Am Significant...';
+
+export const WHO_I_AM_IN_CHRIST_CATEGORY = 'Who I Am in Christ';
+export const WHO_I_AM_ACCEPTED_CATEGORY = 'I Am Accepted';
+export const WHO_I_AM_SECURE_CATEGORY = 'I Am Secure';
+export const WHO_I_AM_SIGNIFICANT_CATEGORY = 'I Am Significant';
+
+const WHO_I_AM_ACCEPTED_REFS = [
+  'John 1:12',
+  'John 15:15',
+  'Romans 5:1',
+  '1 Corinthians 6:17',
+  '1 Corinthians 6:19-20',
+  '1 Corinthians 12:27',
+  'Ephesians 1:3-8',
+  'Colossians 1:13-14',
+  'Colossians 2:9-10',
+  'Hebrews 4:14-16',
+];
+
+const WHO_I_AM_SECURE_REFS = [
+  'Romans 8:1-2',
+  'Romans 8:28',
+  'Romans 8:31-39',
+  '2 Corinthians 1:21-22',
+  'Colossians 3:1-4',
+  'Philippians 1:6',
+  'Philippians 3:20',
+  '2 Timothy 1:7',
+  '1 John 5:18',
+];
+
+const WHO_I_AM_SIGNIFICANT_REFS = [
+  'John 15:5',
+  'John 15:16',
+  '1 Corinthians 3:16',
+  '2 Corinthians 5:17-21',
+  'Ephesians 2:6',
+  'Ephesians 2:10',
+  'Ephesians 3:12',
+  'Philippians 4:13',
+];
+
+function sectionMap(refs: string[], title: string): Record<string, string> {
+  return Object.fromEntries(refs.map((ref) => [ref, title]));
+}
+
+const WHO_I_AM_ACCEPTED_TEXT: Record<string, string> = {
+  'John 1:12': "I am God's child.",
+  'John 15:15': 'As a disciple, I am a friend of Jesus Christ.',
+  'Romans 5:1': 'I have been justified.',
+  '1 Corinthians 6:17': 'I am united with the Lord, and I am one with Him in spirit.',
+  '1 Corinthians 6:19-20': 'I have been bought with a price and I belong to God.',
+  '1 Corinthians 12:27': "I am a member of Christ's body.",
+  'Ephesians 1:3-8': 'I have been chosen by God and adopted as His child.',
+  'Colossians 1:13-14': 'I have been redeemed and forgiven of all my sins.',
+  'Colossians 2:9-10': 'I am complete in Christ.',
+  'Hebrews 4:14-16': 'I have direct access to the throne of grace through Jesus Christ.',
+};
+
+const WHO_I_AM_SECURE_TEXT: Record<string, string> = {
+  'Romans 8:1-2': 'I am free from condemnation.',
+  'Romans 8:28': 'I am assured that God works for my good in all circumstances.',
+  'Romans 8:31-39': 'I cannot be separated from the love of God.',
+  '2 Corinthians 1:21-22': 'I have been established, anointed and sealed by God.',
+  'Colossians 3:1-4': 'I am hidden with Christ in God.',
+  'Philippians 1:6': 'I am confident that God will complete the good work He started in me.',
+  'Philippians 3:20': 'I am a citizen of heaven.',
+  '2 Timothy 1:7': 'I have not been given a spirit of fear but of power, love and a sound mind.',
+  '1 John 5:18': 'I am born of God and the evil one cannot touch me.',
+};
+
+const WHO_I_AM_SIGNIFICANT_TEXT: Record<string, string> = {
+  'John 15:5': 'I am a branch of Jesus Christ, the true vine, and a channel of His life.',
+  'John 15:16': 'I have been chosen and appointed to bear fruit.',
+  '1 Corinthians 3:16': "I am God's temple.",
+  '2 Corinthians 5:17-21': 'I am a minister of reconciliation for God.',
+  'Ephesians 2:6': 'I am seated with Jesus Christ in the heavenly realm.',
+  'Ephesians 2:10': "I am God's workmanship.",
+  'Ephesians 3:12': 'I may approach God with freedom and confidence.',
+  'Philippians 4:13': 'I can do all things through Christ, who strengthens me.',
+};
+
+const WHO_I_AM_TEXT_BY_REF: Record<string, string> = {
+  ...WHO_I_AM_ACCEPTED_TEXT,
+  ...WHO_I_AM_SECURE_TEXT,
+  ...WHO_I_AM_SIGNIFICANT_TEXT,
+};
+
+export const WHO_I_AM_CATEGORIES: FaithScrollCategory[] = [
+  {
+    name: WHO_I_AM_IN_CHRIST_CATEGORY,
+    refs: [
+      ...WHO_I_AM_ACCEPTED_REFS,
+      ...WHO_I_AM_SECURE_REFS,
+      ...WHO_I_AM_SIGNIFICANT_REFS,
+    ],
+    sectionTitleByRef: {
+      ...sectionMap(WHO_I_AM_ACCEPTED_REFS, ACCEPTED_TITLE),
+      ...sectionMap(WHO_I_AM_SECURE_REFS, SECURE_TITLE),
+      ...sectionMap(WHO_I_AM_SIGNIFICANT_REFS, SIGNIFICANT_TITLE),
+    },
+    textByRef: WHO_I_AM_TEXT_BY_REF,
+    preserveOrder: true,
+  },
+  {
+    name: WHO_I_AM_ACCEPTED_CATEGORY,
+    refs: WHO_I_AM_ACCEPTED_REFS,
+    sectionTitleByRef: sectionMap(WHO_I_AM_ACCEPTED_REFS, ACCEPTED_TITLE),
+    textByRef: WHO_I_AM_ACCEPTED_TEXT,
+    preserveOrder: true,
+  },
+  {
+    name: WHO_I_AM_SECURE_CATEGORY,
+    refs: WHO_I_AM_SECURE_REFS,
+    sectionTitleByRef: sectionMap(WHO_I_AM_SECURE_REFS, SECURE_TITLE),
+    textByRef: WHO_I_AM_SECURE_TEXT,
+    preserveOrder: true,
+  },
+  {
+    name: WHO_I_AM_SIGNIFICANT_CATEGORY,
+    refs: WHO_I_AM_SIGNIFICANT_REFS,
+    sectionTitleByRef: sectionMap(WHO_I_AM_SIGNIFICANT_REFS, SIGNIFICANT_TITLE),
+    textByRef: WHO_I_AM_SIGNIFICANT_TEXT,
+    preserveOrder: true,
+  },
+];
 
 export const FAITH_SCROLL_CATEGORIES: FaithScrollCategory[] = [
   {

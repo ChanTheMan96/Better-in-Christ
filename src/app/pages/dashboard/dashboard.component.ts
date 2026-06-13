@@ -3,9 +3,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ClerkService } from 'src/app/services/clerk.service';
 import { ApiService } from 'src/app/services/api.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { firstValueFrom, of, Subject } from 'rxjs';
+import { catchError, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
+import { DAILY_VERSES, DailyVerse } from 'src/app/data/daily-verse.data';
+import { BibleService } from 'src/app/services/bible.service';
+import { BibleVersionService } from 'src/app/services/bible-version.service';
+import { EMOTIONS, EmotionCategory } from 'src/app/data/emotions.data';
+import { UserBattlesService } from 'src/app/services/user-battles.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,6 +19,14 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs';
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  readonly emotions: EmotionCategory[] = EMOTIONS;
+  readonly maxBattles = 5;
+  readonly verseOfDay = this.getDailyVerse();
+  verseOfDayText = 'Loading verse...';
+  selectedBattles: string[] = [];
+  quickChips: string[] = ['Anxiety', 'Shame'];
+  isBattlePickerOpen = false;
+  isSavingBattles = false;
   displayName = '';
   user: any = null;
   dbUser: any = null;
@@ -31,12 +44,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
   journalBody = '';
   private readonly destroy$ = new Subject<void>();
 
+  get battleQuestion(): string {
+    const name = this.user?.firstName || this.displayName?.split(' ')[0] || '';
+    return name
+      ? `${name}, what are you battling today?`
+      : 'What are you battling today?';
+  }
+
   constructor(
     private clerkService: ClerkService,
     private apiService: ApiService,
+    private bibleService: BibleService,
+    private bibleVersions: BibleVersionService,
+    private userBattlesService: UserBattlesService,
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.bibleVersions.selectedVersion$
+      .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => this.loadVerseOfDay());
+
     await this.clerkService.load();
     this.user = this.clerkService.user;
 
@@ -54,6 +81,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
 
       await Promise.allSettled([
+        this.loadTodayBattles(),
         this.loadSavedVerses(),
         this.loadPrayerRequests(),
         this.loadJournalEntries(),
@@ -84,6 +112,118 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   closeModal(): void {
     this.modalItem = null;
+  }
+
+  openBattlePicker(): void {
+    this.isBattlePickerOpen = true;
+  }
+
+  closeBattlePicker(): void {
+    this.isBattlePickerOpen = false;
+  }
+
+  toggleBattle(emotion: string): void {
+    const exists = this.selectedBattles.includes(emotion);
+
+    if (exists) {
+      this.selectedBattles = this.selectedBattles.filter(
+        (battle) => battle !== emotion,
+      );
+      return;
+    }
+
+    if (this.selectedBattles.length >= this.maxBattles) {
+      return;
+    }
+
+    this.selectedBattles = [...this.selectedBattles, emotion];
+  }
+
+  isBattleSelected(emotion: string): boolean {
+    return this.selectedBattles.includes(emotion);
+  }
+
+  removeBattle(emotion: string): void {
+    this.selectedBattles = this.selectedBattles.filter(
+      (battle) => battle !== emotion,
+    );
+  }
+
+  isBattleDisabled(emotion: string): boolean {
+    return (
+      this.selectedBattles.length >= this.maxBattles &&
+      !this.isBattleSelected(emotion)
+    );
+  }
+
+  async saveBattles(): Promise<void> {
+    if (!this.dbUser?.id || this.isSavingBattles) {
+      return;
+    }
+
+    this.isSavingBattles = true;
+
+    try {
+      await firstValueFrom(
+        this.userBattlesService.saveTodayBattles(
+          this.dbUser.id,
+          this.selectedBattles,
+        ),
+      );
+      this.refreshQuickChips(this.selectedBattles);
+      this.closeBattlePicker();
+    } catch (error) {
+      console.error('Save today battles failed:', error);
+    } finally {
+      this.isSavingBattles = false;
+    }
+  }
+
+  async loadTodayBattles(): Promise<void> {
+    if (!this.dbUser?.id) {
+      this.selectedBattles = [];
+      this.refreshQuickChips([]);
+      return;
+    }
+
+    try {
+      const result = await firstValueFrom(
+        this.userBattlesService.getTodayBattles(this.dbUser.id),
+      );
+      const battles = this.normalizeBattles(result);
+      this.selectedBattles = battles.slice(0, this.maxBattles);
+      this.refreshQuickChips(this.selectedBattles);
+    } catch (error) {
+      console.error('Load today battles failed:', error);
+      this.refreshQuickChips(this.selectedBattles);
+    }
+  }
+
+  async clearBattles(): Promise<void> {
+    if (!this.dbUser?.id || this.isSavingBattles) {
+      return;
+    }
+
+    this.isSavingBattles = true;
+
+    try {
+      await firstValueFrom(
+        this.userBattlesService.clearTodayBattles(this.dbUser.id),
+      );
+      this.selectedBattles = [];
+      this.refreshQuickChips([]);
+    } catch (error) {
+      console.error('Clear today battles failed:', error);
+    } finally {
+      this.isSavingBattles = false;
+    }
+  }
+
+  getQuickChipCategory(chip: string): string {
+    const aliases: Record<string, string> = {
+      Shame: 'Shame & Guilt',
+    };
+    return aliases[chip] || chip;
   }
 
   async checkInStreak(): Promise<void> {
@@ -215,6 +355,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
     await this.loadJournalEntries();
   }
 
+  private getDailyVerse(): DailyVerse {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor(
+      (now.getTime() - start.getTime()) / 86_400_000,
+    );
+    return DAILY_VERSES[(dayOfYear - 1) % DAILY_VERSES.length];
+  }
+
+  private loadVerseOfDay(): void {
+    this.verseOfDayText = 'Loading verse...';
+    this.bibleService
+      .getPassage(this.verseOfDay.ref)
+      .pipe(catchError(() => of(null)), takeUntil(this.destroy$))
+      .subscribe((passage) => {
+        this.verseOfDayText = passage
+          ? this.bibleService.formatPassageQuote(passage)
+          : 'This verse did not load.';
+      });
+  }
+
   private async runStreakCheckIn(): Promise<void> {
     if (!this.dbUser?.id || this.isCheckingIn) {
       return;
@@ -284,5 +445,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
       body: entry.body || '',
       createdAt: entry.createdAt || entry.created_at || null,
     };
+  }
+
+  private refreshQuickChips(battles: string[]): void {
+    this.quickChips = battles.length ? [...battles] : ['Anxiety', 'Shame'];
+  }
+
+  private normalizeBattles(result: any): string[] {
+    const rawBattles =
+      result?.battles ||
+      result?.data?.battles ||
+      result?.userBattles ||
+      result?.todayBattles ||
+      (Array.isArray(result) ? result : []);
+
+    return (Array.isArray(rawBattles) ? rawBattles : [])
+      .filter((battle) => typeof battle === 'string')
+      .map((battle) => battle.trim())
+      .filter(Boolean);
   }
 }

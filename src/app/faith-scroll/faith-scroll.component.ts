@@ -6,17 +6,24 @@ import {
   ViewChild,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { of, Subject } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { firstValueFrom, of, Subject } from 'rxjs';
 import {
   catchError,
   distinctUntilChanged,
   map,
+  skip,
   takeUntil,
 } from 'rxjs/operators';
 import {
   FAITH_SCROLL_CATEGORIES,
   FaithScrollCategory,
   JESUS_WORDS_CATEGORY,
+  WHO_I_AM_ACCEPTED_CATEGORY,
+  WHO_I_AM_CATEGORIES,
+  WHO_I_AM_IN_CHRIST_CATEGORY,
+  WHO_I_AM_SECURE_CATEGORY,
+  WHO_I_AM_SIGNIFICANT_CATEGORY,
 } from '../data/faith-scroll.data';
 import { EMOTIONS } from '../data/emotions.data';
 import { GROWTH_TRAITS } from '../data/growth.data';
@@ -27,7 +34,9 @@ import {
 } from '../services/faith-scroll-selection.service';
 import { ApiService } from '../services/api.service';
 import { BibleService } from '../services/bible.service';
+import { BibleVersionService } from '../services/bible-version.service';
 import { ClerkService } from '../services/clerk.service';
+import { UserBattlesService } from '../services/user-battles.service';
 
 interface FaithScrollVerse {
   reference: string;
@@ -35,6 +44,8 @@ interface FaithScrollVerse {
   version: string;
   loaded: boolean;
   error?: boolean;
+  sectionTitle?: string;
+  staticText?: boolean;
 }
 
 interface SavedVerse {
@@ -76,13 +87,17 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   dbUser: any = null;
   categoryGroups: FaithScrollCategoryGroup[] = [];
   moreCategoriesOpen = false;
+  identityChipsOpen = false;
   moreChipGroups: ScrollChipGroup[] = [];
-  readonly primaryChips: ScrollChip[] = [
-    { label: 'For You', categoryName: 'Faith' },
+  readonly identityParentCategory = WHO_I_AM_IN_CHRIST_CATEGORY;
+  readonly identityChips: ScrollChip[] = [
+    { label: 'Accepted', categoryName: WHO_I_AM_ACCEPTED_CATEGORY },
+    { label: 'Secure', categoryName: WHO_I_AM_SECURE_CATEGORY },
+    { label: 'Significant', categoryName: WHO_I_AM_SIGNIFICANT_CATEGORY },
+  ];
+  primaryChips: ScrollChip[] = [
     { label: 'Anxiety', categoryName: 'Anxiety' },
     { label: 'Shame', categoryName: 'Shame & Guilt' },
-    { label: 'Lust', categoryName: 'Lust' },
-    { label: 'Prayer', categoryName: 'Prayer' },
   ];
 
   private readonly destroy$ = new Subject<void>();
@@ -95,9 +110,12 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
   constructor(
     private bibleService: BibleService,
+    private bibleVersions: BibleVersionService,
     private selection: FaithScrollSelectionService,
     private clerkService: ClerkService,
     private apiService: ApiService,
+    private route: ActivatedRoute,
+    private userBattlesService: UserBattlesService,
   ) {}
 
   ngOnInit(): void {
@@ -117,13 +135,26 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.selection.setCategoryGroups(this.categoryGroups);
     this.categories = this.selection.categories;
     this.moreChipGroups = this.buildMoreChipGroups();
-    this.selection.resetToFaith();
+    this.selection.select(this.getInitialScrollCategory());
     this.selection.selected$
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe((categoryName) => {
         this.selectedCategory = categoryName;
         this.loadCategory(categoryName);
       });
+
+    this.route.queryParamMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        const categoryName = this.normalizeScrollCategory(params.get('scroll'));
+        if (categoryName && categoryName !== this.selection.selected) {
+          this.selection.select(categoryName);
+        }
+      });
+
+    this.bibleVersions.selectedVersion$
+      .pipe(distinctUntilChanged(), skip(1), takeUntil(this.destroy$))
+      .subscribe(() => this.loadCategory(this.selectedCategory));
   }
 
   ngOnDestroy(): void {
@@ -299,6 +330,10 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.moreCategoriesOpen = !this.moreCategoriesOpen;
   }
 
+  shouldShowIdentityChips(): boolean {
+    return this.identityChipsOpen || this.isIdentityCategory(this.selectedCategory);
+  }
+
   isPrimaryChipActive(chip: ScrollChip): boolean {
     return this.selectedCategory === chip.categoryName;
   }
@@ -311,18 +346,39 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     const primaryCategoryNames = new Set(
       this.primaryChips.map((chip) => chip.categoryName),
     );
+    const identityChildNames = new Set(
+      this.identityChips.map((chip) => chip.categoryName),
+    );
 
     return this.categoryGroups
       .map((group) => ({
         label: group.label,
         chips: group.categories
           .filter((category) => !primaryCategoryNames.has(category.name))
+          .filter((category) => !identityChildNames.has(category.name))
           .map((category) => ({
             label: category.name,
             categoryName: category.name,
           })),
       }))
       .filter((group) => group.chips.length > 0);
+  }
+
+  private async loadTodayBattleChips(): Promise<void> {
+    if (!this.dbUser?.id) {
+      this.setPrimaryChips([]);
+      return;
+    }
+
+    try {
+      const result = await firstValueFrom(
+        this.userBattlesService.getTodayBattles(this.dbUser.id),
+      );
+      this.setPrimaryChips(this.normalizeBattles(result));
+    } catch (error) {
+      console.error('Load Faith Scroll battle chips failed:', error);
+      this.setPrimaryChips([]);
+    }
   }
 
   getVerseLengthClass(verse: FaithScrollVerse): string {
@@ -373,19 +429,24 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     const category = this.findCategory(categoryName);
     this.loadToken += 1;
     const token = this.loadToken;
-    const refs = this.shuffleRefs(this.getCategoryRefs(category));
+    const refs = category.preserveOrder
+      ? this.getCategoryRefs(category)
+      : this.shuffleRefs(this.getCategoryRefs(category));
 
     this.selectedCategory = category.name;
+    this.identityChipsOpen = this.isIdentityCategory(category.name);
     this.loading = true;
     this.emptyMessage = '';
     this.inFlightRefs.clear();
     this.seenRefs.clear();
     this.verses = refs.map((ref) => ({
       reference: ref,
-      text: 'Loading Scripture...',
+      text: category.textByRef?.[ref] || 'Loading Scripture...',
       version: '',
-      loaded: false,
+      loaded: !!category.textByRef?.[ref],
       error: false,
+      sectionTitle: category.sectionTitleByRef?.[ref],
+      staticText: !!category.textByRef?.[ref],
     }));
     this.activeIndex = 0;
 
@@ -396,6 +457,10 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
           : 'No verses found for this selection.';
       this.loading = false;
       return;
+    }
+
+    if (this.verses.every((verse) => verse.loaded)) {
+      this.loading = false;
     }
 
     setTimeout(() => {
@@ -409,6 +474,29 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       this.categories.find((category) => category.name === categoryName) ||
       this.categories[0]
     );
+  }
+
+  private getInitialScrollCategory(): string {
+    return this.normalizeScrollCategory(
+      this.route.snapshot.queryParamMap.get('scroll'),
+    ) || 'Faith';
+  }
+
+  private normalizeScrollCategory(categoryName: string | null): string | null {
+    if (!categoryName) return null;
+
+    const aliases: Record<string, string> = {
+      Doubt: 'Spiritual Doubt',
+      Tired: 'Work Burnout',
+      Shame: 'Shame & Guilt',
+      Accepted: WHO_I_AM_ACCEPTED_CATEGORY,
+      Secure: WHO_I_AM_SECURE_CATEGORY,
+      Significant: WHO_I_AM_SIGNIFICANT_CATEGORY,
+    };
+    const requestedName = aliases[categoryName] || categoryName;
+    return this.categories.some((category) => category.name === requestedName)
+      ? requestedName
+      : null;
   }
 
   private buildCategoryGroups(): FaithScrollCategoryGroup[] {
@@ -474,6 +562,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
     return [
       { label: 'Featured', categories: featuredCategories },
+      { label: 'Identity', categories: WHO_I_AM_CATEGORIES },
       { label: 'Emotions', categories: emotionCategories },
       { label: 'Growth', categories: growthCategories },
     ];
@@ -498,6 +587,8 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       return;
 
     const requestedRef = verse.reference;
+    const sectionTitle = verse.sectionTitle;
+    const staticText = verse.staticText;
     this.inFlightRefs.add(requestedRef);
 
     this.bibleService
@@ -515,6 +606,8 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
             version: passage.translation_name || passage.translation_id || '',
             loaded: true,
             error: false,
+            sectionTitle,
+            staticText,
           };
         }),
         catchError(() =>
@@ -524,6 +617,8 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
             version: '',
             loaded: true,
             error: true,
+            sectionTitle,
+            staticText,
           }),
         ),
         takeUntil(this.destroy$),
@@ -583,6 +678,45 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     return shuffled;
   }
 
+  private isIdentityCategory(categoryName: string): boolean {
+    return (
+      categoryName === WHO_I_AM_IN_CHRIST_CATEGORY ||
+      this.identityChips.some((chip) => chip.categoryName === categoryName)
+    );
+  }
+
+  private setPrimaryChips(battles: string[]): void {
+    const chips = battles.length ? battles : ['Anxiety', 'Shame'];
+    this.primaryChips = chips.slice(0, 5).map((battle) => ({
+      label: battle,
+      categoryName: this.getBattleCategoryName(battle),
+    }));
+    this.moreChipGroups = this.buildMoreChipGroups();
+  }
+
+  private getBattleCategoryName(battle: string): string {
+    const aliases: Record<string, string> = {
+      Shame: 'Shame & Guilt',
+      Doubt: 'Spiritual Doubt',
+      Tired: 'Work Burnout',
+    };
+    return aliases[battle] || battle;
+  }
+
+  private normalizeBattles(result: any): string[] {
+    const rawBattles =
+      result?.battles ||
+      result?.data?.battles ||
+      result?.userBattles ||
+      result?.todayBattles ||
+      (Array.isArray(result) ? result : []);
+
+    return (Array.isArray(rawBattles) ? rawBattles : [])
+      .filter((battle) => typeof battle === 'string')
+      .map((battle) => battle.trim())
+      .filter(Boolean);
+  }
+
   private markSeen(index: number): void {
     const verse = this.verses[index];
     if (verse) this.seenRefs.add(verse.reference);
@@ -614,6 +748,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
     if (!this.user) {
       this.dbUser = null;
+      this.setPrimaryChips([]);
       await this.loadSavedVerses();
       if (this.selectedCategory === FAITH_SCROLL_FAVORITES_CATEGORY) {
         this.loadCategory(this.selectedCategory);
@@ -623,7 +758,10 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
     const result = await this.apiService.createOrGetUser(this.user);
     this.dbUser = result.user;
-    await this.loadSavedVerses();
+    await Promise.allSettled([
+      this.loadSavedVerses(),
+      this.loadTodayBattleChips(),
+    ]);
 
     if (this.selectedCategory === FAITH_SCROLL_FAVORITES_CATEGORY) {
       this.loadCategory(this.selectedCategory);
