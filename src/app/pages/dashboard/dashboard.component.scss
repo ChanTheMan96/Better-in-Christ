@@ -172,6 +172,10 @@
 }
 
 .verse-day-ref {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
 	margin: 14px 0 0;
 	color: #f6d99d;
 	font-size: 0.95rem;
@@ -247,18 +251,31 @@
 		0 14px 30px rgba(0, 0, 0, 0.16);
 }
 
+.content-tabs ::ng-deep .ant-tabs-nav-wrap {
+	flex: 1;
+	min-width: 0;
+	width: 100%;
+}
+
+.content-tabs ::ng-deep .ant-tabs-nav-operations {
+	display: none;
+}
 
 .content-tabs ::ng-deep .ant-tabs-nav::before {
 	display: none;
 }
 
 .content-tabs ::ng-deep .ant-tabs-nav-list {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	flex: 1;
 	width: 100%;
 	gap: 8px;
+	transform: none !important;
 }
 
 .content-tabs ::ng-deep .ant-tabs-tab {
-	flex: 1 1 0;
+	width: 100%;
 	margin: 0;
 	padding: 0;
 	border: 1px solid rgba(255, 250, 241, 0.08);
@@ -600,6 +617,9 @@
 }
 
 .saved-item .ref {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
 	margin: 0;
 	color: var(--app-accent);
 	font-size: 0.9rem;
@@ -917,8 +937,7 @@
 	}
 
 	.content-tabs ::ng-deep .ant-tabs-nav-list {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 4px;
 		width: 100%;
 		min-width: 100%;

@@ -42,6 +42,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     'Real strength begins where self-rule ends.',
   ];
   verseOfDayText = 'Loading verse...';
+  verseOfDayVersion = '';
   selectedBattles: string[] = [];
   quickChips: string[] = ['Anxiety', 'Shame'];
   isBattlePickerOpen = false;
@@ -53,16 +54,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   savedTruthsPage = 1;
   readonly savedTruthsPageSize = 5;
   prayerRequests: any[] = [];
-  journalEntries: any[] = [];
+  prayerRequestsPage = 1;
+  readonly prayerRequestsPageSize = 5;
   streak = 0;
   isCheckingIn = false;
   modalItem: { title: string; text: string } | null = null;
 
   prayerTitle = '';
   prayerBody = '';
-  journalTitle = '';
-  journalBody = '';
   private readonly destroy$ = new Subject<void>();
+  private savedVersesLoadToken = 0;
 
   get battleQuestion(): string {
     const name = this.user?.firstName || this.displayName?.split(' ')[0] || '';
@@ -87,6 +88,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.savedVerses.length > this.savedTruthsPageSize;
   }
 
+  get prayerRequestsTotalPages(): number {
+    return Math.max(
+      1,
+      Math.ceil(this.prayerRequests.length / this.prayerRequestsPageSize),
+    );
+  }
+
+  get pagedPrayerRequests(): any[] {
+    const start = (this.prayerRequestsPage - 1) * this.prayerRequestsPageSize;
+    return this.prayerRequests.slice(
+      start,
+      start + this.prayerRequestsPageSize,
+    );
+  }
+
+  get shouldShowPrayerRequestsPagination(): boolean {
+    return this.prayerRequests.length > this.prayerRequestsPageSize;
+  }
+
   constructor(
     private clerkService: ClerkService,
     private apiService: ApiService,
@@ -99,7 +119,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.bibleVersions.selectedVersion$
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe(() => this.loadVerseOfDay());
+      .subscribe((bibleId) => {
+        this.loadVerseOfDay(bibleId);
+        if (this.dbUser?.id) {
+          this.loadSavedVerses(bibleId);
+        }
+      });
 
     await this.clerkService.load();
     this.user = this.clerkService.user;
@@ -126,7 +151,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadTodayBattles(),
         this.loadSavedVerses(),
         this.loadPrayerRequests(),
-        this.loadJournalEntries(),
       ]);
     }
 
@@ -262,7 +286,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return aliases[chip] || chip;
   }
 
-  async loadSavedVerses(): Promise<void> {
+  getSavedVerseTitle(verse: any): string {
+    return verse?.version
+      ? `${verse.verseRef} ${verse.version}`
+      : verse?.verseRef || '';
+  }
+
+  async loadSavedVerses(bibleId = this.bibleVersions.getSelectedVersion()): Promise<void> {
+    const loadToken = ++this.savedVersesLoadToken;
+
     if (!this.dbUser?.id) {
       this.savedVerses = [];
       this.savedTruthsPage = 1;
@@ -276,9 +308,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
       result?.data ||
       (Array.isArray(result) ? result : []);
 
-    this.savedVerses = (Array.isArray(rawVerses) ? rawVerses : []).map(
+    const normalizedVerses = (Array.isArray(rawVerses) ? rawVerses : []).map(
       (verse: any) => this.normalizeSavedVerse(verse),
     );
+
+    const hydratedVerses = await Promise.all(
+      normalizedVerses.map((verse: any) => this.hydrateSavedVerse(verse, bibleId)),
+    );
+
+    if (loadToken !== this.savedVersesLoadToken) {
+      return;
+    }
+
+    this.savedVerses = hydratedVerses;
     this.savedTruthsPage = Math.min(
       this.savedTruthsPage,
       this.savedTruthsTotalPages,
@@ -295,6 +337,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   async loadPrayerRequests(): Promise<void> {
     if (!this.dbUser?.id) {
       this.prayerRequests = [];
+      this.prayerRequestsPage = 1;
       return;
     }
 
@@ -309,24 +352,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.prayerRequests = (Array.isArray(rawRequests) ? rawRequests : []).map(
       (request: any) => this.normalizePrayerRequest(request),
     );
+    this.prayerRequestsPage = Math.min(
+      this.prayerRequestsPage,
+      this.prayerRequestsTotalPages,
+    );
   }
 
-  async loadJournalEntries(): Promise<void> {
-    if (!this.dbUser?.id) {
-      this.journalEntries = [];
-      return;
-    }
-
-    const result = await this.apiService.getJournalEntries(this.dbUser.id);
-    const rawEntries =
-      result?.journal ||
-      result?.journalEntries ||
-      result?.entries ||
-      result?.data ||
-      (Array.isArray(result) ? result : []);
-
-    this.journalEntries = (Array.isArray(rawEntries) ? rawEntries : []).map(
-      (entry: any) => this.normalizeJournalEntry(entry),
+  goToPrayerRequestsPage(page: number): void {
+    this.prayerRequestsPage = Math.max(
+      1,
+      Math.min(page, this.prayerRequestsTotalPages),
     );
   }
 
@@ -370,31 +405,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     await this.loadPrayerRequests();
   }
 
-  async addJournalEntry(): Promise<void> {
-    if (
-      !this.dbUser?.id ||
-      !this.journalTitle.trim() ||
-      !this.journalBody.trim()
-    ) {
-      return;
-    }
-
-    await this.apiService.createJournalEntry(
-      this.dbUser.id,
-      this.journalTitle.trim(),
-      this.journalBody.trim(),
-    );
-
-    this.journalTitle = '';
-    this.journalBody = '';
-    await this.loadJournalEntries();
-  }
-
-  async removeJournalEntry(id: number): Promise<void> {
-    await this.apiService.deleteJournalEntry(id);
-    await this.loadJournalEntries();
-  }
-
   private getDailyVerse(): DailyVerse {
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 0);
@@ -404,15 +414,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return DAILY_VERSES[(dayOfYear - 1) % DAILY_VERSES.length];
   }
 
-  private loadVerseOfDay(): void {
+  private loadVerseOfDay(bibleId = this.bibleVersions.getSelectedVersion()): void {
     this.verseOfDayText = 'Loading verse...';
+    this.verseOfDayVersion = '';
     this.bibleService
-      .getPassage(this.verseOfDay.ref)
+      .getPassage(this.verseOfDay.ref, bibleId)
       .pipe(catchError(() => of(null)), takeUntil(this.destroy$))
       .subscribe((passage) => {
         this.verseOfDayText = passage
           ? this.bibleService.formatPassageQuote(passage)
           : 'This verse did not load.';
+        this.verseOfDayVersion = passage
+          ? passage.translation_name || passage.translation_id || ''
+          : '';
       });
   }
 
@@ -445,6 +459,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
       id: verse.id,
       verseRef,
       verseText: verse.verseText || verse.verse_text || verse.text || '',
+      version:
+        verse.version ||
+        verse.translationName ||
+        verse.translation_name ||
+        verse.bibleVersion ||
+        verse.bible_version ||
+        '',
       category:
         verse.category ||
         verse.verseCategory ||
@@ -453,6 +474,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
         verse.scroll_category ||
         this.inferSavedVerseCategory(verseRef),
     };
+  }
+
+  private async hydrateSavedVerse(verse: any, bibleId: string): Promise<any> {
+    if (!verse.verseRef) {
+      return verse;
+    }
+
+    try {
+      const passage = await firstValueFrom(
+        this.bibleService.getPassage(verse.verseRef, bibleId),
+      );
+      const verseText = this.bibleService.formatPassageQuote(passage).trim();
+
+      return {
+        ...verse,
+        verseRef: passage.reference || verse.verseRef,
+        verseText: verseText || verse.verseText,
+        version: passage.translation_name || passage.translation_id || verse.version,
+      };
+    } catch (error) {
+      console.error('Saved truth hydration failed:', verse.verseRef, error);
+      return verse;
+    }
   }
 
   private normalizePrayerRequest(request: any): any {
@@ -466,15 +510,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         request.is_answered === 1 ||
         request.is_answered === '1',
       createdAt: request.createdAt || request.created_at || null,
-    };
-  }
-
-  private normalizeJournalEntry(entry: any): any {
-    return {
-      id: entry.id,
-      title: entry.title || '',
-      body: entry.body || '',
-      createdAt: entry.createdAt || entry.created_at || null,
     };
   }
 

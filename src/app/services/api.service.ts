@@ -31,8 +31,9 @@ export class ApiService {
   async saveVerse(
     userId: number,
     verseRef: string,
-    verseText: string,
     category?: string,
+    bibleVersionId?: string,
+    version?: string,
   ) {
     return this.requestJson('/api/saved-verses', {
       method: 'POST',
@@ -42,9 +43,11 @@ export class ApiService {
       body: JSON.stringify({
         userId,
         verseRef,
-        verseText,
         category,
         verseCategory: category,
+        bibleVersionId,
+        bibleVersion: bibleVersionId,
+        version,
       }),
     });
   }
@@ -98,43 +101,6 @@ export class ApiService {
 
   async deletePrayerRequest(id: number) {
     return this.requestJson(`/api/prayer-requests/${id}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async getJournalEntries(userId: number) {
-    return this.requestJson(`/api/journal?userId=${userId}`);
-  }
-
-  async createJournalEntry(userId: number, title: string, body: string) {
-    return this.requestJson('/api/journal', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        title,
-        body,
-      }),
-    });
-  }
-
-  async updateJournalEntry(id: number, title: string, body: string) {
-    return this.requestJson(`/api/journal/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        title,
-        body,
-      }),
-    });
-  }
-
-  async deleteJournalEntry(id: number) {
-    return this.requestJson(`/api/journal/${id}`, {
       method: 'DELETE',
     });
   }
