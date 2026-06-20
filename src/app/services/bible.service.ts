@@ -401,8 +401,7 @@ export class BibleService {
     return version ? `${ref} (${version})` : ref;
   }
 
-  getPassage(ref: string): Observable<BiblePassage> {
-    const bibleId = this.versions.getSelectedVersion() || environment.apiBible.defaultBibleId;
+  getPassage(ref: string, bibleId = this.versions.getSelectedVersion() || environment.apiBible.defaultBibleId): Observable<BiblePassage> {
     const cacheReference = ref.trim();
     const passageCacheKey = `${bibleId}|${cacheReference}`;
     const cachedPassage = this.passageCache.get(passageCacheKey);

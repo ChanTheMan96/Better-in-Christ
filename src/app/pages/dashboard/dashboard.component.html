@@ -36,7 +36,12 @@
 			<div class="meta-chip verse-day-chip">
 				<span class="label">Verse of the Day</span>
 				<p class="verse-day-text">{{ verseOfDayText }}</p>
-				<p class="verse-day-ref">{{ verseOfDay.ref }}</p>
+				<p class="verse-day-ref">
+					<span>{{ verseOfDay.ref }}</span>
+					@if (verseOfDayVersion) {
+						<span>{{ verseOfDayVersion }}</span>
+					}
+				</p>
 			</div>
 		</div>
 
@@ -72,16 +77,6 @@
 			</span>
 		</ng-template>
 
-		<ng-template #journalTitleTpl>
-			<span class="tab-title">
-				<span class="tab-title-copy">
-					<span class="tab-title-label">Journal</span>
-					<span class="tab-title-subcopy">What God is teaching you</span>
-				</span>
-				<span class="tab-title-count">{{ journalEntries.length }}</span>
-			</span>
-		</ng-template>
-
 		<nz-tabs class="content-tabs">
 			<nz-tab [nzTitle]="savedTitle">
 				<div class="tab-panel">
@@ -101,14 +96,19 @@
 					} @else {
 						<ul class="saved-list">
 							@for (verse of pagedSavedVerses; track verse.id || verse.verseRef) {
-							<li class="saved-item clickable-item" role="button" tabindex="0" (click)="openModal(verse.verseRef, verse.verseText)" (keydown.enter)="openModal(verse.verseRef, verse.verseText)" (keydown.space)="openModal(verse.verseRef, verse.verseText); $event.preventDefault()">
+							<li class="saved-item clickable-item" role="button" tabindex="0" (click)="openModal(getSavedVerseTitle(verse), verse.verseText)" (keydown.enter)="openModal(getSavedVerseTitle(verse), verse.verseText)" (keydown.space)="openModal(getSavedVerseTitle(verse), verse.verseText); $event.preventDefault()">
 								<button type="button" class="remove-verse-btn remove-verse-x" aria-label="Remove saved truth" (click)="$event.stopPropagation(); removeVerse(verse.id)">&#x2715;</button>
 								<div class="saved-item-head">
 									<div>
 										@if (verse.category) {
 											<p class="saved-category">{{ verse.category }}</p>
 										}
-										<p class="ref">{{ verse.verseRef }}</p>
+										<p class="ref">
+											<span>{{ verse.verseRef }}</span>
+											@if (verse.version) {
+												<span>{{ verse.version }}</span>
+											}
+										</p>
 									</div>
 									</div>
 									<p class="text">{{ verse.verseText }}</p>
@@ -145,7 +145,7 @@
 						</div>
 					} @else {
 						<ul class="saved-list">
-							@for (request of prayerRequests; track request.id) {
+							@for (request of pagedPrayerRequests; track request.id) {
 							<li class="saved-item clickable-item" role="button" tabindex="0" (click)="openModal(request.title, request.body)" (keydown.enter)="openModal(request.title, request.body)" (keydown.space)="openModal(request.title, request.body); $event.preventDefault()">
 								<div class="saved-item-head">
 									<p class="ref">{{ request.title }}</p>
@@ -157,38 +157,21 @@
 								</li>
 							}
 						</ul>
+						@if (shouldShowPrayerRequestsPagination) {
+							<div class="saved-pagination" aria-label="Prayers pagination">
+								<button type="button" (click)="goToPrayerRequestsPage(prayerRequestsPage - 1)" [disabled]="prayerRequestsPage === 1">
+									Previous
+								</button>
+								<span>Page {{ prayerRequestsPage }} of {{ prayerRequestsTotalPages }}</span>
+								<button type="button" (click)="goToPrayerRequestsPage(prayerRequestsPage + 1)" [disabled]="prayerRequestsPage === prayerRequestsTotalPages">
+									Next
+								</button>
+							</div>
+						}
 					}
 				</div>
 			</nz-tab>
 
-			<nz-tab [nzTitle]="journalTitleTpl">
-				<div class="tab-panel">
-					<div class="entry-form">
-						<input [(ngModel)]="journalTitle" type="text" placeholder="Journal title" />
-						<textarea [(ngModel)]="journalBody" rows="5" placeholder="Write your reflection..."></textarea>
-						<button type="button" class="primary-action" (click)="addJournalEntry()">Add Journal Entry</button>
-					</div>
-
-					@if (!journalEntries.length) {
-						<div class="saved-empty-state">
-							<p class="saved-empty">No journal entries yet.</p>
-							<p class="saved-empty-copy">Capture what God is teaching you while it is fresh.</p>
-						</div>
-					} @else {
-						<ul class="saved-list">
-							@for (entry of journalEntries; track entry.id) {
-							<li class="saved-item clickable-item" role="button" tabindex="0" (click)="openModal(entry.title, entry.body)" (keydown.enter)="openModal(entry.title, entry.body)" (keydown.space)="openModal(entry.title, entry.body); $event.preventDefault()">
-								<div class="saved-item-head">
-									<p class="ref">{{ entry.title }}</p>
-									<button type="button" class="remove-verse-btn" (click)="$event.stopPropagation(); removeJournalEntry(entry.id)">Remove</button>
-									</div>
-									<p class="text">{{ entry.body }}</p>
-								</li>
-							}
-						</ul>
-					}
-				</div>
-			</nz-tab>
 		</nz-tabs>
 	</section>
 
