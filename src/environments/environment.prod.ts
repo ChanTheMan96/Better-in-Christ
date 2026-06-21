@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  clerkPublishableKey: 'pk_test_cmlnaHQtcHJhd24tMC5jbGVyay5hY2NvdW50cy5kZXYk',
+  clerkPublishableKey: 'pk_live_Y2xlcmsuYmV0dGVyaW5jaHJpc3QuY29tJA',
   apiBible: {
     baseUrl: '/api/bible',
     apiKey: '',
