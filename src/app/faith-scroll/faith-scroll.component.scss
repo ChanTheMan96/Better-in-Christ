@@ -17,18 +17,6 @@
     linear-gradient(145deg, #010101 0%, var(--app-bg) 52%, #120b03 100%);
 }
 
-.faith-scroll-shell::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 42px 42px;
-  mask-image: radial-gradient(circle at center, black, transparent 75%);
-  pointer-events: none;
-}
-
 .scroll-glow {
   position: absolute;
   width: 42vmax;
@@ -60,6 +48,37 @@
   padding: 10px 12px 0;
   background: none;
   pointer-events: none;
+}
+
+.scroll-category-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: calc(100vw - 24px);
+  min-height: 40px;
+  margin: 0 auto;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 250, 241, 0.16);
+  border-radius: 999px;
+  color: #fffaf1;
+  background:
+    linear-gradient(135deg, rgba(246, 217, 157, 0.12), rgba(255, 250, 241, 0.04)),
+    rgba(10, 9, 7, 0.58);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 850;
+  overflow: hidden;
+  pointer-events: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scroll-category-trigger:hover,
+.scroll-category-trigger:focus-visible {
+  border-color: rgba(255, 232, 179, 0.5);
+  outline: none;
 }
 
 .scroll-chip-row {
@@ -258,6 +277,23 @@
   gap: 8px;
 }
 
+.chosen-battle-submenu {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(255, 232, 179, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 232, 179, 0.055);
+}
+
+.chosen-battle-submenu span {
+  color: rgba(255, 232, 179, 0.78);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .scroll-chip-group .scroll-chip {
   min-height: 34px;
   padding: 0 12px;
@@ -319,7 +355,7 @@
   height: 100%;
   max-height: 100%;
   overflow: hidden;
-  padding: 86px 20px 72px;
+  padding: 72px 20px;
   perspective: 1200px;
   scroll-snap-align: start;
   scroll-snap-stop: always;
@@ -794,33 +830,16 @@
 
 @media (max-width: 520px) {
   .verse-slide {
-    padding: 66px 16px max(92px, calc(env(safe-area-inset-bottom) + 76px));
-  }
-
-  .identity-chips-visible .verse-slide {
-    padding-top: 66px;
+    padding: max(66px, env(safe-area-inset-top)) 16px max(66px, env(safe-area-inset-bottom));
   }
 
   .scroll-chip-shell {
-    padding: 8px 0 0;
+    padding: 8px 12px 0;
   }
 
-  .scroll-chip-row {
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    gap: 6px;
-    width: max-content;
-    max-width: calc(100vw - 42px);
-    margin: 0 auto;
-    padding: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x proximity;
-  }
-
-  .identity-chip-title,
-  .identity-chip-row {
-    display: none;
+  .scroll-category-trigger {
+    min-height: 38px;
+    padding: 0 12px;
   }
 
   .scroll-chip {
@@ -859,6 +878,10 @@
 
   .scroll-chip-group div {
     gap: 6px;
+  }
+
+  .chosen-battle-submenu {
+    padding: 9px;
   }
 
   .scroll-chip-group .scroll-chip {

@@ -99,6 +99,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     { label: 'Anxiety', categoryName: 'Anxiety' },
     { label: 'Shame', categoryName: 'Shame & Guilt' },
   ];
+  chosenBattleChips: ScrollChip[] = [];
 
   private readonly destroy$ = new Subject<void>();
   private inFlightRefs = new Set<string>();
@@ -345,19 +346,10 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   }
 
   private buildMoreChipGroups(): ScrollChipGroup[] {
-    const primaryCategoryNames = new Set(
-      this.primaryChips.map((chip) => chip.categoryName),
-    );
-    const identityChildNames = new Set(
-      this.identityChips.map((chip) => chip.categoryName),
-    );
-
     return this.categoryGroups
       .map((group) => ({
         label: group.label,
         chips: group.categories
-          .filter((category) => !primaryCategoryNames.has(category.name))
-          .filter((category) => !identityChildNames.has(category.name))
           .map((category) => ({
             label: category.name,
             categoryName: category.name,
@@ -550,15 +542,6 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
           'Isaiah 30:21',
         ],
       },
-      {
-        name: 'All Scripture',
-        refs: [
-          ...JESUS_WORDS_CATEGORY.refs,
-          ...FAITH_SCROLL_CATEGORIES.flatMap((category) => category.refs),
-          ...emotionCategories.flatMap((category) => category.refs),
-          ...growthCategories.flatMap((category) => category.refs),
-        ],
-      },
       ...FAITH_SCROLL_CATEGORIES,
     ];
 
@@ -688,11 +671,16 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   }
 
   private setPrimaryChips(battles: string[]): void {
-    const chips = battles.length ? battles : ['Anxiety', 'Shame'];
-    this.primaryChips = chips.slice(0, 5).map((battle) => ({
+    this.chosenBattleChips = battles.slice(0, 5).map((battle) => ({
       label: battle,
       categoryName: this.getBattleCategoryName(battle),
     }));
+    this.primaryChips = this.chosenBattleChips.length
+      ? [...this.chosenBattleChips]
+      : [
+          { label: 'Anxiety', categoryName: 'Anxiety' },
+          { label: 'Shame', categoryName: 'Shame & Guilt' },
+        ];
     this.moreChipGroups = this.buildMoreChipGroups();
   }
 
