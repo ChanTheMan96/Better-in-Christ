@@ -831,11 +831,18 @@
 }
 
 @media (max-width: 520px) {
+  .faith-scroll-shell {
+    inset: 86px 0 0;
+  }
+
   .verse-slide {
-    padding: max(66px, env(safe-area-inset-top)) 16px max(66px, env(safe-area-inset-bottom));
+    padding: max(82px, env(safe-area-inset-top)) 16px max(66px, env(safe-area-inset-bottom));
   }
 
   .scroll-chip-shell {
+    position: fixed;
+    top: 86px;
+    z-index: 110;
     padding: 8px 12px 0;
   }
 
