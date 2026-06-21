@@ -36,19 +36,6 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-body::before {
-	content: "";
-	position: fixed;
-	inset: 0;
-	z-index: -1;
-	background:
-		linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
-	background-size: 42px 42px;
-	mask-image: radial-gradient(circle at center, black, transparent 78%);
-	pointer-events: none;
-}
-
 /* Make ng-zorro cards and components match a dark theme */
 .ant-card {
 	background: var(--app-surface);

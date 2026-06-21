@@ -1,50 +1,21 @@
 <main
   class="faith-scroll-shell"
   [class.chips-expanded]="moreCategoriesOpen"
-  [class.identity-chips-visible]="shouldShowIdentityChips()"
   aria-label="Faith Scroll"
   >
   <div class="scroll-glow glow-one"></div>
   <div class="scroll-glow glow-two"></div>
 
   <nav class="scroll-chip-shell" aria-label="Faith Scroll categories">
-    <div class="scroll-chip-row">
-      @for (chip of primaryChips; track chip.label) {
-        <button
-          type="button"
-          class="scroll-chip"
-          [class.active]="isPrimaryChipActive(chip)"
-          (click)="selectCategory(chip.categoryName)"
-          >
-          {{ chip.label }}
-        </button>
-      }
-      <button
-        type="button"
-        class="scroll-chip more-chip"
-        [class.active]="isMoreChipActive()"
-        [attr.aria-expanded]="moreCategoriesOpen"
-        aria-label="More scroll categories"
-        (click)="toggleMoreCategories()"
-        >
-        {{ moreCategoriesOpen ? '−' : '+' }}
-      </button>
-    </div>
-    @if (shouldShowIdentityChips()) {
-      <p class="identity-chip-title">Who I Am in Christ</p>
-      <div class="scroll-chip-row identity-chip-row" aria-label="Who I Am in Christ sections">
-        @for (chip of identityChips; track chip.label) {
-          <button
-            type="button"
-            class="scroll-chip identity-chip"
-            [class.active]="chip.categoryName === selectedCategory"
-            (click)="selectCategory(chip.categoryName)"
-            >
-            {{ chip.label }}
-          </button>
-        }
-      </div>
-    }
+    <button
+      type="button"
+      class="scroll-category-trigger"
+      [attr.aria-expanded]="moreCategoriesOpen"
+      aria-label="Choose scroll category"
+      (click)="toggleMoreCategories()"
+      >
+      {{ selectedCategory }}
+    </button>
   </nav>
 
   @if (moreCategoriesOpen) {
@@ -60,6 +31,23 @@
         @for (group of moreChipGroups; track group.label) {
           <section class="scroll-chip-group" [attr.aria-label]="group.label">
             <p>{{ group.label }}</p>
+            @if (group.label === 'Featured' && chosenBattleChips.length) {
+              <div class="chosen-battle-submenu" aria-label="Chosen battles">
+                <span>Chosen Battles</span>
+                <div>
+                  @for (chip of chosenBattleChips; track chip.categoryName) {
+                    <button
+                      type="button"
+                      class="scroll-chip extra-chip"
+                      [class.active]="chip.categoryName === selectedCategory"
+                      (click)="selectCategory(chip.categoryName)"
+                      >
+                      {{ chip.label }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
             <div>
               @for (chip of group.chips; track chip.categoryName) {
                 <button
