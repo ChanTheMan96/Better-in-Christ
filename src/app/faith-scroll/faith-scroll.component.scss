@@ -1,14 +1,16 @@
 :host {
   display: block;
-  min-height: calc(100dvh - 72px);
+  height: calc(100dvh - 72px);
+  overflow: hidden;
 }
 
 .faith-scroll-shell {
-  position: relative;
+  position: fixed;
+  inset: 72px 0 0;
   overflow: hidden;
   width: 100%;
-  height: calc(100dvh - 72px);
-  min-height: calc(100dvh - 72px);
+  height: auto;
+  min-height: 0;
   color: #fffaf1;
   background-color: #030303;
   background:
