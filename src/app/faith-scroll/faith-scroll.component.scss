@@ -831,7 +831,7 @@
 
 @media (max-width: 520px) {
   .verse-slide {
-    padding: 54px 16px 54px;
+    padding: 54px 16px max(104px, calc(env(safe-area-inset-bottom) + 88px));
   }
 
   .scroll-chip-shell {
