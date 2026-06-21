@@ -212,9 +212,12 @@
 	}
 
 	.battle-picker {
+		display: grid;
+		grid-template-rows: auto auto minmax(0, 1fr) auto;
 		width: 100%;
 		max-height: min(88dvh, 680px);
-		padding: 20px;
+		overflow: hidden;
+		padding: 20px 20px 0;
 		border-radius: 16px;
 	}
 
@@ -225,6 +228,10 @@
 	.battle-picker-grid {
 		gap: 8px;
 		margin-top: 18px;
+		min-height: 0;
+		overflow-y: auto;
+		padding-bottom: 14px;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	.battle-selected-panel {
@@ -239,9 +246,17 @@
 	}
 
 	.battle-picker-actions {
-		position: sticky;
-		bottom: 0;
-		padding-top: 12px;
-		background: linear-gradient(180deg, rgba(17, 16, 13, 0), #11100d 38%);
+		margin: 0 -20px;
+		padding: 12px 20px max(14px, env(safe-area-inset-bottom));
+		border-top: 1px solid rgba(255, 250, 241, 0.1);
+		background:
+			linear-gradient(180deg, rgba(255, 250, 241, 0.055), rgba(255, 250, 241, 0.025)),
+			#11100d;
+		box-shadow: 0 -16px 30px rgba(0, 0, 0, 0.26);
+	}
+
+	.battle-clear,
+	.battle-save {
+		min-width: 0;
 	}
 }
