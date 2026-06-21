@@ -5,11 +5,10 @@
 }
 
 .faith-scroll-shell {
-  position: fixed;
-  inset: 72px 0 0;
+  position: relative;
   overflow: hidden;
   width: 100%;
-  height: auto;
+  height: 100%;
   min-height: 0;
   color: #fffaf1;
   background-color: #030303;
@@ -831,18 +830,11 @@
 }
 
 @media (max-width: 520px) {
-  .faith-scroll-shell {
-    inset: 86px 0 0;
-  }
-
   .verse-slide {
     padding: max(82px, env(safe-area-inset-top)) 16px max(66px, env(safe-area-inset-bottom));
   }
 
   .scroll-chip-shell {
-    position: fixed;
-    top: 86px;
-    z-index: 110;
     padding: 8px 12px 0;
   }
 
