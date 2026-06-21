@@ -1,9 +1,10 @@
 .login-page {
 	position: relative;
-	min-height: calc(100vh - 120px);
+	min-height: calc(100dvh - 72px);
 	display: grid;
 	place-items: center;
 	padding: 24px 12px;
+	box-sizing: border-box;
 }
 
 .halo {
