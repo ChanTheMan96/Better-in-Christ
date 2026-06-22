@@ -343,7 +343,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
           .filter((index) => index !== this.activeIndex);
     const nextIndex =
       candidates[Math.floor(Math.random() * candidates.length)] ?? 0;
-    this.scrollToIndex(nextIndex);
+    this.scrollToIndex(nextIndex, 'auto');
   }
 
   retrySelection(): void {
