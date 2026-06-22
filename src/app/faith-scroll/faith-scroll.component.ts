@@ -130,9 +130,6 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.analytics.trackEvent('scroll_page_viewed', {
-      source: 'faith_scroll',
-    });
     this.bootstrapUserAndFavorites();
 
     this.clerkService.authState$

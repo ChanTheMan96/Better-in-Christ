@@ -11,6 +11,9 @@ interface AnalyticsPayload {
   isLoggedIn: boolean;
   path: string;
   metadata: AnalyticsMetadata;
+  pageViewCount?: number;
+  page_view_count?: number;
+  pages_json?: string;
   viewportWidth: number | null;
   viewportHeight: number | null;
   userAgent: string;
@@ -22,13 +25,33 @@ interface AnalyticsPayload {
 export class AnalyticsService {
   private readonly api = environment.apiBaseUrl;
   private readonly sessionStorageKey = 'bic_session_id';
+  private readonly pageViewCountStorageKey = 'bic_page_view_count';
+  private readonly pagesJsonStorageKey = 'bic_pages_json';
   private sessionId = '';
 
   constructor(private clerkService: ClerkService) {}
 
   trackEvent(eventName: string, metadata: AnalyticsMetadata = {}): void {
     const payload = this.buildPayload(eventName, metadata);
+    this.sendPayload(payload);
+  }
 
+  trackPageView(path: string): void {
+    const pageView = this.recordPageView(path);
+    const payload = this.buildPayload('page_viewed', {
+      source: 'router',
+    });
+
+    this.sendPayload({
+      ...payload,
+      path,
+      pageViewCount: pageView.count,
+      page_view_count: pageView.count,
+      pages_json: pageView.pagesJson,
+    });
+  }
+
+  private sendPayload(payload: AnalyticsPayload): void {
     fetch(`${this.api}/api/analytics`, {
       method: 'POST',
       headers: {
@@ -89,5 +112,38 @@ export class AnalyticsService {
     return typeof crypto !== 'undefined' && 'randomUUID' in crypto
       ? crypto.randomUUID()
       : `bic_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  }
+
+  private recordPageView(path: string): { count: number; pagesJson: string } {
+    if (typeof localStorage === 'undefined') {
+      return { count: 1, pagesJson: JSON.stringify([path]) };
+    }
+
+    try {
+      const currentCount = Number(
+        localStorage.getItem(this.pageViewCountStorageKey),
+      ) || 0;
+      const nextCount = currentCount + 1;
+      const pages = this.getPagesHistory();
+      pages.push(path);
+      localStorage.setItem(this.pageViewCountStorageKey, String(nextCount));
+      localStorage.setItem(this.pagesJsonStorageKey, JSON.stringify(pages));
+      return { count: nextCount, pagesJson: JSON.stringify(pages) };
+    } catch {
+      return { count: 1, pagesJson: JSON.stringify([path]) };
+    }
+  }
+
+  private getPagesHistory(): string[] {
+    try {
+      const pages = JSON.parse(
+        localStorage.getItem(this.pagesJsonStorageKey) || '[]',
+      );
+      return Array.isArray(pages)
+        ? pages.filter((page) => typeof page === 'string')
+        : [];
+    } catch {
+      return [];
+    }
   }
 }
