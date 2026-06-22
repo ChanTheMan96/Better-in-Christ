@@ -35,6 +35,10 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event) => {
+        if (event.urlAfterRedirects === '/') {
+          return;
+        }
+
         this.analytics.trackPageView(event.urlAfterRedirects);
       });
   }
