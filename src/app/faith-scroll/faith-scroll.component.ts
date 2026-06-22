@@ -184,8 +184,10 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     if (!el) return;
 
     const nextIndex = this.getActiveIndexFromScroll(el);
-    if (nextIndex === this.programmaticScrollTargetIndex) {
-      this.programmaticScrollTargetIndex = null;
+    if (this.programmaticScrollTargetIndex !== null) {
+      if (nextIndex === this.programmaticScrollTargetIndex) {
+        this.programmaticScrollTargetIndex = null;
+      }
       return;
     }
 
