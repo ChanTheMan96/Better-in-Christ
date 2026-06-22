@@ -125,7 +125,9 @@ export class AnalyticsService {
       ) || 0;
       const nextCount = currentCount + 1;
       const pages = this.getPagesHistory();
-      pages.push(path);
+      if (!pages.includes(path)) {
+        pages.push(path);
+      }
       localStorage.setItem(this.pageViewCountStorageKey, String(nextCount));
       localStorage.setItem(this.pagesJsonStorageKey, JSON.stringify(pages));
       return { count: nextCount, pagesJson: JSON.stringify(pages) };
