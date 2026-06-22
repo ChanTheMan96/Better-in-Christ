@@ -5,6 +5,7 @@ import { ContactComponent } from './contact/contact.component';
 import { LoginComponent } from './pages/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HomeRedirectComponent } from './pages/home-redirect/home-redirect.component';
+import { dashboardAuthGuard } from './guards/dashboard-auth.guard';
 
 const routes: Routes = [
   { path: '', component: HomeRedirectComponent, pathMatch: 'full' },
@@ -19,7 +20,7 @@ const routes: Routes = [
   { path: 'donate', component: DonateComponent },
   { path: 'contact', component: ContactComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [dashboardAuthGuard] },
   { path: '**', redirectTo: '' },
 ];
 

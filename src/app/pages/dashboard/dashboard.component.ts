@@ -64,7 +64,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   prayerBody = '';
   private readonly destroy$ = new Subject<void>();
   private savedVersesLoadToken = 0;
-  private isRedirectingToAuth = false;
 
   get battleQuestion(): string {
     const name = this.user?.firstName || this.displayName?.split(' ')[0] || '';
@@ -130,7 +129,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.user = this.clerkService.user;
 
     if (!this.user) {
-      await this.redirectToDashboardAuth();
       return;
     }
 
@@ -158,7 +156,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((authState) => {
         if (!authState.isSignedIn) {
-          this.redirectToDashboardAuth();
           return;
         }
 
@@ -175,15 +172,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   signOut() {
     this.clerkService.signOut();
-  }
-
-  private async redirectToDashboardAuth(): Promise<void> {
-    if (this.isRedirectingToAuth) {
-      return;
-    }
-
-    this.isRedirectingToAuth = true;
-    await this.clerkService.openSignIn('/dashboard');
   }
 
   openModal(title: string, text: string): void {
