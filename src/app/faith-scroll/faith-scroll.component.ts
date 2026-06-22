@@ -206,7 +206,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
     this.trackScrollStarted();
     this.analytics.trackEvent('scroll_save_clicked', {
-      ...this.getVerseAnalyticsMetadata(verse, this.activeIndex),
+      ...this.getVerseAnalyticsMetadata(verse),
       isSaved: this.favoriteRefs.has(verse.reference),
     });
 
@@ -233,7 +233,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     if (!this.dbUser?.id) {
       this.saveAccountPromptOpen = true;
       this.analytics.trackEvent('scroll_save_logged_out_prompt_shown', {
-        ...this.getVerseAnalyticsMetadata(verse, this.activeIndex),
+        ...this.getVerseAnalyticsMetadata(verse),
       });
       return;
     }
@@ -795,7 +795,12 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
     this.analytics.trackEvent(
       'scroll_item_viewed',
-      this.getVerseAnalyticsMetadata(verse, this.activeIndex, this.viewedItemCount),
+      {
+        ...this.getVerseAnalyticsMetadata(verse),
+        scrollCount: this.viewedItemCount,
+        scrollIndex: this.viewedItemCount,
+        position: this.viewedItemCount,
+      },
     );
   }
 
@@ -803,18 +808,11 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     return `${this.selectedCategory}|${verse.reference}`;
   }
 
-  private getVerseAnalyticsMetadata(
-    verse: FaithScrollVerse,
-    index: number,
-    scrollIndex = index + 1,
-  ): Record<string, any> {
+  private getVerseAnalyticsMetadata(verse: FaithScrollVerse): Record<string, any> {
     return {
       itemId: this.getVerseItemId(verse),
       itemType: this.getItemType(),
       category: this.selectedCategory,
-      scrollCount: scrollIndex,
-      scrollIndex,
-      position: scrollIndex,
       source: 'faith_scroll',
       path: this.router.url,
       reference: verse.reference,
