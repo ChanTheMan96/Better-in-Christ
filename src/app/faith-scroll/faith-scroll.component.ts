@@ -114,6 +114,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   private viewedItemCount = 0;
   private loadToken = 0;
   private hasTrackedScrollStart = false;
+  private isRandomJumping = false;
   private cardTouchStartY: number | null = null;
   private toastTimeoutId: number | null = null;
 
@@ -189,7 +190,9 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       );
       this.markSeen(this.activeIndex);
       this.loadVerseWindow(this.activeIndex);
-      this.trackCurrentItemViewed();
+      if (!this.isRandomJumping) {
+        this.trackCurrentItemViewed();
+      }
       this.pulse();
     }
   }
@@ -343,7 +346,12 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
           .filter((index) => index !== this.activeIndex);
     const nextIndex =
       candidates[Math.floor(Math.random() * candidates.length)] ?? 0;
-    this.scrollToIndex(nextIndex, 'auto', this.loadToken, true);
+    this.trackRandomItemViewed(nextIndex);
+    this.isRandomJumping = true;
+    this.scrollToIndex(nextIndex, 'auto', this.loadToken, false, false);
+    window.setTimeout(() => {
+      this.isRandomJumping = false;
+    }, 150);
   }
 
   retrySelection(): void {
@@ -672,6 +680,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     index: number,
     behavior: ScrollBehavior = 'smooth',
     token = this.loadToken,
+    shouldTrackView = true,
     countDuplicateView = false,
   ): void {
     const el = this.feed?.nativeElement;
@@ -683,7 +692,9 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.activeIndex = safeIndex;
     this.markSeen(safeIndex);
     this.loadVerseWindow(safeIndex, token);
-    this.trackCurrentItemViewed(countDuplicateView);
+    if (shouldTrackView) {
+      this.trackCurrentItemViewed(countDuplicateView);
+    }
     this.pulse();
   }
 
@@ -800,6 +811,27 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
         position: this.viewedItemCount,
       },
     );
+  }
+
+  private trackRandomItemViewed(index: number): void {
+    const verse = this.verses[index];
+    if (!verse?.reference) {
+      return;
+    }
+
+    this.viewedItemIds.add(this.getVerseItemId(verse));
+    this.viewedItemCount += 1;
+
+    if (!this.scrollItemTrackingPositions.has(this.viewedItemCount)) {
+      return;
+    }
+
+    this.analytics.trackEvent('scroll_milestone', {
+      ...this.getVerseAnalyticsMetadata(verse),
+      scrollCount: this.viewedItemCount,
+      scrollIndex: this.viewedItemCount,
+      position: this.viewedItemCount,
+    });
   }
 
   private getVerseItemId(verse: FaithScrollVerse): string {
