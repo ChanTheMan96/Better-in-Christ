@@ -85,9 +85,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     await this.clerkService.openSignIn();
   }
 
-  goToDashboard(): void {
+  async goToDashboard(event?: Event): Promise<void> {
+    event?.preventDefault();
     this.closeMobileMenu();
-    this.router.navigate(['/dashboard']);
+    if (this.isSignedIn) {
+      await this.router.navigate(['/dashboard']);
+      return;
+    }
+
+    await this.clerkService.openSignIn('/dashboard');
   }
 
   async signOut(): Promise<void> {

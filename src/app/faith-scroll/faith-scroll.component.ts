@@ -6,7 +6,7 @@ import {
   ViewChild,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom, of, Subject } from 'rxjs';
 import {
   catchError,
@@ -89,6 +89,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   moreCategoriesOpen = false;
   identityChipsOpen = false;
   moreChipGroups: ScrollChipGroup[] = [];
+  saveAccountPromptOpen = false;
   readonly identityParentCategory = WHO_I_AM_IN_CHRIST_CATEGORY;
   readonly identityChips: ScrollChip[] = [
     { label: 'Accepted', categoryName: WHO_I_AM_ACCEPTED_CATEGORY },
@@ -116,6 +117,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     private clerkService: ClerkService,
     private apiService: ApiService,
     private route: ActivatedRoute,
+    private router: Router,
     private userBattlesService: UserBattlesService,
   ) {}
 
@@ -210,7 +212,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     }
 
     if (!this.dbUser?.id) {
-      this.showToast('Log in to save');
+      this.saveAccountPromptOpen = true;
       return;
     }
 
@@ -285,6 +287,15 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       this.showToast('Copied');
     }
     this.pulse();
+  }
+
+  closeSaveAccountPrompt(): void {
+    this.saveAccountPromptOpen = false;
+  }
+
+  async createAccountFromSavePrompt(): Promise<void> {
+    this.saveAccountPromptOpen = false;
+    await this.clerkService.openSignUp(this.getCurrentReturnUrl());
   }
 
   randomVerse(): void {
@@ -733,7 +744,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   }
 
   private async bootstrapUserAndFavorites(): Promise<void> {
-    await this.clerkService.load();
+    await this.clerkService.initialize();
     this.user = this.clerkService.user;
 
     if (!this.user) {
@@ -773,5 +784,12 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       this.toastMessage = '';
       this.toastTimeoutId = null;
     }, 1300);
+  }
+
+  private getCurrentReturnUrl(): string {
+    const urlTree = this.router.createUrlTree(['/scroll'], {
+      queryParams: this.route.snapshot.queryParams,
+    });
+    return this.router.serializeUrl(urlTree);
   }
 }

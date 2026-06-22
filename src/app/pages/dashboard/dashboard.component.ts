@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ClerkService } from 'src/app/services/clerk.service';
 import { ApiService } from 'src/app/services/api.service';
 import { firstValueFrom, of, Subject } from 'rxjs';
@@ -64,6 +64,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   prayerBody = '';
   private readonly destroy$ = new Subject<void>();
   private savedVersesLoadToken = 0;
+  private isRedirectingToAuth = false;
 
   get battleQuestion(): string {
     const name = this.user?.firstName || this.displayName?.split(' ')[0] || '';
@@ -113,7 +114,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private bibleService: BibleService,
     private bibleVersions: BibleVersionService,
     private userBattlesService: UserBattlesService,
-    private router: Router,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -126,11 +126,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       });
 
-    await this.clerkService.load();
+    await this.clerkService.initialize();
     this.user = this.clerkService.user;
 
     if (!this.user) {
-      await this.router.navigate(['/login'], { replaceUrl: true });
+      await this.redirectToDashboardAuth();
       return;
     }
 
@@ -158,7 +158,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((authState) => {
         if (!authState.isSignedIn) {
-          this.router.navigate(['/login'], { replaceUrl: true });
+          this.redirectToDashboardAuth();
           return;
         }
 
@@ -175,6 +175,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   signOut() {
     this.clerkService.signOut();
+  }
+
+  private async redirectToDashboardAuth(): Promise<void> {
+    if (this.isRedirectingToAuth) {
+      return;
+    }
+
+    this.isRedirectingToAuth = true;
+    await this.clerkService.openSignIn('/dashboard');
   }
 
   openModal(title: string, text: string): void {

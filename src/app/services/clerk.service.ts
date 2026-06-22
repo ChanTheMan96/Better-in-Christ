@@ -55,12 +55,21 @@ export class ClerkService {
     this.emitAuthState();
   }
 
-  async openSignIn(): Promise<void> {
+  async openSignIn(returnUrl = '/dashboard'): Promise<void> {
     await this.initialize();
     const clerk = await this.getClerk();
     await clerk.redirectToSignIn({
-      signInForceRedirectUrl: '/dashboard',
-      signUpForceRedirectUrl: '/dashboard',
+      signInForceRedirectUrl: returnUrl,
+      signUpForceRedirectUrl: returnUrl,
+    });
+  }
+
+  async openSignUp(returnUrl = '/dashboard'): Promise<void> {
+    await this.initialize();
+    const clerk = await this.getClerk();
+    await clerk.redirectToSignUp({
+      signInForceRedirectUrl: returnUrl,
+      signUpForceRedirectUrl: returnUrl,
     });
   }
 

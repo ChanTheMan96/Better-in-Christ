@@ -172,4 +172,21 @@
       {{ toastMessage }}
     </div>
   }
+
+  @if (saveAccountPromptOpen) {
+    <div class="save-account-backdrop" (click)="closeSaveAccountPrompt()">
+      <section class="save-account-modal" role="dialog" aria-modal="true" aria-labelledby="save-account-title" (click)="$event.stopPropagation()">
+        <button type="button" class="save-account-close" aria-label="Close account prompt" (click)="closeSaveAccountPrompt()">&#x2715;</button>
+        <p class="save-account-kicker">Free Account</p>
+        <h2 id="save-account-title">Want to save this for later?</h2>
+        <p>
+          Create a free account to save verses, prayers, and encouragement God is using in your life. You&rsquo;ll also unlock your personal dashboard, daily battles, saved favorites, streaks, and a scroll shaped around what you&rsquo;re walking through.
+        </p>
+        <div class="save-account-actions">
+          <button type="button" class="save-account-primary" (click)="createAccountFromSavePrompt()">Create Free Account</button>
+          <button type="button" class="save-account-secondary" (click)="closeSaveAccountPrompt()">Keep Scrolling</button>
+        </div>
+      </section>
+    </div>
+  }
 </main>
