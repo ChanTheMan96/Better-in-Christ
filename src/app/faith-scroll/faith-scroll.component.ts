@@ -97,6 +97,9 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     { label: 'Secure', categoryName: WHO_I_AM_SECURE_CATEGORY },
     { label: 'Significant', categoryName: WHO_I_AM_SIGNIFICANT_CATEGORY },
   ];
+  private readonly scrollItemTrackingPositions = new Set([
+    1, 3, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+  ]);
   primaryChips: ScrollChip[] = [
     { label: 'Anxiety', categoryName: 'Anxiety' },
     { label: 'Shame', categoryName: 'Shame & Guilt' },
@@ -773,6 +776,11 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   private trackCurrentItemViewed(): void {
     const verse = this.verses[this.activeIndex];
     if (!verse?.loaded) {
+      return;
+    }
+
+    const position = this.activeIndex + 1;
+    if (!this.scrollItemTrackingPositions.has(position)) {
       return;
     }
 
