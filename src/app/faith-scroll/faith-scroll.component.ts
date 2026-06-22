@@ -777,7 +777,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
   private trackCurrentItemViewed(): void {
     const verse = this.verses[this.activeIndex];
-    if (!verse?.loaded) {
+    if (!verse?.reference) {
       return;
     }
 
@@ -812,6 +812,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       itemId: this.getVerseItemId(verse),
       itemType: this.getItemType(),
       category: this.selectedCategory,
+      scrollCount: scrollIndex,
       scrollIndex,
       position: scrollIndex,
       source: 'faith_scroll',
