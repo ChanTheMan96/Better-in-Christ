@@ -116,6 +116,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   private loadToken = 0;
   private hasTrackedScrollStart = false;
   private isRandomJumping = false;
+  private programmaticScrollTargetIndex: number | null = null;
   private cardTouchStartY: number | null = null;
   private toastTimeoutId: number | null = null;
 
@@ -183,6 +184,11 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     if (!el) return;
 
     const nextIndex = this.getActiveIndexFromScroll(el);
+    if (nextIndex === this.programmaticScrollTargetIndex) {
+      this.programmaticScrollTargetIndex = null;
+      return;
+    }
+
     if (nextIndex !== this.activeIndex) {
       this.trackScrollStarted();
       this.activeIndex = Math.max(
@@ -691,6 +697,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
     const safeIndex = Math.max(0, Math.min(index, this.verses.length - 1));
     const slide = el.querySelectorAll<HTMLElement>('.verse-slide')[safeIndex];
+    this.programmaticScrollTargetIndex = safeIndex;
     el.scrollTo({ top: slide?.offsetTop ?? safeIndex * el.clientHeight, behavior });
     this.activeIndex = safeIndex;
     this.advanceActiveView();
