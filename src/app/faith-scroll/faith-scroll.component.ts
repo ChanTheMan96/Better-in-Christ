@@ -182,7 +182,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     const el = this.feed?.nativeElement;
     if (!el) return;
 
-    const nextIndex = Math.round(el.scrollTop / Math.max(1, el.clientHeight));
+    const nextIndex = this.getActiveIndexFromScroll(el);
     if (nextIndex !== this.activeIndex) {
       this.trackScrollStarted();
       this.activeIndex = Math.max(
@@ -679,7 +679,8 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     if (!el) return;
 
     const safeIndex = Math.max(0, Math.min(index, this.verses.length - 1));
-    el.scrollTo({ top: safeIndex * el.clientHeight, behavior });
+    const slide = el.querySelectorAll<HTMLElement>('.verse-slide')[safeIndex];
+    el.scrollTo({ top: slide?.offsetTop ?? safeIndex * el.clientHeight, behavior });
     this.activeIndex = safeIndex;
     this.markSeen(safeIndex);
     this.loadVerseWindow(safeIndex, token);
@@ -808,7 +809,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       itemId: this.getVerseItemId(verse, index),
       itemType: this.getItemType(),
       category: this.selectedCategory,
-      scrollIndex: index,
+      scrollIndex: index + 1,
       position: index + 1,
       source: 'faith_scroll',
       path: this.router.url,
@@ -824,6 +825,22 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     if (categoryName.includes('wisdom')) return 'wisdom';
     if (categoryName.includes('encouragement')) return 'encouragement';
     return 'verse';
+  }
+
+  private getActiveIndexFromScroll(el: HTMLElement): number {
+    const slides = Array.from(
+      el.querySelectorAll<HTMLElement>('.verse-slide'),
+    );
+    if (!slides.length) {
+      return Math.round(el.scrollTop / Math.max(1, el.clientHeight));
+    }
+
+    return slides.reduce((closestIndex, slide, index) => {
+      const closestSlide = slides[closestIndex];
+      const currentDistance = Math.abs(slide.offsetTop - el.scrollTop);
+      const closestDistance = Math.abs(closestSlide.offsetTop - el.scrollTop);
+      return currentDistance < closestDistance ? index : closestIndex;
+    }, 0);
   }
 
   private removeUnfavoritedFromFavoritesFeed(): void {
