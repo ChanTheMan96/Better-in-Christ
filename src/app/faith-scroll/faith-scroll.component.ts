@@ -111,6 +111,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   private seenRefs = new Set<string>();
   private savedVerseIdByRef = new Map<string, number>();
   private viewedItemIds = new Set<string>();
+  private viewedItemCount = 0;
   private loadToken = 0;
   private hasTrackedScrollStart = false;
   private cardTouchStartY: number | null = null;
@@ -769,7 +770,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.hasTrackedScrollStart = true;
     this.analytics.trackEvent('scroll_started', {
       category: this.selectedCategory,
-      scrollIndex: this.activeIndex,
+      scrollIndex: this.viewedItemCount,
       source: 'faith_scroll',
     });
   }
@@ -780,37 +781,39 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const position = this.activeIndex + 1;
-    if (!this.scrollItemTrackingPositions.has(position)) {
-      return;
-    }
-
-    const itemId = this.getVerseItemId(verse, this.activeIndex);
+    const itemId = this.getVerseItemId(verse);
     if (this.viewedItemIds.has(itemId)) {
       return;
     }
 
     this.viewedItemIds.add(itemId);
+    this.viewedItemCount += 1;
+
+    if (!this.scrollItemTrackingPositions.has(this.viewedItemCount)) {
+      return;
+    }
+
     this.analytics.trackEvent(
       'scroll_item_viewed',
-      this.getVerseAnalyticsMetadata(verse, this.activeIndex),
+      this.getVerseAnalyticsMetadata(verse, this.activeIndex, this.viewedItemCount),
     );
   }
 
-  private getVerseItemId(verse: FaithScrollVerse, index: number): string {
-    return `${this.selectedCategory}|${verse.reference}|${index}`;
+  private getVerseItemId(verse: FaithScrollVerse): string {
+    return `${this.selectedCategory}|${verse.reference}`;
   }
 
   private getVerseAnalyticsMetadata(
     verse: FaithScrollVerse,
     index: number,
+    scrollIndex = index + 1,
   ): Record<string, any> {
     return {
-      itemId: this.getVerseItemId(verse, index),
+      itemId: this.getVerseItemId(verse),
       itemType: this.getItemType(),
       category: this.selectedCategory,
-      scrollIndex: index + 1,
-      position: index + 1,
+      scrollIndex,
+      position: scrollIndex,
       source: 'faith_scroll',
       path: this.router.url,
       reference: verse.reference,
