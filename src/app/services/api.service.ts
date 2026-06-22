@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private api = 'https://better-in-christ-api.monkeycity230.workers.dev';
+  private api = environment.apiBaseUrl;
 
   private async requestJson<T = any>(
     path: string,
