@@ -343,7 +343,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
           .filter((index) => index !== this.activeIndex);
     const nextIndex =
       candidates[Math.floor(Math.random() * candidates.length)] ?? 0;
-    this.scrollToIndex(nextIndex, 'auto');
+    this.scrollToIndex(nextIndex, 'auto', this.loadToken, true);
   }
 
   retrySelection(): void {
@@ -672,6 +672,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     index: number,
     behavior: ScrollBehavior = 'smooth',
     token = this.loadToken,
+    countDuplicateView = false,
   ): void {
     const el = this.feed?.nativeElement;
     if (!el) return;
@@ -682,7 +683,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.activeIndex = safeIndex;
     this.markSeen(safeIndex);
     this.loadVerseWindow(safeIndex, token);
-    this.trackCurrentItemViewed();
+    this.trackCurrentItemViewed(countDuplicateView);
     this.pulse();
   }
 
@@ -772,14 +773,14 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     });
   }
 
-  private trackCurrentItemViewed(): void {
+  private trackCurrentItemViewed(countDuplicateView = false): void {
     const verse = this.verses[this.activeIndex];
     if (!verse?.reference) {
       return;
     }
 
     const itemId = this.getVerseItemId(verse);
-    if (this.viewedItemIds.has(itemId)) {
+    if (this.viewedItemIds.has(itemId) && !countDuplicateView) {
       return;
     }
 
