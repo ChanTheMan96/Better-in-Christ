@@ -725,6 +725,95 @@
   animation: toastIn 180ms ease both;
 }
 
+.save-account-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(12px);
+}
+
+.save-account-modal {
+  position: relative;
+  width: min(100%, 520px);
+  padding: 28px;
+  border: 1px solid rgba(255, 232, 179, 0.24);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at top left, rgba(246, 217, 157, 0.13), transparent 16rem),
+    linear-gradient(180deg, rgba(255, 250, 241, 0.09), rgba(255, 250, 241, 0.035)),
+    #11100d;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.46);
+}
+
+.save-account-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 250, 241, 0.16);
+  border-radius: 999px;
+  color: rgba(255, 250, 241, 0.82);
+  background: rgba(255, 250, 241, 0.06);
+  cursor: pointer;
+}
+
+.save-account-kicker {
+  margin: 0 0 8px;
+  color: var(--app-accent);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.save-account-modal h2 {
+  margin: 0;
+  padding-right: 38px;
+  color: #fffaf1;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.7rem, 6vw, 2.45rem);
+  line-height: 1.08;
+}
+
+.save-account-modal p:not(.save-account-kicker) {
+  margin: 14px 0 0;
+  color: rgba(255, 250, 241, 0.72);
+  line-height: 1.6;
+}
+
+.save-account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.save-account-primary,
+.save-account-secondary {
+  min-height: 44px;
+  border-radius: 999px;
+  padding: 0 16px;
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.save-account-primary {
+  border: 1px solid rgba(255, 232, 179, 0.45);
+  color: #2a1a07;
+  background: linear-gradient(140deg, #ffe8b3, #f4cf8a);
+}
+
+.save-account-secondary {
+  border: 1px solid rgba(255, 250, 241, 0.18);
+  color: #fffaf1;
+  background: rgba(255, 250, 241, 0.05);
+}
+
 @keyframes activeVerseSettle {
   from {
     opacity: 0.82;

@@ -6,7 +6,7 @@ import {
   ViewChild,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom, of, Subject } from 'rxjs';
 import {
   catchError,
@@ -37,6 +37,7 @@ import { BibleService } from '../services/bible.service';
 import { BibleVersionService } from '../services/bible-version.service';
 import { ClerkService } from '../services/clerk.service';
 import { UserBattlesService } from '../services/user-battles.service';
+import { AnalyticsService } from '../services/analytics.service';
 
 interface FaithScrollVerse {
   reference: string;
@@ -89,12 +90,16 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   moreCategoriesOpen = false;
   identityChipsOpen = false;
   moreChipGroups: ScrollChipGroup[] = [];
+  saveAccountPromptOpen = false;
   readonly identityParentCategory = WHO_I_AM_IN_CHRIST_CATEGORY;
   readonly identityChips: ScrollChip[] = [
     { label: 'Accepted', categoryName: WHO_I_AM_ACCEPTED_CATEGORY },
     { label: 'Secure', categoryName: WHO_I_AM_SECURE_CATEGORY },
     { label: 'Significant', categoryName: WHO_I_AM_SIGNIFICANT_CATEGORY },
   ];
+  private readonly scrollItemTrackingPositions = new Set([
+    1, 3, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+  ]);
   primaryChips: ScrollChip[] = [
     { label: 'Anxiety', categoryName: 'Anxiety' },
     { label: 'Shame', categoryName: 'Shame & Guilt' },
@@ -105,7 +110,10 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   private inFlightRefs = new Set<string>();
   private seenRefs = new Set<string>();
   private savedVerseIdByRef = new Map<string, number>();
+  private viewedItemIds = new Set<string>();
+  private viewedItemCount = 0;
   private loadToken = 0;
+  private hasTrackedScrollStart = false;
   private cardTouchStartY: number | null = null;
   private toastTimeoutId: number | null = null;
 
@@ -116,7 +124,9 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     private clerkService: ClerkService,
     private apiService: ApiService,
     private route: ActivatedRoute,
+    private router: Router,
     private userBattlesService: UserBattlesService,
+    private analytics: AnalyticsService,
   ) {}
 
   ngOnInit(): void {
@@ -170,14 +180,16 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     const el = this.feed?.nativeElement;
     if (!el) return;
 
-    const nextIndex = Math.round(el.scrollTop / Math.max(1, el.clientHeight));
+    const nextIndex = this.getActiveIndexFromScroll(el);
     if (nextIndex !== this.activeIndex) {
+      this.trackScrollStarted();
       this.activeIndex = Math.max(
         0,
         Math.min(nextIndex, this.verses.length - 1),
       );
       this.markSeen(this.activeIndex);
       this.loadVerseWindow(this.activeIndex);
+      this.trackCurrentItemViewed();
       this.pulse();
     }
   }
@@ -188,6 +200,12 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
 
   async saveVerse(verse: FaithScrollVerse): Promise<void> {
     if (verse.error || !verse.reference) return;
+
+    this.trackScrollStarted();
+    this.analytics.trackEvent('scroll_save_clicked', {
+      ...this.getVerseAnalyticsMetadata(verse),
+      isSaved: this.favoriteRefs.has(verse.reference),
+    });
 
     if (this.favoriteRefs.has(verse.reference)) {
       const savedId = this.savedVerseIdByRef.get(verse.reference);
@@ -210,7 +228,10 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     }
 
     if (!this.dbUser?.id) {
-      this.showToast('Log in to save');
+      this.saveAccountPromptOpen = true;
+      this.analytics.trackEvent('scroll_save_logged_out_prompt_shown', {
+        ...this.getVerseAnalyticsMetadata(verse),
+      });
       return;
     }
 
@@ -270,6 +291,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   async shareVerse(verse: FaithScrollVerse): Promise<void> {
     if (verse.error) return;
 
+    this.trackScrollStarted();
     const shareText = `${verse.text}\n\n${verse.reference}${verse.version ? ` (${verse.version})` : ''}\n\nbetterinchrist.com`;
     const nav = navigator as Navigator & {
       share?: (data: ShareData) => Promise<void>;
@@ -287,8 +309,26 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.pulse();
   }
 
+  closeSaveAccountPrompt(): void {
+    this.saveAccountPromptOpen = false;
+    this.analytics.trackEvent('scroll_save_logged_out_prompt_dismissed', {
+      category: this.selectedCategory,
+      source: 'save_prompt',
+    });
+  }
+
+  async createAccountFromSavePrompt(): Promise<void> {
+    this.saveAccountPromptOpen = false;
+    this.analytics.trackEvent('scroll_save_logged_out_prompt_clicked', {
+      category: this.selectedCategory,
+      source: 'save_prompt',
+    });
+    await this.clerkService.openSignUp(this.getCurrentReturnUrl());
+  }
+
   randomVerse(): void {
     if (!this.verses.length) return;
+    this.trackScrollStarted();
     const unseenIndexes = this.verses
       .map((verse, index) => ({ verse, index }))
       .filter(
@@ -303,7 +343,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
           .filter((index) => index !== this.activeIndex);
     const nextIndex =
       candidates[Math.floor(Math.random() * candidates.length)] ?? 0;
-    this.scrollToIndex(nextIndex);
+    this.scrollToIndex(nextIndex, 'auto');
   }
 
   retrySelection(): void {
@@ -325,6 +365,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   }
 
   selectCategory(categoryName: string): void {
+    this.trackScrollStarted();
     this.selection.select(categoryName);
     this.moreCategoriesOpen = false;
   }
@@ -384,6 +425,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   }
 
   onVerseCardTouchStart(event: TouchEvent): void {
+    this.trackScrollStarted();
     this.cardTouchStartY = event.touches[0]?.clientY ?? null;
   }
 
@@ -407,6 +449,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   }
 
   onVerseCardWheel(event: WheelEvent): void {
+    this.trackScrollStarted();
     const card = event.currentTarget as HTMLElement | null;
     if (!card || Math.abs(event.deltaY) < 4) return;
 
@@ -460,6 +503,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.scrollToIndex(0, 'auto', token);
       this.loadVerseWindow(this.activeIndex, token);
+      this.trackCurrentItemViewed();
     });
   }
 
@@ -619,6 +663,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
         this.verses[index] = loadedVerse;
         if (index === this.activeIndex) {
           this.loading = false;
+          this.trackCurrentItemViewed();
         }
       });
   }
@@ -632,10 +677,12 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     if (!el) return;
 
     const safeIndex = Math.max(0, Math.min(index, this.verses.length - 1));
-    el.scrollTo({ top: safeIndex * el.clientHeight, behavior });
+    const slide = el.querySelectorAll<HTMLElement>('.verse-slide')[safeIndex];
+    el.scrollTo({ top: slide?.offsetTop ?? safeIndex * el.clientHeight, behavior });
     this.activeIndex = safeIndex;
     this.markSeen(safeIndex);
     this.loadVerseWindow(safeIndex, token);
+    this.trackCurrentItemViewed();
     this.pulse();
   }
 
@@ -712,6 +759,87 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     if (verse) this.seenRefs.add(verse.reference);
   }
 
+  private trackScrollStarted(): void {
+    if (this.hasTrackedScrollStart) {
+      return;
+    }
+
+    this.hasTrackedScrollStart = true;
+    this.analytics.trackEvent('scroll_started', {
+      category: this.selectedCategory,
+      scrollIndex: this.viewedItemCount,
+      source: 'faith_scroll',
+    });
+  }
+
+  private trackCurrentItemViewed(): void {
+    const verse = this.verses[this.activeIndex];
+    if (!verse?.reference) {
+      return;
+    }
+
+    const itemId = this.getVerseItemId(verse);
+    if (this.viewedItemIds.has(itemId)) {
+      return;
+    }
+
+    this.viewedItemIds.add(itemId);
+    this.viewedItemCount += 1;
+
+    if (!this.scrollItemTrackingPositions.has(this.viewedItemCount)) {
+      return;
+    }
+
+    this.analytics.trackEvent(
+      'scroll_milestone',
+      {
+        ...this.getVerseAnalyticsMetadata(verse),
+        scrollCount: this.viewedItemCount,
+        scrollIndex: this.viewedItemCount,
+        position: this.viewedItemCount,
+      },
+    );
+  }
+
+  private getVerseItemId(verse: FaithScrollVerse): string {
+    return `${this.selectedCategory}|${verse.reference}`;
+  }
+
+  private getVerseAnalyticsMetadata(verse: FaithScrollVerse): Record<string, any> {
+    return {
+      itemId: this.getVerseItemId(verse),
+      itemType: this.getItemType(),
+      category: this.selectedCategory,
+      source: 'faith_scroll',
+      path: this.router.url,
+      isLoggedIn: !!this.dbUser?.id || this.clerkService.authState.isSignedIn,
+    };
+  }
+
+  private getItemType(): string {
+    const categoryName = this.selectedCategory.toLowerCase();
+    if (categoryName.includes('prayer')) return 'prayer';
+    if (categoryName.includes('wisdom')) return 'wisdom';
+    if (categoryName.includes('encouragement')) return 'encouragement';
+    return 'verse';
+  }
+
+  private getActiveIndexFromScroll(el: HTMLElement): number {
+    const slides = Array.from(
+      el.querySelectorAll<HTMLElement>('.verse-slide'),
+    );
+    if (!slides.length) {
+      return Math.round(el.scrollTop / Math.max(1, el.clientHeight));
+    }
+
+    return slides.reduce((closestIndex, slide, index) => {
+      const closestSlide = slides[closestIndex];
+      const currentDistance = Math.abs(slide.offsetTop - el.scrollTop);
+      const closestDistance = Math.abs(closestSlide.offsetTop - el.scrollTop);
+      return currentDistance < closestDistance ? index : closestIndex;
+    }, 0);
+  }
+
   private removeUnfavoritedFromFavoritesFeed(): void {
     const currentRef = this.verses[this.activeIndex]?.reference;
     this.verses = this.verses.filter((verse) =>
@@ -733,7 +861,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   }
 
   private async bootstrapUserAndFavorites(): Promise<void> {
-    await this.clerkService.load();
+    await this.clerkService.initialize();
     this.user = this.clerkService.user;
 
     if (!this.user) {
@@ -773,5 +901,12 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       this.toastMessage = '';
       this.toastTimeoutId = null;
     }, 1300);
+  }
+
+  private getCurrentReturnUrl(): string {
+    const urlTree = this.router.createUrlTree(['/scroll'], {
+      queryParams: this.route.snapshot.queryParams,
+    });
+    return this.router.serializeUrl(urlTree);
   }
 }

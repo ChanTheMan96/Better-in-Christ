@@ -1,7 +1,10 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { BibleVersionOption, BibleVersionService } from './services/bible-version.service';
 import { BibleService } from './services/bible.service';
+import { AnalyticsService } from './services/analytics.service';
 
 @Component({
     selector: 'app-root',
@@ -20,13 +23,24 @@ export class AppComponent implements OnInit {
 
   constructor(
     private bibleVersions: BibleVersionService,
-    public bibleService: BibleService
+    public bibleService: BibleService,
+    private router: Router,
+    private analytics: AnalyticsService,
   ) {}
 
   ngOnInit(): void {
     const selectedVersionId = this.bibleVersions.getSelectedVersion();
     this.bibleVersions.setSelectedVersion(selectedVersionId);
     this.loadVersions(selectedVersionId);
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        if (event.urlAfterRedirects === '/') {
+          return;
+        }
+
+        this.analytics.trackPageView(event.urlAfterRedirects);
+      });
   }
 
   private loadVersions(selectedVersionId: string): void {

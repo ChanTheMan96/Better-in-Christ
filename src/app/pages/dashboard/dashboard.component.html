@@ -7,7 +7,7 @@
 			<div class="carrying-chip-row" aria-label="Today's battle shortcuts">
 				@for (chip of quickChips; track chip) {
 					<a
-						routerLink="/faith-scroll"
+						routerLink="/scroll"
 						[queryParams]="{ scroll: getQuickChipCategory(chip) }"
 						class="carrying-chip"
 						>
@@ -46,7 +46,7 @@
 		</div>
 
 		<div class="hero-actions">
-			<a routerLink="/faith-scroll" class="action-link">Open Faith Scroll</a>
+			<a routerLink="/scroll" class="action-link">Open Faith Scroll</a>
 			<button type="button" class="signout" (click)="signOut()">Sign Out</button>
 		</div>
 	</header>
@@ -91,7 +91,7 @@
 						<div class="saved-empty-state">
 							<p class="saved-empty">No saved verses yet.</p>
 							<p class="saved-empty-copy">When you save a verse from Faith Scroll, it will appear here.</p>
-							<a routerLink="/faith-scroll" class="saved-empty-link">Browse Faith Scroll</a>
+							<a routerLink="/scroll" class="saved-empty-link">Browse Faith Scroll</a>
 						</div>
 					} @else {
 						<ul class="saved-list">
