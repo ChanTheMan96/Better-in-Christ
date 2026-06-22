@@ -110,8 +110,9 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
   private inFlightRefs = new Set<string>();
   private seenRefs = new Set<string>();
   private savedVerseIdByRef = new Map<string, number>();
-  private viewedItemIds = new Set<string>();
   private viewedItemCount = 0;
+  private activeViewSequence = 0;
+  private countedActiveViewSequences = new Set<number>();
   private loadToken = 0;
   private hasTrackedScrollStart = false;
   private isRandomJumping = false;
@@ -188,6 +189,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
         0,
         Math.min(nextIndex, this.verses.length - 1),
       );
+      this.advanceActiveView();
       this.markSeen(this.activeIndex);
       this.loadVerseWindow(this.activeIndex);
       if (!this.isRandomJumping) {
@@ -348,7 +350,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       candidates[Math.floor(Math.random() * candidates.length)] ?? 0;
     this.trackRandomItemViewed(nextIndex);
     this.isRandomJumping = true;
-    this.scrollToIndex(nextIndex, 'auto', this.loadToken, false, false);
+    this.scrollToIndex(nextIndex, 'auto', this.loadToken, false);
     window.setTimeout(() => {
       this.isRandomJumping = false;
     }, 150);
@@ -484,6 +486,8 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.emptyMessage = '';
     this.inFlightRefs.clear();
     this.seenRefs.clear();
+    this.activeViewSequence = 0;
+    this.countedActiveViewSequences.clear();
     this.verses = refs.map((ref) => ({
       reference: ref,
       text: category.textByRef?.[ref] || 'Loading Scripture...',
@@ -681,7 +685,6 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     behavior: ScrollBehavior = 'smooth',
     token = this.loadToken,
     shouldTrackView = true,
-    countDuplicateView = false,
   ): void {
     const el = this.feed?.nativeElement;
     if (!el) return;
@@ -690,10 +693,13 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     const slide = el.querySelectorAll<HTMLElement>('.verse-slide')[safeIndex];
     el.scrollTo({ top: slide?.offsetTop ?? safeIndex * el.clientHeight, behavior });
     this.activeIndex = safeIndex;
+    this.advanceActiveView();
     this.markSeen(safeIndex);
     this.loadVerseWindow(safeIndex, token);
     if (shouldTrackView) {
-      this.trackCurrentItemViewed(countDuplicateView);
+      this.trackCurrentItemViewed();
+    } else {
+      this.markActiveViewCounted();
     }
     this.pulse();
   }
@@ -784,18 +790,16 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     });
   }
 
-  private trackCurrentItemViewed(countDuplicateView = false): void {
+  private trackCurrentItemViewed(): void {
     const verse = this.verses[this.activeIndex];
     if (!verse?.reference) {
       return;
     }
-
-    const itemId = this.getVerseItemId(verse);
-    if (this.viewedItemIds.has(itemId) && !countDuplicateView) {
+    if (this.countedActiveViewSequences.has(this.activeViewSequence)) {
       return;
     }
 
-    this.viewedItemIds.add(itemId);
+    this.markActiveViewCounted();
     this.viewedItemCount += 1;
 
     if (!this.scrollItemTrackingPositions.has(this.viewedItemCount)) {
@@ -819,7 +823,6 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.viewedItemIds.add(this.getVerseItemId(verse));
     this.viewedItemCount += 1;
 
     if (!this.scrollItemTrackingPositions.has(this.viewedItemCount)) {
@@ -832,6 +835,14 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       scrollIndex: this.viewedItemCount,
       position: this.viewedItemCount,
     });
+  }
+
+  private advanceActiveView(): void {
+    this.activeViewSequence += 1;
+  }
+
+  private markActiveViewCounted(): void {
+    this.countedActiveViewSequences.add(this.activeViewSequence);
   }
 
   private getVerseItemId(verse: FaithScrollVerse): string {
