@@ -794,7 +794,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     }
 
     this.analytics.trackEvent(
-      'scroll_item_viewed',
+      'scroll_milestone',
       {
         ...this.getVerseAnalyticsMetadata(verse),
         scrollCount: this.viewedItemCount,
@@ -815,8 +815,6 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
       category: this.selectedCategory,
       source: 'faith_scroll',
       path: this.router.url,
-      reference: verse.reference,
-      version: verse.version,
       isLoggedIn: !!this.dbUser?.id || this.clerkService.authState.isSignedIn,
     };
   }
