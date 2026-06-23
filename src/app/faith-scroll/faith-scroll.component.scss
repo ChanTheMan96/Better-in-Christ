@@ -992,10 +992,12 @@
   }
 
   .verse-card-content {
-    max-height: none;
-    overflow: visible;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: auto;
+    max-height: calc(100dvh - 250px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
 
   .scroll-progress {
