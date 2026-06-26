@@ -494,6 +494,7 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     this.emptyMessage = '';
     this.inFlightRefs.clear();
     this.seenRefs.clear();
+    this.viewedItemCount = 0;
     this.activeViewSequence = 0;
     this.countedActiveViewSequences.clear();
     this.verses = refs.map((ref) => ({
@@ -521,9 +522,9 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
     }
 
     setTimeout(() => {
-      this.scrollToIndex(0, 'auto', token);
+      this.scrollToIndex(0, 'auto', token, false);
       this.loadVerseWindow(this.activeIndex, token);
-      this.trackCurrentItemViewed();
+      this.trackInitialScrollItemViewed();
     });
   }
 
@@ -824,6 +825,11 @@ export class FaithScrollComponent implements OnInit, OnDestroy {
         position: this.viewedItemCount,
       },
     );
+  }
+
+  private trackInitialScrollItemViewed(): void {
+    this.advanceActiveView();
+    this.trackCurrentItemViewed();
   }
 
   private trackRandomItemViewed(index: number): void {
